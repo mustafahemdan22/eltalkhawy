@@ -49,6 +49,11 @@ export default function FilterSidebar({
     });
   };
 
+  const handleCategorySelect = (slug: string) => {
+    onSelectCategory(slug);
+    if (onClose && !slug) onClose();
+  };
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
     setMaxPrice(val);
@@ -74,7 +79,7 @@ export default function FilterSidebar({
         {hasActiveFilters && (
           <button
             onClick={onClearAll}
-            className="text-xs font-semibold text-[var(--gold)] hover:text-[var(--gold)] transition-colors uppercase tracking-wider"
+            className="px-3 py-3 -my-3 text-xs font-semibold text-[var(--gold)] hover:text-[var(--gold)] transition-colors uppercase tracking-wider"
           >
             {dict.shop?.clearAll || 'Clear All'}
           </button>
@@ -89,28 +94,28 @@ export default function FilterSidebar({
         </h3>
         <ul className="space-y-2 max-h-60 overflow-y-auto no-scrollbar pr-1" role="list">
           <li>
-            <button
-              onClick={() => onSelectCategory('')}
-              className={cn(
-                  'w-full text-left px-4 py-3 rounded text-sm transition-all duration-200',
-                !selectedCategory
-                  ? 'bg-surface-raised/80 text-primary font-medium'
-                  : 'text-secondary hover:bg-surface/40 hover:text-primary',
-                  locale === 'ar' && 'text-right'
-              )}
-            >
-              {dict.shop?.allCategories || 'All Specialties'}
-            </button>
-          </li>
-          {CATEGORIES.map((cat) => (
-            <li key={cat.slug}>
               <button
-                onClick={() => onSelectCategory(cat.slug)}
+                onClick={() => handleCategorySelect('')}
+                className={cn(
+                    'w-full text-left px-4 py-3 rounded text-sm transition-all duration-200',
+                  !selectedCategory
+                    ? 'bg-[var(--gold-subtle)] text-[var(--gold)] font-bold border border-[var(--gold-border)] shadow-gold'
+                    : 'text-secondary hover:bg-surface-raised hover:text-primary border border-transparent',
+                    locale === 'ar' && 'text-right'
+                )}
+              >
+                {dict.shop?.allCategories || 'All Specialties'}
+              </button>
+            </li>
+            {CATEGORIES.map((cat) => (
+              <li key={cat.slug}>
+                <button
+                  onClick={() => { onSelectCategory(cat.slug); if (onClose) onClose(); }}
                 className={cn(
                   'w-full text-left px-4 py-2.5 rounded text-sm transition-all duration-200 flex items-center justify-between',
                   selectedCategory === cat.slug
-                    ? 'bg-surface-raised/80 text-primary font-medium'
-                    : 'text-secondary hover:bg-surface/40 hover:text-primary',
+                    ? 'bg-[var(--gold-subtle)] text-[var(--gold)] font-bold border border-[var(--gold-border)] shadow-gold'
+                    : 'text-secondary hover:bg-surface-raised hover:text-primary border border-transparent',
                     locale === 'ar' && 'flex-row-reverse text-right'
                 )}
               >
@@ -118,7 +123,7 @@ export default function FilterSidebar({
                   <span aria-hidden="true">{cat.icon}</span>
                   {locale === 'ar' ? cat.nameAr : cat.name}
                 </span>
-                <span className="text-xs text-muted font-arabic font-light tracking-wide">
+                <span className="text-xs text-muted font-arabic font-normal tracking-wide">
                   {locale === 'ar' ? cat.name : cat.nameAr}
                 </span>
               </button>
@@ -155,8 +160,8 @@ export default function FilterSidebar({
                   className={cn(
                     'w-4 h-4 rounded border transition-all duration-200 flex items-center justify-center shrink-0',
                     selectedStates[item.key]
-                      ? 'border-[var(--gold)] bg-[var(--gold)] text-[var(--gold-fg)]'
-                      : 'border-muted bg-surface-raised group-hover:border-muted',
+                      ? 'border-[var(--gold)] bg-[var(--gold)] text-[var(--gold-fg)] shadow-gold'
+                      : 'border-muted bg-surface-raised group-hover:border-[var(--gold-border)] transition-colors',
                   )}
                 >
                   {selectedStates[item.key] && (
@@ -197,8 +202,9 @@ export default function FilterSidebar({
             step="50"
             value={maxPrice}
             onChange={handlePriceChange}
-            className="w-full accent-[var(--gold)] h-1.5 bg-surface-raised/80 rounded-lg cursor-pointer appearance-none"
+            className="w-full accent-[var(--gold)] h-1.5 bg-surface-raised border border-muted rounded-lg cursor-pointer appearance-none shadow-inner"
             dir="ltr"
+            aria-label={dict.shop?.priceRangeLabel || 'Maximum price filter'}
           />
           <div className="flex justify-between text-2xs text-muted mt-3 font-mono" dir="ltr">
             <span>EGP 0</span>
@@ -224,10 +230,11 @@ export default function FilterSidebar({
         )}
       >
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-surface-raised/80 backdrop-blur-sm" onClick={onClose} />
+        <div className="absolute inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} />
 
         {/* Panel */}
         <div
+          data-theme="dark"
           className={cn(
             'absolute top-0 bottom-0 left-0 w-80 max-w-[85vw] bg-surface border-r border-muted p-6 shadow-raised transition-transform duration-300 flex flex-col',
             isOpen ? 'translate-x-0' : '-translate-x-full',
@@ -236,7 +243,7 @@ export default function FilterSidebar({
           {/* Close button */}
           <button
             onClick={onClose}
-            className={cn("absolute top-4 p-2 rounded-button bg-surface-raised border border-muted text-secondary hover:text-primary", locale === 'ar' ? 'left-4' : 'right-4')}
+            className={cn("absolute top-4 p-3 rounded-button bg-surface-raised border border-muted text-secondary hover:text-primary", locale === 'ar' ? 'left-4' : 'right-4')}
             aria-label={dict.shop?.closeFilters || "Close filters"}
           >
             <X className="w-4 h-4" />

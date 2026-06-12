@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ProductCard from '@/components/shop/ProductCard';
@@ -11,7 +12,7 @@ import { Heart, ShoppingBag } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/components/LocaleProvider';
-import { cn } from '@/lib/utils';
+import { discountedPrice } from '@/lib/utils';
 
 export default function WishlistPage() {
   const { user, isLoaded: authLoaded } = useUser();
@@ -24,7 +25,7 @@ export default function WishlistPage() {
 
   const handleToggleWishlist = async (productId: string) => {
     if (!user) return;
-    await toggleWishlistMutation({ userId: user.id, productId: productId as any });
+    await toggleWishlistMutation({ userId: user.id, productId: productId as Id<'products'> });
   };
 
   const handleAddToCart = async (productId: string, weight: string, quantity: number) => {
@@ -32,13 +33,13 @@ export default function WishlistPage() {
     const product = wishlistItems.find((p) => p._id === productId);
     if (!product) return;
     const variant = product.variants.find((v) => v.weight === weight) ?? product.variants[0];
-    const finalPrice = product.discount ? variant.price * (1 - product.discount / 100) : variant.price;
+    const finalPrice = product.discount ? discountedPrice(variant.price, product.discount) : variant.price;
 
     if (user) {
-      await addToCartMutation({ userId: user.id, productId: productId as any, variantWeight: weight, quantity, price: finalPrice });
+      await addToCartMutation({ userId: user.id, productId: productId as Id<'products'>, variantWeight: weight, quantity, price: finalPrice });
     } else {
       const guestCart = JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]');
-      const existingIdx = guestCart.findIndex((item: any) => item.productId === productId && item.variantWeight === weight);
+      const existingIdx = guestCart.findIndex((item: { productId: string; variantWeight: string; quantity: number }) => item.productId === productId && item.variantWeight === weight);
       if (existingIdx > -1) guestCart[existingIdx].quantity += quantity;
       else guestCart.push({ productId, variantWeight: weight, quantity, price: finalPrice });
       localStorage.setItem('et_guest_cart', JSON.stringify(guestCart));
@@ -52,7 +53,7 @@ export default function WishlistPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-base py-14 md:py-20">
+      <main id="main-content" className="min-h-screen bg-base py-14 md:py-20">
         <div className="container-brand">
           <div className="text-center mb-14">
             <span className="text-[var(--gold)] text-3xs font-semibold tracking-[0.25em] uppercase block mb-4">
@@ -62,7 +63,7 @@ export default function WishlistPage() {
               <Heart className="w-6 h-6 text-[var(--brand)] fill-current" />
               {dict.wishlist?.title || 'Wishlist'}
             </h1>
-            <p className="text-base text-secondary mt-3 max-w-sm mx-auto leading-relaxed font-sans font-light">
+            <p className="text-base text-secondary mt-3 max-w-sm mx-auto leading-relaxed font-sans font-normal">
               {dict.wishlist?.subtitle || 'Your privately reserved cuts.'}
             </p>
           </div>
@@ -77,10 +78,10 @@ export default function WishlistPage() {
                 <Heart className="w-7 h-7 text-[var(--brand)]" />
               </div>
               <h3 className="font-display text-lg font-bold text-primary">{dict.wishlist?.privateWishlist || 'Private Wishlist'}</h3>
-              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-light">
+              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-normal">
                 {dict.wishlist?.signInDescription || 'Sign in to access your wishlist.'}
               </p>
-              <Button onClick={() => router.push('/sign-in')} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
+              <Button onClick={() => router.push(`/${locale}/sign-in`)} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
                 {dict.wishlist?.signInButton || 'Sign In'}
               </Button>
             </div>
@@ -96,10 +97,10 @@ export default function WishlistPage() {
                 <ShoppingBag className="w-7 h-7 text-[var(--gold)]" />
               </div>
               <h3 className="font-display text-lg font-bold text-primary">{dict.wishlist?.emptyTitle || 'Wishlist is Empty'}</h3>
-              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-light">
+              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-normal">
                 {dict.wishlist?.emptyDescription || 'Explore our selection to start your list.'}
               </p>
-              <Button onClick={() => router.push(`/${locale}/shop`)} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
+              <Button onClick={() => router.push(`/${locale}/categories`)} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
                 {dict.wishlist?.goToCatalog || 'Go to Catalog'}
               </Button>
             </div>

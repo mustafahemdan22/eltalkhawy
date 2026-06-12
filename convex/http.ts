@@ -45,7 +45,7 @@ http.route({
       case "user.created":
       case "user.updated": {
         const primaryEmailId = data.primary_email_address_id;
-        const primaryEmailObj = data.email_addresses?.find((e: any) => e.id === primaryEmailId);
+        const primaryEmailObj = data.email_addresses?.find((e) => e.id === primaryEmailId);
         const email = primaryEmailObj?.email_address ?? data.email_addresses?.[0]?.email_address ?? "";
         const firstName = data.first_name ?? "";
         const lastName = data.last_name ?? "";
@@ -69,7 +69,7 @@ http.route({
         break;
       }
       default:
-        console.log(`Unhandled Clerk webhook event type: ${type}`);
+        // Unhandled Clerk webhook event type: ${type}
     }
 
     return new Response(null, { status: 200 });

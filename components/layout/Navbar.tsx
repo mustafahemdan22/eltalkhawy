@@ -9,14 +9,13 @@ import {
   Heart,
   Search,
   User,
-  Menu,
   X,
-  ChevronDown,
   Phone,
   Truck,
   Globe,
   Sun,
   Moon,
+  ArrowUp,
 } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
@@ -27,14 +26,10 @@ import { cn } from '@/lib/utils';
 import { NAV_LINKS, CATEGORIES, SITE_CONFIG } from '@/lib/constants';
 import CartDrawer from '@/components/layout/CartDrawer';
 
-/* ── Types ── */
-interface NavbarProps {
-  cartCount?:    number;
-  wishlistCount?:number;
-}
+const ANIMAL_SLUGS = new Set(['beef', 'buffalo', 'lamb', 'goat', 'veal']);
 
 /* ── Navbar ── */
-export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
+export default function Navbar() {
   const pathname            = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -62,7 +57,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
     if (!user) {
       const updateCount = () => {
         const guestCart = JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]');
-        const totalQty = guestCart.reduce((acc: number, item: any) => acc + item.quantity, 0);
+        const totalQty = guestCart.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
         setLocalCartCount(totalQty);
       };
       updateCount();
@@ -88,9 +83,11 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
 
   /* close mobile on route change */
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setMobileOpen(false);
     setShopOpen(false);
     setSearchOpen(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [pathname]);
 
   /* lock scroll when mobile menu open */
@@ -125,6 +122,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
   }, [mobileOpen, searchOpen, shopOpen]);
 
   /* mounted for theme hydration */
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
   const toggleLanguage = () => {
@@ -142,10 +140,27 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
+      {/* ── Mobile Top Bar (Marquee Ticker) ── */}
+      <div className="flex md:hidden fixed top-0 left-0 right-0 h-9 z-50 bg-[var(--brand)] items-center overflow-hidden border-b border-[var(--gold)]/20">
+        <div className="relative flex overflow-x-hidden w-full">
+          <div className="marquee-track flex items-center gap-16 text-2xs font-semibold uppercase tracking-[0.2em] text-[var(--gold)] whitespace-nowrap">
+            <span>{locale === 'ar' ? 'عرض خاص: توصيل مجاني للطلبات فوق ٢٠٠٠ ج.م' : 'Special Offer: Free delivery over EGP 2000'}</span>
+            <span>{locale === 'ar' ? 'جودة لحوم بلدية فاخرة ١٠٠٪ طازجة يومياً' : '100% Premium Local Fresh Meat Daily'}</span>
+            {/* Duplicate for seamless scrolling marquee effect */}
+            <span aria-hidden="true">{locale === 'ar' ? 'عرض خاص: توصيل مجاني للطلبات فوق ٢٠٠٠ ج.م' : 'Special Offer: Free delivery over EGP 2000'}</span>
+            <span aria-hidden="true">{locale === 'ar' ? 'جودة لحوم بلدية فاخرة ١٠٠٪ طازجة يومياً' : '100% Premium Local Fresh Meat Daily'}</span>
+          </div>
+        </div>
+      </div>
+
       {/* ── Top bar ── */}
-      <div className="hidden md:flex items-center justify-between bg-surface border-b border-muted px-6 py-2.5 text-sm text-secondary">
+      <div className="hidden md:flex items-center justify-between bg-surface-raised border-b border-subtle px-6 py-2.5 text-xs text-secondary font-medium tracking-wide">
         <div className="flex items-center gap-6">
           <span className="flex items-center gap-2">
             <Truck className="w-3 h-3 text-[var(--gold)]" aria-hidden="true" />
@@ -169,10 +184,10 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
       {/* ── Main Navbar ── */}
       <header
         className={cn(
-          'sticky top-0 z-50 w-full transition-all duration-350 ease-premium',
+          'fixed bottom-0 top-auto left-0 right-0 z-50 w-full transition-all duration-350 ease-premium md:sticky md:top-0 md:bottom-auto',
           scrolled
-            ? 'bg-base/95 backdrop-blur-md border-b border-muted shadow-card'
-            : 'bg-base border-b border-muted',
+            ? 'bg-base/95 backdrop-blur-md border-t border-muted md:border-t-0 md:border-b shadow-card'
+            : 'bg-base border-t border-muted md:border-t-0 md:border-b',
         )}
       >
         <nav
@@ -181,7 +196,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
         >
           {/* ── Logo ── */}
           <Link href={`/${locale}`} className="flex items-center gap-4 shrink-0 group" aria-label="El Talkhawy home">
-            <div className="w-11 h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-gold group-hover:shadow-gold-lg transition-shadow duration-300">
+            <div className="w-11 h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-gold group-hover:shadow-gold-lg ring-1 ring-[var(--gold)]/30 group-hover:ring-[var(--gold)]/60 transition-all duration-300">
               <span className="text-[var(--brand-fg)] font-display font-bold text-sm leading-none select-none">
                 ET
               </span>
@@ -190,94 +205,22 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
               <div className="font-display font-bold text-primary text-lg leading-none tracking-tight">
                 {locale === 'ar' ? SITE_CONFIG.nameAr : SITE_CONFIG.name}
               </div>
-              <div className="text-[var(--gold)] text-2xs font-medium tracking-[0.15em] uppercase leading-none mt-0.5">
-                {locale === 'ar' ? 'لحوم بلدية فاخرة' : 'Premium Meat'}
-              </div>
             </div>
           </Link>
 
           {/* ── Desktop Nav Links ── */}
-          <ul className="hidden lg:flex items-center gap-1.5" role="list">
+          <ul className="hidden md:flex items-center gap-1.5" role="list">
             {NAV_LINKS.map((link) => {
               const active = isActive(link.href);
-              const isShop = link.href === '/shop';
               const labelText = locale === 'ar' ? link.labelAr : link.label;
-
-              if (isShop) {
-                return (
-                  <li key={link.href} className="relative">
-                    <button
-                      onClick={() => setShopOpen((v) => !v)}
-                      className={cn(
-                        'flex items-center gap-1 px-3.5 py-2.5 rounded-button text-sm font-medium transition-all duration-250',
-                        active || shopOpen
-                          ? 'text-primary bg-surface-raised'
-                          : 'text-secondary hover:text-primary hover:bg-surface',
-                      )}
-                      aria-expanded={shopOpen}
-                      aria-haspopup="true"
-                    >
-                      {labelText}
-                      <ChevronDown
-                        className={cn(
-                          'w-3.5 h-3.5 transition-transform duration-250',
-                          shopOpen && 'rotate-180',
-                        )}
-                        aria-hidden="true"
-                      />
-                    </button>
-
-                    {/* Mega menu */}
-                    <AnimatePresence>
-                      {shopOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 8 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[680px] glass rounded-card shadow-raised p-6"
-                          role="menu"
-                        >
-                          <div className="grid grid-cols-3 gap-5">
-                            {CATEGORIES.map((cat: any) => (
-                              <Link
-                                key={cat.slug}
-                                href={`/${locale}/categories/${cat.slug}`}
-                                role="menuitem"
-                                className="flex items-center gap-3 p-4 rounded-lg hover:bg-surface-raised transition-colors group/item"
-                                onClick={() => setShopOpen(false)}
-                              >
-                                <span className="text-xl leading-none" aria-hidden="true">
-                                  {cat.icon}
-                                </span>
-                                <span className="text-sm text-secondary group-hover/item:text-primary transition-colors font-medium">
-                                  {locale === 'ar' ? cat.nameAr : cat.name}
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
-                          <div className="mt-4 pt-4 border-t border-muted">
-                            <Link
-                              href={`/${locale}/shop`}
-                              className="flex items-center justify-center gap-2 text-sm text-[var(--gold)] hover:text-[var(--gold-hover)] font-medium transition-colors"
-                              onClick={() => setShopOpen(false)}
-                            >
-                              {locale === 'ar' ? 'عرض جميع المنتجات ←' : 'View all products →'}
-                            </Link>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </li>
-                );
-              }
 
               return (
                 <li key={link.href}>
                   <Link
                     href={link.href === '/' ? `/${locale}` : `/${locale}${link.href}`}
                     className={cn(
-                      'block px-3.5 py-2.5 rounded-button text-sm font-medium transition-all duration-250',
+                      'block px-3 py-2.5 rounded-button text-sm font-medium transition-all duration-250 nav-link-indicator',
+                      active && 'active',
                       active
                         ? 'text-primary bg-surface-raised'
                         : 'text-secondary hover:text-primary hover:bg-surface',
@@ -296,7 +239,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             {/* Search button */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="p-2.5 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+              className="p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250 shine"
               aria-label="Search"
               aria-expanded={searchOpen}
             >
@@ -306,7 +249,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="hidden sm:flex items-center gap-1.5 p-2.5 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+              className="hidden md:flex items-center gap-1.5 p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
               aria-label={locale === 'en' ? 'Switch to Arabic' : 'Switch to English'}
             >
               <Globe className="w-4 h-4" aria-hidden="true" />
@@ -316,7 +259,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="hidden sm:flex p-2.5 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+              className="hidden md:flex p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
               aria-label={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {mounted && theme === 'dark' ? (
@@ -329,7 +272,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             {/* Wishlist */}
             <Link
               href={`/${locale}/wishlist`}
-              className="relative p-2.5 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+              className="relative p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
               aria-label={`Wishlist${displayWishlistCount > 0 ? `, ${displayWishlistCount} items` : ''}`}
             >
               <Heart className="w-5 h-5" aria-hidden="true" />
@@ -343,7 +286,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             {/* Cart Button */}
             <button
               onClick={() => setCartDrawerOpen(true)}
-              className="relative p-2 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250 cursor-pointer"
+              className="relative p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250 cursor-pointer"
               aria-label={`Cart${displayCartCount > 0 ? `, ${displayCartCount} items` : ''}`}
             >
               <ShoppingCart className="w-5 h-5" aria-hidden="true" />
@@ -355,11 +298,11 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
             </button>
 
             {/* Auth */}
-            <div className="hidden sm:flex items-center gap-2 ml-1">
+            <div className="hidden md:flex items-center gap-2 ms-1">
               <SignedIn>
                 {isAdmin && (
                   <Link
-                    href="/admin"
+                    href={`/${locale}/admin`}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
                   >
                     {locale === 'ar' ? 'التحكم' : 'Admin'}
@@ -387,17 +330,13 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
 
             {/* Mobile hamburger */}
             <button
-              className="lg:hidden p-2 ml-1 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all"
+              className="md:hidden hamburger-btn ml-1"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
             >
-              {mobileOpen ? (
-                <X className="w-5 h-5" aria-hidden="true" />
-              ) : (
-                <Menu className="w-5 h-5" aria-hidden="true" />
-              )}
+              <span className="hamburger-line" aria-hidden="true" />
             </button>
           </div>
         </nav>
@@ -435,7 +374,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                     onKeyDown={(e) => {
                       if (e.key === 'Escape') setSearchOpen(false);
                       if (e.key === 'Enter' && searchQuery.trim()) {
-                        window.location.href = `/${locale}/shop?q=${encodeURIComponent(searchQuery.trim())}`;
+                        router.push(`/${locale}/categories?q=${encodeURIComponent(searchQuery.trim())}`);
                       }
                     }}
                   />
@@ -455,26 +394,32 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-[var(--bg-overlay)] lg:hidden"
+              className="fixed inset-0 z-40 bg-[var(--bg-overlay)] md:hidden"
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
 
-            {/* Drawer */}
+            {/* Bottom Sheet Drawer */}
             <motion.div
               id="mobile-menu"
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 left-0 bottom-0 z-50 w-80 bg-base border-r border-muted flex flex-col lg:hidden overflow-y-auto"
+              data-theme="dark"
+              className="fixed bottom-[72px] left-0 right-0 z-45 bg-base border-t border-muted rounded-t-2xl flex flex-col md:hidden overflow-y-auto max-h-[75vh]"
               role="dialog"
               aria-label="Mobile navigation"
               aria-modal="true"
             >
+              {/* Drag Handle Indicator */}
+              <div className="flex justify-center py-3">
+                <div className="w-12 h-1.5 rounded-full bg-muted/40" />
+              </div>
+
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-muted">
-                <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
+              <div className="flex items-center justify-between px-6 pb-4 border-b border-muted">
+                <Link href={`/${locale}`} className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
                   <div className="w-8 h-8 rounded-full bg-gradient-brand flex items-center justify-center">
                     <span className="text-[var(--brand-fg)] font-display font-bold text-xs">ET</span>
                   </div>
@@ -482,7 +427,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                 </Link>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="p-2 rounded-button text-secondary hover:text-primary hover:bg-surface"
+                  className="p-3 rounded-button text-secondary hover:text-primary hover:bg-surface"
                   aria-label="Close menu"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
@@ -514,10 +459,10 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                     {locale === 'ar' ? 'التصنيفات' : 'Categories'}
                   </p>
                   <div className="grid grid-cols-2 gap-3 mt-1">
-                    {CATEGORIES.slice(0, 8).map((cat: any) => (
+                    {CATEGORIES.slice(0, 8).map((cat) => (
                       <Link
                         key={cat.slug}
-                        href={`/${locale}/categories/${cat.slug}`}
+                        href={ANIMAL_SLUGS.has(cat.slug) ? `/${locale}/animal/${cat.slug}` : `/${locale}/categories/${cat.slug}`}
                         className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-secondary hover:bg-surface hover:text-primary transition-colors"
                         onClick={() => setMobileOpen(false)}
                       >
@@ -535,7 +480,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                 <div className="flex items-center justify-between gap-2 pb-2 border-b border-muted">
                   <button
                     onClick={toggleLanguage}
-                    className="flex items-center gap-2 px-3 py-2 rounded-button text-secondary hover:text-primary hover:bg-surface-raised transition-colors text-sm"
+                    className="flex items-center gap-2 px-4 py-3 rounded-button text-secondary hover:text-primary hover:bg-surface-raised transition-colors text-sm"
                     aria-label={locale === 'en' ? 'Switch to Arabic' : 'Switch to English'}
                   >
                     <Globe className="w-4 h-4" aria-hidden="true" />
@@ -543,7 +488,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                   </button>
                   <button
                     onClick={toggleTheme}
-                    className="p-2 rounded-button text-secondary hover:text-primary hover:bg-surface-raised transition-colors"
+                    className="p-3 rounded-button text-secondary hover:text-primary hover:bg-surface-raised transition-colors"
                     aria-label={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                   >
                     {mounted && theme === 'dark' ? (
@@ -556,7 +501,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
 
                 <SignedIn>
                   <Link
-                    href="/account"
+                    href={`/${locale}/account`}
                     className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-secondary hover:bg-surface-raised hover:text-primary transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -565,7 +510,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                   </Link>
                   {isAdmin && (
                     <Link
-                      href="/admin"
+                      href={`/${locale}/admin`}
                       className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-[var(--gold)] hover:bg-[var(--gold-subtle)] transition-colors"
                       onClick={() => setMobileOpen(false)}
                     >
@@ -575,7 +520,7 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
                 </SignedIn>
                 <SignedOut>
                   <Link
-                    href="/sign-in"
+                    href={`/${locale}/sign-in`}
                     className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-button text-sm font-medium bg-[var(--brand)] text-[var(--brand-fg)] hover:bg-[var(--brand-hover)] transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -607,6 +552,25 @@ export default function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps
 
       {/* Slide-in cart drawer */}
       <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
+
+      {/* Floating Scroll to Top — hidden on mobile (covered by bottom nav) */}
+      <AnimatePresence>
+        {scrolled && (
+          <motion.button
+            initial={{ opacity: 0, y: 16, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.8 }}
+            onClick={scrollToTop}
+            className={cn(
+              "fixed z-40 bottom-8 bg-[var(--gold)] text-[var(--gold-fg)] p-3 rounded-full shadow-gold hover:bg-[var(--gold-hover)] hover:scale-110 transition-all duration-200 cursor-pointer hidden md:block",
+              locale === 'ar' ? 'left-6' : 'right-6'
+            )}
+            aria-label={locale === 'ar' ? 'العودة إلى الأعلى' : 'Scroll to top'}
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 }

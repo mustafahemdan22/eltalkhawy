@@ -4,10 +4,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import type { Id, Doc } from '@/convex/_generated/dataModel';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
-import { cn, formatPrice, cloudinaryUrl } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryUrl, discountedPrice } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -28,6 +29,10 @@ interface CheckoutCartItem {
   variantWeight: string;
   quantity:      number;
   price:         number;
+  isGrilled?:    boolean;
+  grillComment?: string;
+  starterName?:  string;
+  starterPrice?: number;
   product: {
     _id:          string;
     slug:         string;
@@ -67,25 +72,42 @@ export default function CheckoutPage() {
     orderNumber: string;
   } | null>(null);
 
-  const [guestCart, setGuestCart] = useState<any[]>([]);
-  const [appliedPromo, setAppliedPromo] = useState<any | null>(null);
+  const guestCart = useMemo<Array<{
+    productId:     string;
+    variantWeight: string;
+    quantity:      number;
+    price:         number;
+  }>>(() => {
+    if (typeof window !== 'undefined') {
+       try { return JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]') as Array<{ productId: string; variantWeight: string; quantity: number; price: number }>; } catch { return []; }
+
+    }
+    return [];
+  }, []);
+  const appliedPromo = useMemo<Doc<'promoCodes'> | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const p = sessionStorage.getItem('et_applied_promo');
+        return p ? JSON.parse(p) : null;
+      } catch { return null; }
+    }
+    return null;
+  }, []);
 
   const dbCart = useQuery(api.cart.get, user ? { userId: user.id } : 'skip');
   const allProducts = useQuery(api.products.list, {});
   const createOrderMutation = useMutation(api.orders.create);
 
   useEffect(() => {
-    if (!user) {
-      setGuestCart(JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]'));
-    } else {
+    if (!user) return;
+    const timer = setTimeout(() => {
       setFullName(user.fullName || '');
       setPhone(user.primaryPhoneNumber?.phoneNumber || '');
       if (user.primaryEmailAddress?.emailAddress) {
         setGuestEmail(user.primaryEmailAddress.emailAddress);
       }
-    }
-    const promo = sessionStorage.getItem('et_applied_promo');
-    if (promo) setAppliedPromo(JSON.parse(promo));
+    }, 0);
+    return () => clearTimeout(timer);
   }, [user]);
 
   const checkoutItems = useMemo<CheckoutCartItem[]>(() => {
@@ -99,7 +121,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (authLoaded && dbCart !== undefined && checkoutItems.length === 0 && !successOrder) {
-      router.push(`/${locale}/shop`);
+      router.push(`/${locale}/categories`);
     }
   }, [authLoaded, dbCart, checkoutItems, successOrder, locale, router]);
 
@@ -107,7 +129,10 @@ export default function CheckoutPage() {
     const subtotal = checkoutItems.reduce((acc, item) => {
       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
       const baseVal = variant ? variant.price : item.price;
-      const latestPrice = item.product.discount ? baseVal * (1 - item.product.discount / 100) : baseVal;
+      const rawPrice = item.product.discount ? discountedPrice(baseVal, item.product.discount) : baseVal;
+      const grillFee = item.isGrilled ? 50 : 0;
+      const starterFee = item.starterPrice ?? 0;
+      const latestPrice = rawPrice + grillFee + starterFee;
       return acc + latestPrice * item.quantity;
     }, 0);
     const deliveryCost = subtotal >= SITE_CONFIG.deliveryMin || subtotal === 0 ? 0 : SITE_CONFIG.deliveryCost;
@@ -145,14 +170,21 @@ export default function CheckoutPage() {
       const orderItems = checkoutItems.map((item) => {
         const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
         const baseVal = variant ? variant.price : item.price;
-        const unitPrice = item.product.discount ? baseVal * (1 - item.product.discount / 100) : baseVal;
+        const rawPrice = item.product.discount ? discountedPrice(baseVal, item.product.discount) : baseVal;
+        const grillFee = item.isGrilled ? 50 : 0;
+        const starterFee = item.starterPrice ?? 0;
+        const unitPrice = rawPrice + grillFee + starterFee;
         return {
-          productId: item.product._id as any,
+          productId: item.product._id as Id<'products'>,
           productName: item.product.name,
           variantWeight: item.variantWeight,
           quantity: item.quantity,
           unitPrice,
           totalPrice: unitPrice * item.quantity,
+          isGrilled: item.isGrilled,
+          grillComment: item.grillComment,
+          starterName: item.starterName,
+          starterPrice: item.starterPrice,
         };
       });
       const response = await createOrderMutation({
@@ -191,7 +223,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-base flex flex-col">
         <Navbar />
-        <main className="flex-grow flex items-center justify-center py-16 px-4">
+        <main id="main-content" className="flex-grow flex items-center justify-center py-16 px-4">
           <div className="max-w-md w-full p-10 rounded-2xl bg-surface border border-muted text-center shadow-raised relative overflow-hidden">
             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[var(--success)]/2 blur-[80px] rounded-full pointer-events-none" />
             <div className="w-16 h-16 rounded-full bg-success-bg border border-success-border flex items-center justify-center text-success mx-auto mb-6">
@@ -203,7 +235,7 @@ export default function CheckoutPage() {
             <h1 className="font-display text-2xl font-bold text-primary mb-3">
               {dict.checkout?.successTitle || 'Order Placed!'}
             </h1>
-            <p className="text-sm text-secondary font-light leading-relaxed max-w-sm mx-auto mb-8">
+            <p className="text-sm text-secondary font-normal leading-relaxed max-w-sm mx-auto mb-8">
               {dict.checkout?.successDescription || 'Your order is being prepared.'}
             </p>
             <div className="bg-surface-raised/80 border border-muted rounded-xl p-5 text-left text-sm mb-8 space-y-2.5 font-mono">
@@ -225,11 +257,11 @@ export default function CheckoutPage() {
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              <Button onClick={() => router.push(`/${locale}/shop`)} fullWidth className="uppercase tracking-wider text-2xs font-semibold h-11 cursor-pointer">
+              <Button onClick={() => router.push(`/${locale}/categories`)} fullWidth className="uppercase tracking-wider text-2xs font-semibold h-11 cursor-pointer">
                 {dict.checkout?.backToCatalog || 'Back to Catalog'}
               </Button>
               {user && (
-                <button onClick={() => router.push('/account')}
+                <button onClick={() => router.push(`/${locale}/account`)}
                   className="h-11 px-5 rounded-button text-2xs font-semibold border border-muted text-secondary hover:text-primary hover:border-muted transition-all uppercase tracking-wider cursor-pointer">
                   {dict.checkout?.trackOrder || 'Track Order'}
                 </button>
@@ -247,7 +279,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-base py-14 md:py-20">
+      <main id="main-content" className="min-h-screen bg-base py-14 md:py-20">
         <div className="container-brand">
           <div className="text-center mb-14">
             <span className="text-[var(--gold)] text-3xs font-semibold tracking-[0.25em] uppercase block mb-4">
@@ -268,10 +300,10 @@ export default function CheckoutPage() {
               <div className="lg:col-span-7 flex flex-col gap-6">
                 {/* Delivery Info */}
                 <div className="p-7 rounded-2xl bg-surface border border-muted flex flex-col gap-6">
-                  <h3 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
+                  <h2 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-[var(--gold)]" />
                     {dict.checkout?.deliveryInfo || 'Delivery Info'}
-                  </h3>
+                  </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="fullName" className="text-3xs uppercase tracking-wider text-secondary font-semibold">{dict.checkout?.fullName || 'Full Name'}</label>
@@ -338,10 +370,10 @@ export default function CheckoutPage() {
 
                 {/* Payment */}
                 <div className="p-7 rounded-2xl bg-surface border border-muted flex flex-col gap-6">
-                  <h3 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
+                  <h2 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
                     <CircleDollarSign className="w-4 h-4 text-[var(--gold)]" />
                     {dict.checkout?.paymentMethod || 'Payment'}
-                  </h3>
+                  </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
                       { id: 'cash' as const, label: dict.checkout?.cash || 'Cash', labelAr: 'الدفع عند الاستلام', icon: CircleDollarSign },
@@ -352,7 +384,7 @@ export default function CheckoutPage() {
                       return (
                         <button key={method.id} type="button" onClick={() => setPaymentMethod(method.id)}
                           className={cn('p-5 rounded-xl border flex flex-col items-center text-center gap-4 transition-all duration-350 cursor-pointer',
-                                                        paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)] text-[var(--gold)] shadow-gold-sm' : 'border-muted bg-surface-raised/40 text-secondary hover:border-muted hover:text-primary' )}>
+                                                        paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)] text-[var(--gold)] shadow-gold' : 'border-muted bg-surface-raised/40 text-secondary hover:border-muted hover:text-primary' )}>
                           <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0 border',
                                                         paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)]' : 'border-muted bg-surface-raised' )}>
                             <Icon className="w-4 h-4 text-[var(--gold)]" />
@@ -371,21 +403,24 @@ export default function CheckoutPage() {
               {/* Order Summary */}
               <div className="lg:col-span-5 flex flex-col gap-6">
                 <div className="p-7 rounded-2xl bg-surface border border-muted flex flex-col gap-5">
-                  <h3 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
+                  <h2 className="font-display text-primary font-bold text-base border-b border-muted pb-4 flex items-center gap-2">
                     <ShoppingBag className="w-4 h-4 text-[var(--gold)]" />
                     {dict.checkout?.yourOrder || 'Your Order'}
-                  </h3>
+                  </h2>
                   <div className="divide-y divide-muted/40 max-h-60 overflow-y-auto no-scrollbar pr-1">
                     {checkoutItems.map((item) => {
                       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
                       const basePrice = variant ? variant.price : item.price;
-                      const unitPrice = item.product.discount ? basePrice * (1 - item.product.discount / 100) : basePrice;
+                      const rawPrice = item.product.discount ? discountedPrice(basePrice, item.product.discount) : basePrice;
+                      const grillFee = item.isGrilled ? 50 : 0;
+                      const starterFee = item.starterPrice ?? 0;
+                      const unitPrice = rawPrice + grillFee + starterFee;
                       const imgUrl = item.product.images[0]
                         ? (item.product.images[0].startsWith('http') ? item.product.images[0] : cloudinaryUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill' }))
                         : 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=200&q=80';
 
                       return (
-                        <div key={`${item.productId}-${item.variantWeight}`} className={cn('py-4 flex items-center justify-between gap-5', isRtl && 'flex-row-reverse')}>
+                        <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className={cn('py-4 flex items-center justify-between gap-5', isRtl && 'flex-row-reverse')}>
                           <div className={cn('flex items-center gap-4', isRtl && 'flex-row-reverse')}>
                             <div className="relative w-10 h-12 rounded bg-surface-raised border border-muted overflow-hidden shrink-0">
                               <Image src={imgUrl} alt={locale === 'ar' ? item.product.nameAr : item.product.name} fill sizes="60px" className="object-cover" />
@@ -393,6 +428,12 @@ export default function CheckoutPage() {
                             <div className={isRtl ? 'text-right' : ''}>
                               <span className="text-sm font-semibold text-primary block line-clamp-1">{locale === 'ar' ? item.product.nameAr : item.product.name}</span>
                               <span className="text-3xs text-muted block font-mono mt-0.5">{item.variantWeight} × {item.quantity}</span>
+                              {item.isGrilled && (
+                                <span className="text-3xs text-[var(--gold)] block font-medium">🔥 {locale === 'ar' ? 'تسوية وشوي (+٥٠ ج.م)' : 'Grill Prep (+EGP 50)'}</span>
+                              )}
+                              {item.starterName && (
+                                <span className="text-3xs text-[var(--gold)] block font-medium">🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                              )}
                             </div>
                           </div>
                           <span className="font-mono text-sm font-bold text-[var(--gold)] shrink-0">{formatPrice(unitPrice * item.quantity, locale)}</span>
@@ -403,7 +444,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="p-7 rounded-2xl bg-surface border border-muted flex flex-col gap-6">
-                  <h3 className="font-display text-primary font-bold text-base border-b border-muted pb-4">{dict.checkout?.billingDetails || 'Billing'}</h3>
+                  <h2 className="font-display text-primary font-bold text-base border-b border-muted pb-4">{dict.checkout?.billingDetails || 'Billing'}</h2>
                   <div className="space-y-4 text-sm divide-y divide-muted/40">
                     <div className={cn('flex justify-between pb-3', isRtl && 'flex-row-reverse')}>
                       <span className="text-secondary">{dict.checkout?.subtotal || 'Subtotal'}</span>
@@ -419,7 +460,7 @@ export default function CheckoutPage() {
                     </div>
                     {totals.promoDiscount > 0 && (
                       <div className={cn('flex justify-between pt-3 pb-3 text-[var(--gold)] font-medium', isRtl && 'flex-row-reverse')}>
-                        <span>{dict.checkout?.couponSavings || 'Savings'} ({appliedPromo.code})</span>
+                        <span>{dict.checkout?.couponSavings || 'Savings'} ({appliedPromo!.code})</span>
                         <span className="font-mono font-bold">−{formatPrice(totals.promoDiscount, locale)}</span>
                       </div>
                     )}

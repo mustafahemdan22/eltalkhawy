@@ -1,4 +1,4 @@
-import { query, mutation } from './_generated/server';
+import { query, mutation, QueryCtx } from './_generated/server';
 import { v } from 'convex/values';
 
 /* ─────────────────────────────────────────
@@ -16,7 +16,7 @@ export const list = query({
     limit:        v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db.query('products').filter((q) =>
+    const q = ctx.db.query('products').filter((q) =>
       q.eq(q.field('isAvailable'), true),
     );
 
@@ -58,6 +58,71 @@ export const getBySlug = query({
   },
 });
 
+/** Single product by id (admin only) */
+export const get = query({
+  args: { id: v.id('products') },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error('Not authenticated');
+    const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
+    if (!user || user.role !== 'admin') throw new Error('Not authorized');
+    return await ctx.db.get(args.id);
+  },
+});
+
+/** Lightweight admin/global search across products + orders (admin only). */
+export const globalSearch = query({
+  args: { query: v.string(), limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error('Not authenticated');
+    const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
+    if (!user || user.role !== 'admin') throw new Error('Not authorized');
+
+    const q = args.query.trim().toLowerCase();
+    if (q.length < 2) return { products: [], orders: [] };
+
+    const lim = args.limit ?? 5;
+
+    const allProducts = await ctx.db.query('products').collect();
+    const products = allProducts
+      .filter((p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.nameAr.toLowerCase().includes(q) ||
+        p.slug.toLowerCase().includes(q)
+      )
+      .slice(0, lim)
+      .map((p) => ({
+        _id:        p._id,
+        slug:       p.slug,
+        name:       p.name,
+        nameAr:     p.nameAr,
+        images:     p.images,
+        basePrice:  p.basePrice,
+        isAvailable:p.isAvailable,
+      }));
+
+    const allOrders = await ctx.db.query('orders').collect();
+    const orders = allOrders
+      .filter((o) =>
+        o.orderNumber.toLowerCase().includes(q) ||
+        o.deliveryAddress.fullName.toLowerCase().includes(q) ||
+        o.deliveryAddress.phone.toLowerCase().includes(q)
+      )
+      .slice(0, lim)
+      .map((o) => ({
+        _id:             o._id,
+        orderNumber:     o.orderNumber,
+        total:           o.total,
+        status:          o.status,
+        _creationTime:   o._creationTime,
+        customerName:    o.deliveryAddress.fullName,
+      }));
+
+    return { products, orders };
+  },
+});
+
 /** Search products by name */
 export const search = query({
   args: { query: v.string(), limit: v.optional(v.number()) },
@@ -95,14 +160,54 @@ export const related = query({
   },
 });
 
+/** Per-category product stats (count + price range). Used by home/cards. */
+export const categoryStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db
+      .query('products')
+      .filter((q) => q.eq(q.field('isAvailable'), true))
+      .collect();
+
+    const buckets = new Map<
+      string,
+      { count: number; minPrice: number; maxPrice: number }
+    >();
+
+    for (const p of all) {
+      const minVariantPrice = Math.min(...p.variants.map((v) => v.price));
+      const discounted = p.discount
+        ? minVariantPrice * (1 - p.discount / 100)
+        : minVariantPrice;
+      const entry = buckets.get(p.categorySlug);
+      if (!entry) {
+        buckets.set(p.categorySlug, {
+          count: 1,
+          minPrice: discounted,
+          maxPrice: discounted,
+        });
+      } else {
+        entry.count += 1;
+        entry.minPrice = Math.min(entry.minPrice, discounted);
+        entry.maxPrice = Math.max(entry.maxPrice, discounted);
+      }
+    }
+
+    return Array.from(buckets.entries()).map(([slug, stats]) => ({
+      slug,
+      ...stats,
+    }));
+  },
+});
+
 /* ─────────────────────────────────────────
    MUTATIONS (admin only — no auth guard yet)
 ───────────────────────────────────────── */
 
-async function requireAdmin(ctx: any): Promise<string> {
+async function requireAdmin(ctx: QueryCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new Error('Not authenticated');
-  const user = await ctx.db.query('users').withIndex('by_clerkId', (q: any) => q.eq('clerkId', identity.subject)).unique();
+  const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
   if (!user || user.role !== 'admin') throw new Error('Not authorized');
   return identity.subject;
 }
@@ -111,6 +216,7 @@ async function requireAdmin(ctx: any): Promise<string> {
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
+    await requireAdmin(ctx);
     return await ctx.db.query('products').collect();
   },
 });
@@ -223,6 +329,7 @@ export const updateStock = mutation({
     delta:         v.number(), // negative to reduce
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     const product = await ctx.db.get(args.productId);
     if (!product) throw new Error('Product not found');
 
@@ -233,5 +340,27 @@ export const updateStock = mutation({
     );
 
     await ctx.db.patch(args.productId, { variants: updatedVariants });
+  },
+});
+
+/** Set stock for a specific variant to an absolute value (admin only). */
+export const setStock = mutation({
+  args: {
+    productId:     v.id('products'),
+    variantWeight: v.string(),
+    stock:         v.number(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const product = await ctx.db.get(args.productId);
+    if (!product) throw new Error('Product not found');
+
+    const stock = Math.max(0, Math.floor(args.stock));
+    const updatedVariants = product.variants.map((v) =>
+      v.weight === args.variantWeight ? { ...v, stock } : v,
+    );
+
+    await ctx.db.patch(args.productId, { variants: updatedVariants });
+    return stock;
   },
 });

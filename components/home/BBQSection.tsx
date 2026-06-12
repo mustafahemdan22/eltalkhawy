@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Flame } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useLocale } from '@/components/LocaleProvider';
@@ -12,6 +12,15 @@ export default function BBQSection() {
   const { locale, dict } = useLocale();
   const bbqProducts = useQuery(api.products.list, { isBBQ: true });
   const topBBQ = bbqProducts?.slice(0, 3) ?? [];
+  const shouldReduceMotion = useReducedMotion();
+
+  const initialLeft = shouldReduceMotion ? {} : { opacity: 0, x: locale === 'ar' ? 32 : -32 };
+  const animateLeft = shouldReduceMotion ? {} : { opacity: 1, x: 0 };
+  const transitionLeft = shouldReduceMotion ? {} : { duration: 0.65 };
+
+  const initialRight = shouldReduceMotion ? {} : { opacity: 0, x: locale === 'ar' ? -32 : 32 };
+  const animateRight = shouldReduceMotion ? {} : { opacity: 1, x: 0 };
+  const transitionRight = shouldReduceMotion ? {} : { duration: 0.65, delay: 0.15 };
 
   return (
     <section
@@ -23,7 +32,7 @@ export default function BBQSection() {
         className="absolute inset-0 opacity-20"
         style={{
           backgroundImage:
-            'radial-gradient(ellipse 80% 60% at 60% 50%, #7c0035 0%, transparent 70%)',
+            'radial-gradient(ellipse 80% 60% at 60% 50%, var(--brand) 0%, transparent 70%)',
         }}
         aria-hidden="true"
       />
@@ -33,20 +42,17 @@ export default function BBQSection() {
 
           {/* Left: text block */}
           <motion.div
-            initial={{ opacity: 0, x: locale === 'ar' ? 32 : -32 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={initialLeft}
+            whileInView={shouldReduceMotion ? undefined : animateLeft}
             viewport={{ once: true }}
-            transition={{ duration: 0.65 }}
+            transition={transitionLeft}
           >
-            <span className="section-label text-[var(--brand)] mb-5 block">
-              {dict.home?.bbqSection.label}
-            </span>
             <h2
               id="bbq-heading"
               className="font-display text-4xl sm:text-5xl font-bold text-primary leading-tight"
             >
               {dict.home?.bbqSection.title}{' '}
-              <span className="text-gradient-brand italic">{dict.home?.bbqSection.titleHighlight}</span>
+              <span className="text-brand-emphasis italic">{dict.home?.bbqSection.titleHighlight}</span>
             </h2>
             <p className="mt-5 text-lg text-secondary leading-relaxed max-w-md">
               {dict.home?.bbqSection.description}
@@ -71,10 +77,10 @@ export default function BBQSection() {
                 {topBBQ.map((p) => {
                   const firstPrice = p.variants[0]?.price ?? p.basePrice;
                   return (
-                    <li key={p.slug}>
+                    <li key={p._id}>
                       <Link
                         href={`/${locale}/shop/${p.slug}`}
-                        className="group flex items-center gap-5 p-5 rounded-lg bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-black/50 hover:bg-surface-raised transition-all duration-250"
+                        className="group flex items-center gap-5 p-5 rounded-lg bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-[var(--gold)]/50 hover:shadow-gold hover:bg-surface-raised transition-all duration-300"
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-raised">
                           <Image
@@ -82,6 +88,7 @@ export default function BBQSection() {
                             alt={locale === 'ar' ? p.nameAr : p.name}
                             width={56}
                             height={56}
+                            loading="lazy"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -108,20 +115,20 @@ export default function BBQSection() {
             )}
 
             <Link
-              href={`/${locale}/categories/bbq`}
-              className="inline-flex items-center gap-2 px-8 h-12 rounded-full border border-muted text-sm font-semibold text-primary hover:bg-surface-raised hover:border-[var(--gold)] transition-all duration-300"
+              href={`/${locale}/categories/bbq-cuts`}
+              className="inline-flex items-center justify-center gap-3 mt-4 px-9 h-12 rounded-button text-sm font-semibold uppercase tracking-wider text-primary border border-[var(--gold-border)] bg-surface hover:bg-[var(--gold-subtle)] hover:text-[var(--gold)] hover:shadow-gold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
             >
-              <Flame className="w-4 h-4" aria-hidden="true" />
+              <Flame className="w-4 h-4 text-[var(--warning)]" aria-hidden="true" />
               {dict.home?.bbqSection.shopAll}
             </Link>
           </motion.div>
 
           {/* Right: cinematic image stack */}
           <motion.div
-            initial={{ opacity: 0, x: locale === 'ar' ? -32 : 32 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={initialRight}
+            whileInView={shouldReduceMotion ? undefined : animateRight}
             viewport={{ once: true }}
-            transition={{ duration: 0.65, delay: 0.15 }}
+            transition={transitionRight}
             className="relative h-[440px] lg:h-[540px]"
             aria-hidden="true"
           >
@@ -130,18 +137,20 @@ export default function BBQSection() {
                 src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80"
                 alt="Premium raw steak"
                 fill
+                loading="lazy"
                 className="object-cover opacity-60"
               />
             </div>
-            <div className={locale === 'ar' ? "absolute right-0 top-12 bottom-12 left-12 rounded-card overflow-hidden shadow-raised border border-muted" : "absolute left-0 top-12 bottom-12 right-12 rounded-card overflow-hidden shadow-raised border border-muted"}>
+            <div className={locale === 'ar' ? "absolute right-0 top-12 bottom-12 left-12 rounded-card overflow-hidden shadow-raised border border-muted" : "absolute left-0 top-12 bottom-12 right-12 rounded-card overflow-hidden shadow-raised border border-muted"} data-theme="dark">
               <Image
                 src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80"
                 alt="Premium raw meat cuts on butcher block"
                 fill
+                loading="lazy"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-              <div className={locale === 'ar' ? "absolute bottom-5 right-5 flex items-center gap-3 px-5 py-2.5 rounded-full glass" : "absolute bottom-5 left-5 flex items-center gap-3 px-5 py-2.5 rounded-full glass"}>
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)]/80 via-transparent to-transparent" />
+              <div className={locale === 'ar' ? "absolute bottom-5 right-5 flex items-center gap-3 px-5 py-2.5 rounded-full surface-elevated" : "absolute bottom-5 left-5 flex items-center gap-3 px-5 py-2.5 rounded-full surface-elevated"}>
                 <Flame className="w-4 h-4 text-[var(--warning)]" />
                 <span className="text-sm font-semibold text-primary">
                   {dict.home?.bbqSection.butchersPick}

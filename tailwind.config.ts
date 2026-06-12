@@ -177,10 +177,13 @@ const config: Config = {
 
       /* ── Shadows ── */
       boxShadow: {
+        'sm':         'var(--shadow-sm)',
         'card':       'var(--shadow-card)',
         'card-hover': 'var(--shadow-card-hover)',
         'raised':     'var(--shadow-raised)',
+        'xl':         'var(--shadow-xl)',
         'gold':       'var(--shadow-gold)',
+        'gold-sm':    '0 0 10px rgba(201, 162, 39, 0.12)',
         'gold-lg':    'var(--shadow-gold-lg)',
         'inset-gold': 'var(--shadow-inset-gold)',
       },
@@ -241,7 +244,6 @@ const config: Config = {
       /* ── Timing functions ── */
       transitionTimingFunction: {
         premium: 'var(--ease-premium)',
-        bounce:  'var(--ease-bounce)',
       },
 
       /* ── Durations ── */

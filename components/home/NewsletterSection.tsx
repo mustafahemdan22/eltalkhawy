@@ -2,16 +2,23 @@
 
 import { useState } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
 
 export default function NewsletterSection() {
   const { locale, dict } = useLocale();
+  const shouldReduceMotion = useReducedMotion();
   const [email, setEmail]       = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
+  const subscribe = useMutation(api.newsletter.subscribe);
+
+  const initial = shouldReduceMotion ? {} : { opacity: 0, scale: 0.92 };
+  const animate = shouldReduceMotion ? {} : { opacity: 1, scale: 1 };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +29,14 @@ export default function NewsletterSection() {
     }
     setError('');
     setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await subscribe({ email: email.trim(), locale: locale as 'en' | 'ar' });
+      setSubmitted(true);
+    } catch {
+      setError(dict.home?.newsletter.errorEmpty || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,8 +67,8 @@ export default function NewsletterSection() {
             {submitted ? (
               <motion.div
                 key="success"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={initial}
+                animate={animate}
                 className="mt-10 flex flex-col items-center gap-4"
               >
                 <div className="w-16 h-16 rounded-full bg-fresh-bg flex items-center justify-center">
@@ -71,6 +82,8 @@ export default function NewsletterSection() {
             ) : (
               <motion.form
                 key="form"
+                initial={initial}
+                animate={animate}
                 onSubmit={handleSubmit}
                 className="mt-10"
                 noValidate

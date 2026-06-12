@@ -1,15 +1,20 @@
 'use client';
 
-import { SORT_OPTIONS } from '@/lib/constants';
+import { useCallback, useRef } from 'react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
+import { useToast } from '@/components/ui/Toast';
+import SortMenu from './SortMenu';
+import { SORT_OPTIONS, type SortValue } from '@/lib/constants';
 
 interface SortBarProps {
   productCount: number;
-  selectedSort: string;
-  onSelectSort: (sort: string) => void;
+  selectedSort: SortValue;
+  onSelectSort: (sort: SortValue) => void;
   onOpenMobileFilters: () => void;
+  onClearAllFilters?: () => void;
+  hasActiveFilters?: boolean;
 }
 
 export default function SortBar({
@@ -17,55 +22,100 @@ export default function SortBar({
   selectedSort,
   onSelectSort,
   onOpenMobileFilters,
+  onClearAllFilters,
+  hasActiveFilters = false,
 }: SortBarProps) {
   const { locale, dict } = useLocale();
-  const currentSort = SORT_OPTIONS.find((opt) => opt.value === selectedSort) ?? SORT_OPTIONS[0];
+  const { showToast } = useToast();
+  const isFirstRender = useRef(true);
+
+  const handleSelectSort = useCallback(
+    (next: SortValue) => {
+      const sameAsCurrent = next === selectedSort;
+      onSelectSort(next);
+
+      const isReset = next === 'featured';
+      const option = SORT_OPTIONS.find((o) => o.value === next);
+      const optionLabel = option
+        ? (locale === 'ar' ? option.labelAr : option.label)
+        : '';
+
+      if (isFirstRender.current || sameAsCurrent) {
+        isFirstRender.current = false;
+        return;
+      }
+
+      const template = isReset
+        ? (dict.shop?.sortCleared || 'Sort cleared')
+        : (dict.shop?.sortApplied || 'Sorted by {option}').replace('{option}', optionLabel);
+
+      showToast(template, 'info');
+      isFirstRender.current = false;
+    },
+    [onSelectSort, selectedSort, showToast, dict.shop?.sortApplied, dict.shop?.sortCleared, locale],
+  );
 
   return (
-    <div className="flex items-center justify-between gap-4 p-6 rounded-xl bg-surface border border-muted shadow-sm">
-      {/* Product Count / Mobile Filter Button */}
-      <div className="flex items-center gap-4">
+    <div
+      className={cn(
+        'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
+        'p-4 sm:p-5 rounded-xl',
+        'bg-surface border border-muted shadow-card',
+        'sticky top-[68px] md:top-0 z-30',
+        'backdrop-blur-sm bg-surface/95',
+      )}
+    >
+      {/* Left: count + mobile filter button */}
+      <div className="flex items-center gap-3 flex-wrap">
         <button
+          type="button"
           onClick={onOpenMobileFilters}
-          className="lg:hidden flex items-center gap-2 h-11 px-6 rounded-button bg-surface-raised border border-muted text-sm font-semibold uppercase tracking-wider text-primary hover:bg-surface-raised/80 transition-colors cursor-pointer"
+          className={cn(
+            'lg:hidden inline-flex items-center gap-2 min-h-11 px-4 rounded-button',
+            'bg-surface-raised border border-muted',
+            'text-sm font-semibold uppercase tracking-wider text-primary',
+            'hover:bg-surface-raised/80 transition-colors cursor-pointer',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]/50',
+          )}
+          aria-label={dict.shop?.filter || 'Filter'}
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <SlidersHorizontal className="w-4 h-4 text-[var(--gold)]" aria-hidden="true" />
           {dict.shop?.filter || 'Filter'}
         </button>
-        <span className="hidden sm:inline font-sans text-sm uppercase tracking-wider text-muted">
-          {dict.shop?.showing || 'Showing'} <span className="font-mono text-[var(--gold)] font-bold" dir="ltr">{productCount}</span> {dict.shop?.specialties || 'Specialties'}
+
+        <span className="font-sans text-sm text-secondary">
+          <span className="uppercase tracking-wider text-muted text-2xs">
+            {dict.shop?.showing || 'Showing'}
+          </span>{' '}
+          <span className="font-mono font-bold text-[var(--gold)]" dir="ltr">
+            {productCount}
+          </span>{' '}
+          <span className="uppercase tracking-wider text-muted text-2xs">
+            {dict.shop?.specialties || 'Specialties'}
+          </span>
         </span>
+
+        {hasActiveFilters && onClearAllFilters && (
+          <button
+            type="button"
+            onClick={onClearAllFilters}
+            className={cn(
+              'inline-flex items-center gap-1.5 min-h-11 px-3 rounded-button',
+              'text-xs font-semibold uppercase tracking-wider',
+              'text-muted hover:text-error transition-colors cursor-pointer',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40',
+            )}
+            aria-label={dict.shop?.clearAll || 'Clear all filters'}
+          >
+            <X className="w-3.5 h-3.5" aria-hidden="true" />
+            {dict.shop?.clearAll || 'Clear All'}
+          </button>
+        )}
       </div>
 
-      {/* Sort Select */}
-      <div className="flex items-center gap-4 font-sans">
-        <label htmlFor="sort-select" className="hidden md:inline text-sm uppercase tracking-wider text-muted">
-          {dict.shop?.sortBy || 'Sort By'}:
-        </label>
-        <div className="relative">
-          <select
-            id="sort-select"
-            value={selectedSort}
-            onChange={(e) => onSelectSort(e.target.value)}
-            className={cn(
-              'h-11 rounded-button text-sm font-semibold tracking-wide appearance-none cursor-pointer',
-              'bg-surface-raised border border-muted text-primary',
-              'focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20',
-              'transition-all duration-200',
-              locale === 'ar' ? 'pr-5 pl-11' : 'pl-5 pr-11'
-            )}
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-surface text-primary">
-                {locale === 'ar' ? opt.labelAr : opt.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            className={cn("absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none", locale === 'ar' ? "left-3.5" : "right-3.5")}
-            aria-hidden="true"
-          />
-        </div>
+      {/* Right: sort menu */}
+      <div className="flex items-center gap-2">
+        <SortMenu value={selectedSort} onChange={handleSelectSort} />
       </div>
     </div>
   );

@@ -2,24 +2,40 @@
   "name": "eltalkhawy",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "convex dev --start 'next dev'",
+    "dev": "npx convex dev --start=\"next dev\"",
+
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
+    "@clerk/localizations": "^4.7.1",
     "@clerk/nextjs": "^6.39.2",
+    "@clerk/themes": "^2.4.57",
+    "@formatjs/intl-localematcher": "^0.8.8",
+    "clsx": "^2.1.1",
     "convex": "^1.36.1",
+    "framer-motion": "^12.40.0",
+    "http-proxy": "^1.18.1",
+    "lucide-react": "^1.16.0",
+    "negotiator": "^1.0.0",
     "next": "^16.2.4",
+    "next-cloudinary": "^6.17.5",
+    "next-themes": "^0.4.6",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "svix": "^1.94.0"
+    "server-only": "^0.0.1",
+    "svix": "^1.94.0",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.2.2",
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/http-proxy": "^1.17.17",
+    "@types/negotiator": "^0.6.4",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

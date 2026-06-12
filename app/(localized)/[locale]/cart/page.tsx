@@ -10,7 +10,8 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { cn, formatPrice, cloudinaryUrl } from '@/lib/utils';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { cn, formatPrice, cloudinaryUrl, discountedPrice } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -32,6 +33,10 @@ interface PopulatedCartItem {
   variantWeight: string;
   quantity:      number;
   price:         number;
+  isGrilled?:    boolean;
+  grillComment?: string;
+  starterName?:  string;
+  starterPrice?: number;
   product: {
     _id:          string;
     slug:         string;
@@ -91,11 +96,15 @@ export default function CartPage() {
     variantWeight: string;
     quantity:      number;
     price:         number;
-  }>>([]);
+  }>>(() => {
+    if (typeof window !== 'undefined') {
+       try { return JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]') as Array<{ productId: string; variantWeight: string; quantity: number; price: number }>; } catch { return []; }
 
-  const [localProductsList, setLocalProductsList] = useState<any[]>([]);
+    }
+    return [];
+  });
   const [promoCodeInput, setPromoCodeInput] = useState('');
-  const [activePromo, setActivePromo] = useState<any | null>(null);
+  const [activePromo, setActivePromo] = useState<Doc<"promoCodes"> | null>(null);
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState('');
 
@@ -111,24 +120,19 @@ export default function CartPage() {
       const loadGuestCart = () => {
         setGuestCart(JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]'));
       };
-      loadGuestCart();
       window.addEventListener('storage', loadGuestCart);
       return () => window.removeEventListener('storage', loadGuestCart);
     }
   }, [user]);
 
-  useEffect(() => {
-    if (allProducts) setLocalProductsList(allProducts);
-  }, [allProducts]);
-
   const cartItems = useMemo<PopulatedCartItem[]>(() => {
     if (user) return (dbCart?.items ?? []) as unknown as PopulatedCartItem[];
-    if (!localProductsList.length) return [];
+    if (!allProducts || !allProducts.length) return [];
     return guestCart.map((item) => {
-      const product = localProductsList.find((p) => p._id === item.productId);
+      const product = allProducts.find((p) => p._id === item.productId);
       return { ...item, product } as unknown as PopulatedCartItem;
     }).filter((item) => item.product !== undefined);
-  }, [user, dbCart, guestCart, localProductsList]);
+  }, [user, dbCart, guestCart, allProducts]);
 
   /* ── Stock validation ── */
   const stockIssues = useMemo(() => {
@@ -152,7 +156,10 @@ export default function CartPage() {
     const subtotal = cartItems.reduce((acc, item) => {
       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
       const baseVal = variant ? variant.price : item.price;
-      const latestPrice = item.product.discount ? baseVal * (1 - item.product.discount / 100) : baseVal;
+      const rawPrice = item.product.discount ? discountedPrice(baseVal, item.product.discount) : baseVal;
+      const grillFee = item.isGrilled ? 50 : 0;
+      const starterFee = item.starterPrice ?? 0;
+      const latestPrice = rawPrice + grillFee + starterFee;
       return acc + latestPrice * item.quantity;
     }, 0);
     const deliveryCost = subtotal >= SITE_CONFIG.deliveryMin || subtotal === 0 ? 0 : SITE_CONFIG.deliveryCost;
@@ -186,41 +193,44 @@ export default function CartPage() {
   useEffect(() => {
     if (!promoQueryCode) return;
     if (promoResult === undefined) return;
-    setPromoLoading(false);
-    if (!promoResult) {
-      setPromoError(dict.cart?.invalidCoupon || 'Invalid coupon code.');
+    const timer = setTimeout(() => {
+      setPromoLoading(false);
+      if (!promoResult) {
+        setPromoError(dict.cart?.invalidCoupon || 'Invalid coupon code.');
+        setPromoQueryCode(null);
+        return;
+      }
+      if (!promoResult.isActive) {
+        setPromoError(dict.cart?.invalidCoupon || 'This coupon is no longer active.');
+        setPromoQueryCode(null);
+        return;
+      }
+      if (promoResult.expiresAt && Date.now() > promoResult.expiresAt) {
+        setPromoError('This coupon has expired.');
+        setPromoQueryCode(null);
+        return;
+      }
+      if (promoResult.maxUses && promoResult.currentUses >= promoResult.maxUses) {
+        setPromoError('This coupon has reached its usage limit.');
+        setPromoQueryCode(null);
+        return;
+      }
+      if (promoResult.minOrder && totals.subtotal < promoResult.minOrder) {
+        setPromoError(`Minimum order of EGP ${promoResult.minOrder} required for this coupon.`);
+        setPromoQueryCode(null);
+        return;
+      }
+      setActivePromo(promoResult);
+      setPromoCodeInput('');
       setPromoQueryCode(null);
-      return;
-    }
-    if (!promoResult.isActive) {
-      setPromoError(dict.cart?.invalidCoupon || 'This coupon is no longer active.');
-      setPromoQueryCode(null);
-      return;
-    }
-    if (promoResult.expiresAt && Date.now() > promoResult.expiresAt) {
-      setPromoError('This coupon has expired.');
-      setPromoQueryCode(null);
-      return;
-    }
-    if (promoResult.maxUses && promoResult.currentUses >= promoResult.maxUses) {
-      setPromoError('This coupon has reached its usage limit.');
-      setPromoQueryCode(null);
-      return;
-    }
-    if (promoResult.minOrder && totals.subtotal < promoResult.minOrder) {
-      setPromoError(`Minimum order of EGP ${promoResult.minOrder} required for this coupon.`);
-      setPromoQueryCode(null);
-      return;
-    }
-    setActivePromo(promoResult);
-    setPromoCodeInput('');
-    setPromoQueryCode(null);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [promoQueryCode, promoResult, totals.subtotal, dict]);
 
   /* ── Quantity/Remove/Clear ── */
   const handleUpdateQuantity = async (productId: string, weight: string, newQty: number) => {
     if (user) {
-      await updateQuantityMutation({ userId: user.id, productId: productId as any, variantWeight: weight, quantity: newQty });
+      await updateQuantityMutation({ userId: user.id, productId: productId as Id<'products'>, variantWeight: weight, quantity: newQty });
     } else {
       const updated = guestCart.map((item) =>
         item.productId === productId && item.variantWeight === weight ? { ...item, quantity: Math.max(1, newQty) } : item
@@ -232,7 +242,7 @@ export default function CartPage() {
 
   const handleRemoveItem = async (productId: string, weight: string) => {
     if (user) {
-      await removeMutation({ userId: user.id, productId: productId as any, variantWeight: weight });
+      await removeMutation({ userId: user.id, productId: productId as Id<'products'>, variantWeight: weight });
     } else {
       setGuestCart((prev) => {
         const updated = prev.filter((item) => !(item.productId === productId && item.variantWeight === weight));
@@ -263,7 +273,7 @@ export default function CartPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-base py-14 md:py-20">
+      <main id="main-content" className="min-h-screen bg-base py-14 md:py-20">
         <div className="container-brand">
           <div className="text-center mb-16">
             <span className="text-[var(--gold)] text-3xs font-semibold tracking-[0.25em] uppercase block mb-4">
@@ -273,7 +283,7 @@ export default function CartPage() {
               <ShoppingBag className="w-6 h-6 text-[var(--gold)]" />
               {dict.cart?.pageTitle || 'Cart'}
             </h1>
-            <p className="text-base text-secondary mt-3 max-w-sm mx-auto leading-relaxed font-sans font-light">
+            <p className="text-base text-secondary mt-3 max-w-sm mx-auto leading-relaxed font-sans font-normal">
               {dict.cart?.pageSubtitle || 'Review your selection before checkout.'}
             </p>
           </div>
@@ -286,7 +296,7 @@ export default function CartPage() {
               <div className="lg:col-span-8 flex flex-col gap-6">
                 <div className="flex items-center justify-between pb-4 border-b border-muted text-sm font-semibold uppercase tracking-wider text-secondary">
                   <span>{dict.cart?.specialtyCut || 'Item'}</span>
-                  <button onClick={handleClearCart} className="text-[var(--gold)] hover:text-[var(--gold-hover)] transition-colors cursor-pointer">
+                  <button onClick={handleClearCart} className="px-3 py-2 -my-2 min-h-10 text-[var(--gold)] hover:text-[var(--gold-hover)] transition-colors cursor-pointer">
                     {dict.cart?.clearCart || 'Clear Cart'}
                   </button>
                 </div>
@@ -299,7 +309,7 @@ export default function CartPage() {
                       <p className="font-semibold mb-1">{locale === 'ar' ? 'تعديل الكمية' : 'Quantity Adjustment Needed'}</p>
                       <ul className="space-y-1 text-warning/80">
                         {stockIssues.map((issue, i) => (
-                          <li key={i}>• {issue.name} ({issue.weight}): {dict.cart?.subtotal || 'requested'} {issue.wanted}, {dict.cart?.freeDelivery || 'available'} {issue.available}</li>
+                          <li key={i}>• {issue.name} ({issue.weight}): {dict.cart?.requested || 'requested'} {issue.wanted}, {dict.cart?.available || 'available'} {issue.available}</li>
                         ))}
                       </ul>
                     </div>
@@ -310,14 +320,17 @@ export default function CartPage() {
                   {cartItems.map((item) => {
                     const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
                     const basePrice = variant ? variant.price : item.price;
-                    const finalPrice = item.product.discount ? basePrice * (1 - item.product.discount / 100) : basePrice;
+                    const rawPrice = item.product.discount ? discountedPrice(basePrice, item.product.discount) : basePrice;
+                    const grillFee = item.isGrilled ? 50 : 0;
+                    const starterFee = item.starterPrice ?? 0;
+                    const finalPrice = rawPrice + grillFee + starterFee;
                     const maxStock = variant?.stock ?? 99;
                     const imgUrl = item.product.images[0]
                       ? (item.product.images[0].startsWith('http') ? item.product.images[0] : cloudinaryUrl(item.product.images[0], { width: 300, height: 350, crop: 'fill' }))
                       : 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300&q=80';
 
                     return (
-                      <div key={`${item.productId}-${item.variantWeight}`} className="py-4 md:py-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                      <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 md:py-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                         <div className={cn('flex items-center gap-4 flex-1', isRtl && 'flex-row-reverse')}>
                           <div className="relative w-16 h-20 md:w-20 md:h-24 rounded-lg overflow-hidden bg-surface-raised border border-muted shrink-0">
                             <Image src={imgUrl} alt={locale === 'ar' ? item.product.nameAr : item.product.name} fill sizes="120px" className="object-cover" />
@@ -327,9 +340,29 @@ export default function CartPage() {
                             <Link href={`/${locale}/shop/${item.product.slug}`} className="font-display font-bold text-primary text-sm md:text-base hover:text-[var(--gold-hover)] transition-colors line-clamp-1">
                               {locale === 'ar' ? item.product.nameAr : item.product.name}
                             </Link>
-                            <div className={cn('flex items-center gap-4 text-xs text-secondary font-light mt-0.5', isRtl && 'flex-row-reverse')}>
+
+                            {/* Grill & Starter Info */}
+                            {(item.isGrilled || item.starterName) && (
+                              <div className={cn("flex flex-col gap-0.5 text-3xs text-[var(--gold)] mt-0.5 font-sans font-medium", isRtl && "items-end text-right")}>
+                                {item.isGrilled && (
+                                  <div className="flex items-center gap-1.5">
+                                    <span>🔥 {locale === 'ar' ? 'تسوية وشوي (+٥٠ ج.م)' : 'Grill Prep (+EGP 50)'}</span>
+                                    {item.grillComment && (
+                                      <span className="text-muted italic">({item.grillComment})</span>
+                                    )}
+                                  </div>
+                                )}
+                                {item.starterName && (
+                                  <div>
+                                    <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            <div className={cn('flex items-center gap-4 text-xs text-secondary font-normal mt-0.5', isRtl && 'flex-row-reverse')}>
                               <span className={cn('font-semibold px-2 py-0.5 rounded border', maxStock <= 0 ? 'text-error border-error-border bg-error-bg' : 'bg-surface-raised border-muted')}>
-                                {maxStock <= 0 ? dict.cart?.cartEmpty || 'Out of Stock' : item.variantWeight}
+                                {maxStock <= 0 ? (dict.cart?.outOfStock || 'Out of Stock') : item.variantWeight}
                               </span>
                               <span className="text-muted">{locale === 'ar' ? item.product.name : item.product.nameAr}</span>
                             </div>
@@ -358,12 +391,12 @@ export default function CartPage() {
                             <span className="text-3xs text-warning font-medium">{locale === 'ar' ? 'الحد الأقصى' : 'Max'}</span>
                           )}
 
-                          <div className={cn('flex flex-col gap-0.5', isRtl && 'items-start')}>
-                            <span className="font-mono text-sm md:text-base font-bold text-[var(--gold)]">{formatPrice(finalPrice * item.quantity, locale)}</span>
-                            <span className="font-mono text-3xs text-muted">({formatPrice(finalPrice, locale)}/{dict.shop?.per || '/'}{item.variantWeight})</span>
+                          <div className={cn('flex flex-col gap-0.5 text-right', isRtl && 'text-left')}>
+                            <span className="price-current text-sm md:text-base">{formatPrice(finalPrice * item.quantity, locale)}</span>
+                            <span className="price-unit">({formatPrice(finalPrice, locale)}/{dict.shop?.per || '/'}{item.variantWeight})</span>
                           </div>
 
-                          <button onClick={() => handleRemoveItem(item.productId, item.variantWeight)} className="p-2 rounded bg-surface-raised border border-muted text-secondary hover:text-error hover:border-error-border transition-all cursor-pointer" aria-label={dict.cart?.remove || 'Remove'}>
+                          <button onClick={() => handleRemoveItem(item.productId, item.variantWeight)} className="p-3 rounded bg-surface-raised border border-muted text-secondary hover:text-error hover:border-error-border transition-all cursor-pointer" aria-label={dict.cart?.remove || 'Remove'}>
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -375,7 +408,7 @@ export default function CartPage() {
 
               {/* Summary */}
               <div className="lg:col-span-4 flex flex-col gap-8">
-                <div className="p-8 rounded-2xl bg-surface border border-muted flex flex-col gap-6">
+                <div className="p-8 rounded-card bg-surface border border-muted flex flex-col gap-6">
                   <h3 className="font-display text-primary font-bold text-base border-b border-muted pb-4">{dict.cart?.orderSummary || 'Order Summary'}</h3>
 
                   <div className="space-y-3 text-sm divide-y divide-muted/40">
@@ -391,10 +424,10 @@ export default function CartPage() {
                         <span className="font-mono font-bold text-primary">{formatPrice(totals.deliveryCost, locale)}</span>
                       )}
                     </div>
-                    {totals.promoDiscount > 0 && (
+                    {activePromo && totals.promoDiscount > 0 && (
                       <div className={cn('flex justify-between pt-3 pb-3 text-[var(--gold)] font-medium', isRtl && 'flex-row-reverse')}>
                         <span className={cn('flex items-center gap-1.5', isRtl && 'flex-row-reverse')}>
-                          <Tag className="w-3.5 h-3.5" />{dict.cart?.codeApplied || 'Code'}: {activePromo.code}
+                          <Tag className="w-3.5 h-3.5" />{dict.cart?.codeApplied || 'Code'}: {activePromo!.code}
                         </span>
                         <span className="font-mono font-bold">−{formatPrice(totals.promoDiscount, locale)}</span>
                       </div>
@@ -425,7 +458,7 @@ export default function CartPage() {
                       <span className={cn('flex items-center gap-1.5', isRtl && 'flex-row-reverse')}>
                         <Tag className="w-3.5 h-3.5" />{dict.cart?.codeApplied || 'Applied'}: {activePromo.code}
                       </span>
-                      <button onClick={() => { setActivePromo(null); setPromoError(''); }} className="text-[var(--gold)] hover:text-[var(--gold-hover)] font-bold cursor-pointer">✕</button>
+                      <button onClick={() => { setActivePromo(null); setPromoError(''); }} className="flex items-center justify-center w-11 h-11 -mr-3 text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] rounded transition-colors cursor-pointer font-bold" aria-label="Remove promo code">✕</button>
                     </div>
                   )}
                   {promoLoading && <p className="text-2xs text-muted flex items-center gap-1.5"><RefreshCw className="w-3 h-3 animate-spin" /> {locale === 'ar' ? 'جاري التحقق...' : 'Validating...'}</p>}
@@ -463,8 +496,8 @@ export default function CartPage() {
                 <ShoppingBag className="w-7 h-7 text-[var(--gold)]" />
               </div>
               <h3 className="font-display text-lg font-bold text-primary">{dict.cart?.cartEmpty || 'Cart is Empty'}</h3>
-              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-light">{dict.cart?.cartEmptyDesc || 'Browse our selection.'}</p>
-              <Button onClick={() => router.push(`/${locale}/shop`)} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
+              <p className="text-sm text-secondary max-w-xs mt-2 font-sans font-normal">{dict.cart?.cartEmptyDesc || 'Browse our selection.'}</p>
+              <Button onClick={() => router.push(`/${locale}/categories`)} className="mt-6 h-11 px-7 rounded-button text-sm font-semibold uppercase tracking-wider cursor-pointer">
                 {dict.cart?.goToCatalog || 'Go to Catalog'}
               </Button>
             </div>

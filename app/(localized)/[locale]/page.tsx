@@ -3,6 +3,7 @@ import Navbar            from '@/components/layout/Navbar';
 import Footer            from '@/components/layout/Footer';
 import HeroSection       from '@/components/home/HeroSection';
 import FeaturedCategories from '@/components/home/FeaturedCategories';
+import QuickFilterBar    from '@/components/home/QuickFilterBar';
 import PromoBanners      from '@/components/home/PromoBanners';
 import BestSellers       from '@/components/home/BestSellers';
 import PremiumCutsSection from '@/components/home/PremiumCutsSection';
@@ -34,25 +35,28 @@ export default function HomePage() {
         {/* 2 — Category grid */}
         <FeaturedCategories />
 
-        {/* 3 — Promo banners */}
+        {/* 3 — Quick chip shortcuts to each animal */}
+        <QuickFilterBar />
+
+        {/* 4 — Promo banners */}
         <PromoBanners />
 
-        {/* 4 — Best sellers product grid */}
+        {/* 5 — Best sellers product grid */}
         <BestSellers />
 
-        {/* 5 — Premium & rare cuts editorial section */}
+        {/* 6 — Premium & rare cuts editorial section */}
         <PremiumCutsSection />
 
-        {/* 6 — Grill-ready cuts */}
+        {/* 7 — Grill-ready cuts */}
         <BBQSection />
 
-        {/* 7 — Trust / Why choose us */}
+        {/* 8 — Trust / Why choose us */}
         <WhyChooseUs />
 
-        {/* 8 — Customer testimonials */}
+        {/* 9 — Customer testimonials */}
         <Testimonials />
 
-        {/* 9 — Newsletter */}
+        {/* 10 — Newsletter */}
         <NewsletterSection />
       </main>
 

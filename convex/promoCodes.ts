@@ -1,10 +1,10 @@
 import { v } from 'convex/values';
-import { query, mutation } from './_generated/server';
+import { query, mutation, QueryCtx } from './_generated/server';
 
-async function requireAdmin(ctx: any): Promise<string> {
+async function requireAdmin(ctx: QueryCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new Error('Not authenticated');
-  const user = await ctx.db.query('users').withIndex('by_clerkId', (q: any) => q.eq('clerkId', identity.subject)).unique();
+  const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
   if (!user || user.role !== 'admin') throw new Error('Not authorized');
   return identity.subject;
 }

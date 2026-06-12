@@ -6,6 +6,8 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Phone,
   Mail,
@@ -22,39 +24,44 @@ export default function ContactPage() {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { locale } = useLocale();
+  const { locale, dict } = useLocale();
+  const sendMessage = useMutation(api.contact.send);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
 
     setLoading(true);
-    // Simulate contact form submission
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
-    setName('');
-    setEmail('');
-    setMessage('');
+    try {
+      await sendMessage({ name, email, message, locale: locale as 'en' | 'ar' });
+      setSubmitted(true);
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch {
+      // Error state could be added
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-[var(--bg-base)] py-14 md:py-20 font-sans">
+      <main id="main-content" className="min-h-screen bg-[var(--bg-base)] py-14 md:py-20 font-sans">
         <div className="container-brand">
           
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-[var(--gold)] text-3xs font-semibold tracking-[0.25em] uppercase block mb-4">
-              Get in Touch
+              {dict.contact.getInTouch}
             </span>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-primary leading-tight">
-              Elite Support Registry
+              {dict.contact.title}
             </h1>
-            <p className="text-base text-secondary mt-4 leading-relaxed font-light">
-              Connect with our master butcher advisers or corporate support. We are here to assist with bulk orders, custom cuts, or catalog inquiries.
+            <p className="text-base text-secondary mt-4 leading-relaxed font-normal">
+              {dict.contact.subtitle}
             </p>
           </div>
 
@@ -64,62 +71,62 @@ export default function ContactPage() {
             <div className="lg:col-span-5 flex flex-col gap-6 w-full">
               
               {/* Phone card */}
-              <div className="p-6 rounded-xl bg-surface border border-muted shadow-sm flex items-start gap-4">
+              <div className="p-6 rounded-xl bg-surface border border-muted shadow-card flex items-start gap-4">
                 <div className="w-11 h-11 rounded-full bg-surface-raised border border-muted flex items-center justify-center text-[var(--gold)] shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block">Phone Helpline</span>
+                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block">{dict.contact.phoneHelpline}</span>
                   <a href={`tel:${SITE_CONFIG.phone}`} className="text-sm font-semibold text-primary hover:text-[var(--gold)] transition-colors block">
                     {SITE_CONFIG.phone}
                   </a>
-                  <span className="text-3xs text-secondary font-light block">Sat – Thu: 8:00 AM – 12:00 AM</span>
+                  <span className="text-3xs text-secondary font-normal block">{dict.contact.phoneHours}</span>
                 </div>
               </div>
 
               {/* Email card */}
-              <div className="p-6 rounded-xl bg-surface border border-muted shadow-sm flex items-start gap-4">
+              <div className="p-6 rounded-xl bg-surface border border-muted shadow-card flex items-start gap-4">
                 <div className="w-11 h-11 rounded-full bg-surface-raised border border-muted flex items-center justify-center text-[var(--gold)] shrink-0">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block">Email Dispatch</span>
+                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block">{dict.contact.emailDispatch}</span>
                   <a href={`mailto:${SITE_CONFIG.email}`} className="text-sm font-semibold text-primary hover:text-[var(--gold)] transition-colors block break-all">
                     {SITE_CONFIG.email}
                   </a>
-                  <span className="text-3xs text-secondary font-light block">Corporate response within 24 hours</span>
+                  <span className="text-3xs text-secondary font-normal block">{dict.contact.emailResponse}</span>
                 </div>
               </div>
 
               {/* Branches */}
               {SITE_CONFIG.branches.map((branch, idx) => (
-                <div key={idx} className="p-6 rounded-xl bg-surface border border-muted shadow-sm flex items-start gap-4">
+                <div key={idx} className="p-6 rounded-xl bg-surface border border-muted shadow-card flex items-start gap-4">
                   <div className="w-11 h-11 rounded-full bg-surface-raised border border-muted flex items-center justify-center text-[var(--gold)] shrink-0 mt-1">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div className="space-y-1.5">
                     <span className="text-3xs uppercase tracking-wider text-muted font-semibold block">{locale === 'ar' ? branch.nameAr : branch.name}</span>
                     <span className="text-sm font-semibold text-primary block">{locale === 'ar' ? branch.addressAr : branch.address}</span>
-                    <span className="text-3xs text-secondary font-light block">Direct pickup and showroom</span>
+                    <span className="text-3xs text-secondary font-normal block">{dict.contact.directPickup}</span>
                   </div>
                 </div>
               ))}
 
               {/* Boutique Hours */}
-              <div className="p-6 rounded-xl bg-surface border border-muted shadow-sm flex items-start gap-4">
+              <div className="p-6 rounded-xl bg-surface border border-muted shadow-card flex items-start gap-4">
                 <div className="w-11 h-11 rounded-full bg-surface-raised border border-muted flex items-center justify-center text-[var(--gold)] shrink-0 mt-1">
                   <Clock className="w-4 h-4" />
                 </div>
                 <div className="space-y-1.5 w-full">
-                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block mb-2">Boutique working hours</span>
-                  <div className="text-sm text-secondary font-light space-y-1.5 w-full">
-                    <p className="flex justify-between w-full pr-4">
-                      <span>Saturday – Thursday:</span>
-                      <span className="font-semibold text-primary">8:00 AM – 12:00 AM</span>
+                  <span className="text-3xs uppercase tracking-wider text-muted font-semibold block mb-2">{dict.contact.workingHours}</span>
+                  <div className="text-sm text-secondary font-normal space-y-1.5 w-full">
+                    <p className="flex justify-between w-full pe-4">
+                      <span>{dict.contact.satThu}</span>
+                      <span className="font-semibold text-primary">{dict.contact.satThuHours}</span>
                     </p>
-                    <p className="flex justify-between w-full pr-4">
-                      <span>Friday:</span>
-                      <span className="font-semibold text-primary">2:00 PM – 12:00 AM</span>
+                    <p className="flex justify-between w-full pe-4">
+                      <span>{dict.contact.friday}</span>
+                      <span className="font-semibold text-primary">{dict.contact.fridayHours}</span>
                     </p>
                   </div>
                 </div>
@@ -129,19 +136,19 @@ export default function ContactPage() {
 
             {/* Inquiry Form Column */}
             <div className="lg:col-span-7 w-full">
-              <div className="p-8 rounded-2xl bg-surface border border-muted shadow-sm">
-                <h3 className="font-display text-primary font-bold text-lg mb-6 border-b border-muted pb-3">
-                  Send Gastronomy Inquiry
-                </h3>
+              <div className="p-8 rounded-2xl bg-surface border border-muted shadow-card">
+                <h2 className="font-display text-primary font-bold text-lg mb-6 border-b border-muted pb-3">
+                  {dict.contact.sendInquiry}
+                </h2>
 
                 {submitted ? (
                   <div className="text-center py-10 flex flex-col items-center gap-2">
                     <div className="w-14 h-14 rounded-full bg-success-bg border border-success-border flex items-center justify-center text-success mb-3 animate-pulse">
                       <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <h4 className="font-bold text-primary text-base">Message Sent Successfully!</h4>
-                    <p className="text-sm text-secondary font-light max-w-sm mt-1">
-                      Your inquiry has been logged in our corporate registry. An El Talkhawy adviser will contact you soon.
+                    <h3 className="font-bold text-primary text-base">{dict.contact.successTitle}</h3>
+                    <p className="text-sm text-secondary font-normal max-w-sm mt-1">
+                      {dict.contact.successMessage}
                     </p>
                   </div>
                 ) : (
@@ -150,7 +157,7 @@ export default function ContactPage() {
                       {/* Name */}
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="contact-name" className="text-3xs uppercase tracking-wider text-muted font-semibold">
-                          Name
+                          {dict.contact.name}
                         </label>
                         <input
                           id="contact-name"
@@ -168,7 +175,7 @@ export default function ContactPage() {
                       {/* Email */}
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="contact-email" className="text-3xs uppercase tracking-wider text-muted font-semibold">
-                          Email
+                          {dict.contact.email}
                         </label>
                         <input
                           id="contact-email"
@@ -187,7 +194,7 @@ export default function ContactPage() {
                     {/* Message */}
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="contact-message" className="text-3xs uppercase tracking-wider text-muted font-semibold">
-                        Inquiry Message
+                        {dict.contact.message}
                       </label>
                       <textarea
                         id="contact-message"
@@ -195,7 +202,7 @@ export default function ContactPage() {
                         rows={6}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Describe your bulk meat order, special cut requests, or wholesale inquiry..."
+                        placeholder={dict.contact.placeholder}
                         className="w-full p-4 rounded-button text-sm bg-base border border-muted text-primary placeholder:text-muted focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 transition-all duration-300 resize-none"
                       />
                     </div>
@@ -208,7 +215,7 @@ export default function ContactPage() {
                       iconRight={<Send className="w-4 h-4" />}
                       className="h-12 text-sm tracking-wider uppercase font-semibold mt-2 cursor-pointer"
                     >
-                      Dispatch Inquiry
+                      {dict.contact.submit}
                     </Button>
                   </form>
                 )}

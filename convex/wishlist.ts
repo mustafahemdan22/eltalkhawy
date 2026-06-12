@@ -1,5 +1,11 @@
-import { query, mutation } from './_generated/server';
+import { query, mutation, QueryCtx, MutationCtx } from './_generated/server';
 import { v } from 'convex/values';
+
+async function verifyOwnership(ctx: QueryCtx | MutationCtx, userId: string): Promise<void> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error('Not authenticated');
+  if (identity.subject !== userId) throw new Error('Not authorized');
+}
 
 /* ─────────────────────────────────────────
    QUERIES
@@ -9,6 +15,7 @@ import { v } from 'convex/values';
 export const get = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const wishlist = await ctx.db
       .query('wishlist')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -34,6 +41,7 @@ export const get = query({
 export const isInWishlist = query({
   args: { userId: v.string(), productId: v.id('products') },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const wishlist = await ctx.db
       .query('wishlist')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -53,6 +61,7 @@ export const isInWishlist = query({
 export const toggle = mutation({
   args: { userId: v.string(), productId: v.id('products') },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const wishlist = await ctx.db
       .query('wishlist')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))

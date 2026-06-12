@@ -19,7 +19,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
     'bg-[var(--brand)] text-[var(--brand-fg)] hover:bg-[var(--brand-hover)] active:bg-[var(--brand-active)] ' +
-    'shadow-sm hover:shadow-md focus-visible:ring-[var(--brand)]/50',
+    'shadow-card hover:shadow-raised focus-visible:ring-[var(--brand)]/50',
   secondary:
     'bg-transparent border border-[var(--border-default)] text-[var(--text-primary)] ' +
     'hover:bg-[var(--bg-surface-raised)] hover:border-[var(--border-hover)] ' +
@@ -32,7 +32,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     'shadow-[var(--shadow-gold)] hover:shadow-[var(--shadow-gold-lg)] font-semibold ' +
     'focus-visible:ring-[var(--gold)]/50',
   danger:
-    'bg-[var(--error)] text-white hover:bg-[var(--error)]/90 active:bg-[var(--error)]/80 ' +
+    'bg-[var(--error)] text-[var(--brand-fg)] hover:bg-[var(--error)]/90 active:bg-[var(--error)]/80 ' +
     'focus-visible:ring-[var(--error)]/50',
   outline:
     'bg-transparent border border-[var(--gold-border)] text-[var(--gold)] ' +
@@ -42,7 +42,7 @@ const variantStyles: Record<ButtonVariant, string> = {
 
 const sizeStyles: Record<ButtonSize, string> = {
   xs: 'h-8 px-3 text-xs gap-2 rounded-md',
-  sm: 'h-10 px-4 text-sm gap-2 rounded-button',
+  sm: 'h-11 px-4 text-sm gap-2 rounded-button',
   md: 'h-11 px-6 text-sm gap-2.5 rounded-button',
   lg: 'h-12 px-7 text-base gap-3 rounded-button',
   xl: 'h-14 px-9 text-base gap-3 rounded-card',
@@ -72,10 +72,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         'transition-all duration-250 ease-premium',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
-        'select-none whitespace-nowrap',
+        'select-none whitespace-nowrap shine btn-press',
         variantStyles[variant],
         sizeStyles[size],
         fullWidth && 'w-full',
+        variant === 'gold' && 'badge-shimmer',
         className,
       )}
       {...props}

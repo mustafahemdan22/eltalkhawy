@@ -6,10 +6,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 import { useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ShoppingCart, Plus, Minus, ArrowRight } from 'lucide-react';
-import { cn, formatPrice, cloudinaryUrl } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryUrl, discountedPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -18,11 +19,26 @@ interface CartDrawerProps {
   onClose:   () => void;
 }
 
+interface GuestCartItem {
+  productId: string;
+  variantWeight: string;
+  quantity: number;
+  price: number;
+  isGrilled?: boolean;
+  grillComment?: string;
+  starterName?: string;
+  starterPrice?: number;
+}
+
 interface PopulatedCartItem {
   productId:     string;
   variantWeight: string;
   quantity:      number;
   price:         number;
+  isGrilled?:    boolean;
+  grillComment?: string;
+  starterName?:  string;
+  starterPrice?: number;
   product: {
     _id:          string;
     slug:         string;
@@ -46,27 +62,20 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const isRtl = locale === 'ar';
   const localePrefix = `/${locale}`;
 
-  const [guestCart, setGuestCart] = useState<any[]>([]);
-  const [localProductsList, setLocalProductsList] = useState<any[]>([]);
+  const [guestCart, setGuestCart] = useState<GuestCartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try { return JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]'); } catch { return []; }
+    }
+    return [];
+  });
 
   const dbCart = useQuery(api.cart.get, user ? { userId: user.id } : 'skip');
   const allProducts = useQuery(api.products.list, {});
 
+  const localProductsList = useMemo(() => allProducts ?? [], [allProducts]);
+
   const updateQuantityMutation = useMutation(api.cart.updateQuantity);
   const removeMutation = useMutation(api.cart.remove);
-
-  useEffect(() => {
-    if (!user && isOpen) {
-      const cartData = JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]');
-      setGuestCart(cartData);
-    }
-  }, [user, isOpen]);
-
-  useEffect(() => {
-    if (allProducts) {
-      setLocalProductsList(allProducts);
-    }
-  }, [allProducts]);
 
   useEffect(() => {
     if (isOpen) {
@@ -108,9 +117,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     return cartItems.reduce((acc, item) => {
       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
       const baseVal = variant ? variant.price : item.price;
-      const latestPrice = item.product.discount
-        ? baseVal * (1 - item.product.discount / 100)
+      const rawPrice = item.product.discount
+        ? discountedPrice(baseVal, item.product.discount)
         : baseVal;
+      const grillFee = item.isGrilled ? 50 : 0;
+      const starterFee = item.starterPrice ?? 0;
+      const latestPrice = rawPrice + grillFee + starterFee;
       return acc + latestPrice * item.quantity;
     }, 0);
   }, [cartItems]);
@@ -119,7 +131,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     if (user) {
       await updateQuantityMutation({
         userId: user.id,
-        productId: productId as any,
+        productId: productId as Id<"products">,
         variantWeight: weight,
         quantity: newQty,
       });
@@ -140,7 +152,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     if (user) {
       await removeMutation({
         userId: user.id,
-        productId: productId as any,
+        productId: productId as Id<"products">,
         variantWeight: weight,
       });
     } else {
@@ -185,6 +197,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             exit="hidden"
             variants={drawerVariants}
             transition={{ type: 'spring', stiffness: 350, damping: 35 }}
+            data-theme="dark"
             className={cn(
               'fixed top-0 bottom-0 z-50 w-full max-w-md bg-surface border shadow-raised flex flex-col font-sans',
               isRtl ? 'left-0 border-r border-l-0' : 'right-0 border-l',
@@ -192,17 +205,17 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             dir={isRtl ? 'rtl' : 'ltr'}
           >
             {/* Header */}
-            <div className="p-6 border-b border-muted flex items-center justify-between">
+            <div className="p-6 sm:p-8 border-b border-muted flex items-center justify-between">
               <div className="flex items-center gap-3 text-primary">
-                <ShoppingCart className="w-4 h-4 text-[var(--gold)]" />
-                <span className="font-display font-bold text-sm uppercase tracking-wider">{dict.cart?.basket || 'Basket'}</span>
-                <span className="font-mono text-xs text-[var(--gold)] font-bold bg-[var(--gold-subtle)] px-2 py-1 rounded border border-[var(--gold-border)]">
+                <ShoppingCart className="w-5 h-5 text-[var(--gold)]" />
+                <span className="font-display font-bold text-base uppercase tracking-widest">{dict.cart?.basket || 'Basket'}</span>
+                <span className="font-mono text-xs text-[var(--gold)] font-bold bg-[var(--gold-subtle)] px-2.5 py-1 rounded-full border border-[var(--gold-border)]">
                   {cartItems.length}
                 </span>
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-button bg-surface-raised border border-muted text-secondary hover:text-primary transition-colors cursor-pointer"
+                className="p-3 rounded-button bg-surface-raised border border-muted text-secondary hover:text-primary transition-colors cursor-pointer"
                 aria-label={dict.cart?.close || 'Close cart drawer'}
               >
                 <X className="w-4 h-4" />
@@ -215,55 +228,80 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 cartItems.map((item) => {
                   const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
                   const baseVal = variant ? variant.price : item.price;
-                  const finalPrice = item.product.discount
-                    ? baseVal * (1 - item.product.discount / 100)
+                  const rawPrice = item.product.discount
+                    ? discountedPrice(baseVal, item.product.discount)
                     : baseVal;
+                  const grillFee = item.isGrilled ? 50 : 0;
+                  const starterFee = item.starterPrice ?? 0;
+                  const finalPrice = rawPrice + grillFee + starterFee;
 
                   const imgUrl = item.product.images[0]
                     ? (item.product.images[0].startsWith('http') ? item.product.images[0] : cloudinaryUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill' }))
                     : PLACEHOLDER_IMAGES.default;
 
                   return (
-                    <div key={`${item.productId}-${item.variantWeight}`} className="py-6 flex gap-5">
-                      <div className={cn('relative w-14 h-18 rounded bg-surface-raised border border-muted overflow-hidden shrink-0')}>
-                        <Image src={imgUrl} alt={locale === 'ar' ? item.product.nameAr : item.product.name} fill sizes="60px" className="object-cover" />
+                    <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 flex gap-4 cart-item-enter">
+                      <div className={cn('relative w-16 h-20 rounded-md bg-surface-raised border border-muted overflow-hidden shrink-0')}>
+                        <Image src={imgUrl} alt={locale === 'ar' ? item.product.nameAr : item.product.name} fill sizes="64px" className="object-cover" />
                       </div>
 
-                      <div className="flex-1 flex flex-col gap-1.5">
+                      <div className="flex-1 flex flex-col gap-1 min-w-0">
                         <Link
                           href={`/${locale}/shop/${item.product.slug}`}
                           onClick={onClose}
-                          className="font-display font-bold text-primary text-sm hover:text-[var(--gold)] transition-colors line-clamp-1"
+                          className="font-display font-bold text-primary text-sm hover:text-[var(--brand)] transition-colors truncate"
                         >
                           {locale === 'ar' ? item.product.nameAr : item.product.name}
                         </Link>
+                        
+                        {/* Grill & Starter Info */}
+                        {(item.isGrilled || item.starterName) && (
+                          <div className={cn("flex flex-col gap-0.5 text-3xs text-[var(--gold)] mt-0.5 font-sans font-medium", isRtl && "text-right")}>
+                            {item.isGrilled && (
+                              <div className="flex items-center gap-1">
+                                <span>🔥 {locale === 'ar' ? 'تسوية وشوي (+٥٠ ج.م)' : 'Grill Prep (+EGP 50)'}</span>
+                                {item.grillComment && (
+                                  <span className="text-muted italic truncate max-w-[120px]">({item.grillComment})</span>
+                                )}
+                              </div>
+                            )}
+                            {item.starterName && (
+                              <div>
+                                <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         <div className={cn('flex items-baseline gap-2', isRtl && 'flex-row-reverse')}>
-                          <span className="font-mono text-sm font-bold text-[var(--price-current)]">
+                          <span className="price-current text-sm">
                             {formatPrice(finalPrice, locale)}
                           </span>
-                          <span className="text-xs text-secondary font-mono">{item.variantWeight}</span>
+                          <span className="text-xs text-secondary">{item.variantWeight}</span>
                         </div>
 
-                        <div className={cn('flex items-center gap-3 mt-2 select-none', isRtl && 'flex-row-reverse')}>
-                          <div className={cn('flex items-center justify-between border border-muted bg-surface-raised rounded-button px-3 h-8', isRtl ? 'w-22 flex-row-reverse' : 'w-22')}>
+                        <div className={cn('flex items-center gap-2 mt-1 select-none', isRtl && 'flex-row-reverse')}>
+                          <div className={cn('flex items-center justify-between border border-muted bg-surface-raised rounded-md h-11', isRtl ? 'w-28 flex-row-reverse' : 'w-28')}>
                             <button
                               onClick={() => handleUpdateQuantity(item.productId, item.variantWeight, item.quantity - 1)}
-                              className="text-secondary hover:text-primary font-bold text-3xs cursor-pointer"
+                              className="flex items-center justify-center w-11 h-11 text-secondary hover:text-primary font-bold cursor-pointer"
+                              aria-label={dict.cart?.decreaseQuantity || "Decrease quantity"}
                             >
-                              <Minus className="w-2.5 h-2.5" />
+                              <Minus className="w-3.5 h-3.5" />
                             </button>
-                            <span className="font-mono text-3xs text-primary font-bold">{item.quantity}</span>
+                            <span className="text-sm text-primary font-bold tabular-nums">{item.quantity}</span>
                             <button
                               onClick={() => handleUpdateQuantity(item.productId, item.variantWeight, item.quantity + 1)}
-                              className="text-secondary hover:text-primary font-bold text-3xs cursor-pointer"
+                              className="flex items-center justify-center w-11 h-11 text-secondary hover:text-primary font-bold cursor-pointer"
+                              aria-label={dict.cart?.increaseQuantity || "Increase quantity"}
                             >
-                              <Plus className="w-2.5 h-2.5" />
+                              <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
 
                           <button
                             onClick={() => handleRemoveItem(item.productId, item.variantWeight)}
-                            className="text-xs text-secondary hover:text-error transition-colors cursor-pointer flex items-center gap-1"
+                            className="flex items-center gap-1 px-3 py-2 -my-1 text-2xs text-secondary hover:text-error hover:bg-error-bg/40 rounded transition-colors cursor-pointer min-h-10"
                           >
                             <Trash2 className="w-3 h-3" />
                             {dict.cart?.remove || 'Remove'}
@@ -274,15 +312,15 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   );
                 })
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center py-24 px-6">
-                  <div className="w-14 h-14 rounded-full bg-surface-raised border border-muted flex items-center justify-center text-secondary mb-4">
-                    <ShoppingCart className="w-5 h-5" />
+                <div className="h-full flex flex-col items-center justify-center text-center py-20 px-8">
+                  <div className="w-16 h-16 rounded-full bg-[var(--gold-subtle)] border border-[var(--gold-border)] flex items-center justify-center text-[var(--gold)] mb-5">
+                    <ShoppingCart className="w-7 h-7" />
                   </div>
-                  <h4 className="font-display text-primary font-bold text-sm">{dict.cart?.emptyTitle || 'Your Basket is Empty'}</h4>
-                  <p className="text-sm text-secondary max-w-xs mt-2 font-light">
+                  <h4 className="font-display text-primary font-bold text-base leading-tight">{dict.cart?.emptyTitle || 'Your Basket is Empty'}</h4>
+                  <p className="text-sm text-secondary mt-2 font-normal max-w-xs">
                     {dict.cart?.emptyDescription || 'Browse our butcher selections to begin shopping.'}
                   </p>
-                  <Button onClick={() => { onClose(); router.push(`/${locale}/shop`); }} size="sm" className="mt-4 uppercase tracking-wider text-xs h-9 cursor-pointer">
+                  <Button onClick={() => { onClose(); router.push(`/${locale}/categories`); }} size="md" variant="primary" className="mt-6 text-xs h-11 px-7 cursor-pointer">
                     {dict.cart?.browseCatalog || 'Browse Catalog'}
                   </Button>
                 </div>
@@ -291,10 +329,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Footer */}
             {cartItems.length > 0 && (
-              <div className="p-6 border-t border-muted bg-surface-raised/50 flex flex-col gap-5">
-                <div className={cn('flex justify-between items-center text-sm font-bold', isRtl && 'flex-row-reverse')}>
+              <div className="p-6 sm:p-8 border-t border-muted bg-surface-raised/50 flex flex-col gap-6">
+                <div className={cn('flex justify-between items-center text-base font-bold', isRtl && 'flex-row-reverse')}>
                   <span className="text-primary">{dict.cart?.subtotal || 'Subtotal:'}</span>
-                  <span className="font-mono text-[var(--price-current)] text-base">{formatPrice(subtotal, locale)}</span>
+                  <span className="font-mono text-[var(--price-current)] text-xl">{formatPrice(subtotal, locale)}</span>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button

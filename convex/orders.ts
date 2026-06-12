@@ -1,22 +1,32 @@
-import { query, mutation } from './_generated/server';
+import { query, mutation, QueryCtx, MutationCtx } from './_generated/server';
 import { v } from 'convex/values';
+
+async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error('Not authenticated');
+  const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
+  if (!user || user.role !== 'admin') throw new Error('Not authorized');
+  return identity.subject;
+}
 
 /* ─────────────────────────────────────────
    QUERIES
 ───────────────────────────────────────── */
 
-/** Get single order by ID */
+/** Get single order by ID (admin only) */
 export const get = query({
   args: { orderId: v.id('orders') },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     return await ctx.db.get(args.orderId);
   },
 });
 
-/** Get single order by order number */
+/** Get single order by order number (admin only) */
 export const getByOrderNumber = query({
   args: { orderNumber: v.string() },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
     return await ctx.db
       .query('orders')
       .withIndex('by_orderNumber', (q) => q.eq('orderNumber', args.orderNumber))
@@ -30,7 +40,7 @@ export const listAll = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error('Not authenticated');
-    const user = await ctx.db.query('users').withIndex('by_clerkId', (q: any) => q.eq('clerkId', identity.subject)).unique();
+    const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
     if (!user || user.role !== 'admin') throw new Error('Not authorized');
 
     return await ctx.db.query('orders').collect().then((orders) =>
@@ -43,12 +53,17 @@ export const listAll = query({
 export const listUserOrders = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error('Not authenticated');
+    const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
+    const isAdmin = user?.role === 'admin';
+    if (!isAdmin && identity.subject !== args.userId) throw new Error('Not authorized');
+
     const orders = await ctx.db
       .query('orders')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
       .collect();
 
-    // Sort descending by _creationTime
     return orders.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
@@ -64,11 +79,16 @@ export const create = mutation({
     guestEmail:   v.union(v.string(), v.null()),
     items: v.array(v.object({
       productId:     v.id('products'),
+      productSlug:   v.optional(v.string()),
       productName:   v.string(),
       variantWeight: v.string(),
       quantity:      v.number(),
       unitPrice:     v.number(),
       totalPrice:    v.number(),
+      isGrilled:     v.optional(v.boolean()),
+      grillComment:  v.optional(v.string()),
+      starterName:   v.optional(v.string()),
+      starterPrice:  v.optional(v.number()),
     })),
     deliveryAddress: v.object({
       fullName:  v.string(),
@@ -115,9 +135,20 @@ export const create = mutation({
     const rand = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `ET-${dateCode}-${rand}`;
 
+    // Ensure each order item has a slug snapshot for direct product links.
+    // Older callers may not pass it; backfill it from the product table.
+    const itemsWithSlug = await Promise.all(
+      args.items.map(async (item) => {
+        if (item.productSlug) return item;
+        const product = await ctx.db.get(item.productId);
+        return { ...item, productSlug: product?.slug };
+      }),
+    );
+
     // 1. Create order
     const orderId = await ctx.db.insert('orders', {
       ...args,
+      items: itemsWithSlug,
       orderNumber,
       status: 'pending',
     });
@@ -179,10 +210,18 @@ export const updateStatus = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error('Not authenticated');
-    const user = await ctx.db.query('users').withIndex('by_clerkId', (q: any) => q.eq('clerkId', identity.subject)).unique();
+    const user = await ctx.db.query('users').withIndex('by_clerkId', (q) => q.eq('clerkId', identity.subject)).unique();
     if (!user || user.role !== 'admin') throw new Error('Not authorized');
 
-    await ctx.db.patch(args.orderId, { status: args.status });
+    const order = await ctx.db.get(args.orderId);
+    if (!order) throw new Error('Order not found');
+
+    const previous = order.statusHistory ?? [];
+    const entry = { status: args.status, at: Date.now() };
+    await ctx.db.patch(args.orderId, {
+      status: args.status,
+      statusHistory: [...previous, entry],
+    });
     return args.orderId;
   },
 });

@@ -2,10 +2,13 @@
 
 import React, { createContext, useContext } from 'react';
 import type { Locale } from '@/i18n-config';
+import type { Dict } from '@/lib/dictionaries';
+
+import en from '@/dictionaries/en.json';
 
 type LocaleContextType = {
   locale: Locale;
-  dict: any;
+  dict: Dict;
 };
 
 const LocaleContext = createContext<LocaleContextType | null>(null);
@@ -17,7 +20,7 @@ export function LocaleProvider({
 }: {
   children: React.ReactNode;
   locale: Locale;
-  dict: any;
+  dict: Dict;
 }) {
   return (
     <LocaleContext.Provider value={{ locale, dict }}>
@@ -26,11 +29,11 @@ export function LocaleProvider({
   );
 }
 
-export function useLocale() {
+export function useLocale(): LocaleContextType {
   const context = useContext(LocaleContext);
   if (!context) {
     // Fallback for legacy routes during incremental migration
-    return { locale: 'en' as Locale, dict: {} };
+    return { locale: 'en' as Locale, dict: en };
   }
   return context;
 }

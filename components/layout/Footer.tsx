@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Phone,
   Mail,
@@ -9,9 +12,100 @@ import {
   ArrowRight,
   MessageCircle,
 } from 'lucide-react';
-import { SITE_CONFIG, NAV_LINKS, CATEGORIES } from '@/lib/constants';
+import { SITE_CONFIG, CATEGORIES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
+
+function NewsletterForm({ locale }: { locale: 'en' | 'ar' }) {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+  const subscribe = useMutation(api.newsletter.subscribe);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setStatus('error');
+      setMessage(locale === 'ar' ? 'يرجى إدخال البريد الإلكتروني' : 'Please enter your email');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setStatus('error');
+      setMessage(locale === 'ar' ? 'يرجى إدخال بريد إلكتروني صحيح' : 'Please enter a valid email');
+      return;
+    }
+    setStatus('loading');
+    try {
+      const result = await subscribe({ email: trimmed, locale });
+      if (result.status === 'already_subscribed') {
+        setMessage(locale === 'ar' ? 'أنت مشترك بالفعل!' : 'You are already subscribed!');
+      } else {
+        setMessage(locale === 'ar' ? 'تم الاشتراك بنجاح!' : 'Subscribed successfully!');
+      }
+      setStatus('success');
+      setEmail('');
+    } catch {
+      setStatus('error');
+      setMessage(locale === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'Something went wrong. Try again.');
+    }
+    setTimeout(() => setStatus('idle'), 3000);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0">
+      <div className="relative flex-1 sm:w-80">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your premium email address'}
+          className={cn(
+            'w-full h-12 pl-5 pr-10 rounded-button text-sm font-sans',
+            'bg-surface/80 border border-muted backdrop-blur-sm',
+            'text-primary placeholder:text-muted',
+            'focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20',
+            'transition-all duration-300',
+            status === 'success' && 'border-fresh',
+            status === 'error' && 'border-error',
+          )}
+          aria-label="Email address for newsletter"
+        />
+        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse_gold" />
+      </div>
+      <button
+        type="submit"
+        disabled={status === 'loading' || status === 'success'}
+        className={cn(
+          'h-12 px-6 rounded-button text-sm tracking-wider uppercase font-semibold',
+          'bg-gradient-brand text-[var(--brand-fg)] hover:shadow-gold',
+          'border border-[var(--gold)]/20 hover:border-[var(--gold)]/50',
+          'transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 group cursor-pointer',
+          (status === 'loading' || status === 'success') && 'opacity-70 cursor-not-allowed',
+        )}
+      >
+        {status === 'loading' ? (
+          <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        ) : status === 'success' ? (
+          <span>{locale === 'ar' ? 'تم!' : 'Done!'}</span>
+        ) : (
+          <>
+            <span>{locale === 'ar' ? 'اشترك الآن' : 'Subscribe Now'}</span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+          </>
+        )}
+      </button>
+      {message && (
+        <p className={cn(
+          'text-xs mt-1 sm:absolute sm:top-full sm:left-0 sm:right-0',
+          status === 'success' ? 'text-fresh' : 'text-error',
+        )}>
+          {message}
+        </p>
+      )}
+    </form>
+  );
+}
 
 // Custom Instagram icon styled to match Lucide icons exactly
 const Instagram = ({ className, ...props }: React.ComponentProps<'svg'>) => (
@@ -57,7 +151,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const pathname = usePathname();
   const { locale } = useLocale();
-  const isHome = pathname === '/';
+  const isHome = pathname === '/' || pathname === '/ar' || pathname === '/en';
 
   return (
     <footer className="bg-base border-t border-muted mt-auto relative overflow-hidden">
@@ -77,42 +171,11 @@ export default function Footer() {
                 <h2 className="font-display text-2xl md:text-3xl font-bold text-primary leading-tight text-wrap-balance">
                   {locale === 'ar' ? 'احصل على قطعيات حصرية وأحدث خلطات الجزارة' : 'Get Exclusive Cuts & Gastronomy News'}
                 </h2>
-                <p className="text-sm text-secondary mt-3 font-sans font-light leading-relaxed text-wrap-pretty">
+                <p className="text-sm text-secondary mt-3 font-sans font-normal leading-relaxed text-wrap-pretty">
                   {locale === 'ar' ? 'اشترك لتصلك تنبيهات خاصة باللحوم الطازجة، وصفات حصرية من جزارنا، وأولوية الحجز.' : 'Subscribe to receive private alerts on fresh arrivals, curated recipes from our premium butcher, and priority reservations.'}
                 </p>
               </div>
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0"
-              >
-                <div className="relative flex-1 sm:w-80">
-                  <input
-                    type="email"
-                    placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your premium email address'}
-                    className={cn(
-                      'w-full h-12 pl-5 pr-10 rounded-button text-sm font-sans',
-                      'bg-surface/80 border border-muted backdrop-blur-sm',
-                      'text-primary placeholder:text-muted',
-                      'focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20',
-                      'transition-all duration-300',
-                    )}
-                    aria-label="Email address for newsletter"
-                  />
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse_gold" />
-                </div>
-                <button
-                  type="submit"
-                  className={cn(
-                    'h-12 px-6 rounded-button text-sm tracking-wider uppercase font-semibold',
-                    'bg-gradient-brand text-[var(--brand-fg)] hover:shadow-gold',
-                    'border border-[var(--gold)]/20 hover:border-[var(--gold)]/50',
-                    'transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 group cursor-pointer',
-                  )}
-                >
-                  <span>{locale === 'ar' ? 'اشترك الآن' : 'Subscribe Now'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-                </button>
-              </form>
+              <NewsletterForm locale={locale} />
             </div>
           </div>
         </div>
@@ -124,7 +187,7 @@ export default function Footer() {
           
           {/* Column 1: Brand details & identity */}
           <div className="flex flex-col space-y-8">
-            <Link href="/" className="flex items-center gap-3 group w-fit">
+            <Link href={`/${locale}`} className="flex items-center gap-3 group w-fit">
               <div className="w-11 h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-gold transition-transform duration-500 group-hover:rotate-[360deg]">
                 <span className="text-[var(--brand-fg)] font-display font-bold text-base tracking-wider select-none">ET</span>
               </div>
@@ -137,7 +200,7 @@ export default function Footer() {
                 </div>
               </div>
             </Link>
-            <p className="text-sm text-secondary leading-relaxed font-sans font-light max-w-xs text-wrap-pretty">
+            <p className="text-sm text-secondary leading-relaxed font-sans font-normal max-w-xs text-wrap-pretty">
               {locale === 'ar' ? SITE_CONFIG.descriptionAr : SITE_CONFIG.description}
             </p>
             {/* Elegant glassmorphic Social Links */}
@@ -158,6 +221,7 @@ export default function Footer() {
                       'w-11 h-11 rounded-full bg-surface-raised/80 border border-muted flex items-center justify-center',
                       'text-secondary hover:text-primary hover:border-[var(--gold)] hover:bg-[var(--gold-subtle)]',
                       'transition-all duration-300 hover:-translate-y-1 hover:shadow-gold-sm',
+                      'social-icon-ring',
                     )}
                     aria-label={social.label}
                   >
@@ -175,32 +239,37 @@ export default function Footer() {
               {locale === 'ar' ? 'تصنيفات المتجر' : 'Shop Categories'}
             </h3>
             <ul className="space-y-5 font-sans">
-              {CATEGORIES.slice(0, 7).map((cat: any) => (
-                <li key={cat.slug} className="group overflow-hidden">
-                  <Link
-                    href={`/${locale}/categories/${cat.slug}`}
-                    className={cn(
-                      'text-sm text-secondary hover:text-primary',
-                      'flex items-center gap-2.5 transition-all duration-300 ease-out',
-                      'group-hover:translate-x-1.5',
-                    )}
-                  >
+              {CATEGORIES.slice(0, 7).map((cat: (typeof CATEGORIES)[number]) => {
+                const isAnimal = ['beef', 'buffalo', 'lamb', 'goat', 'veal'].includes(cat.slug);
+                const categoryHref = isAnimal ? `/${locale}/animal/${cat.slug}` : `/${locale}/categories/${cat.slug}`;
+                
+                return (
+                  <li key={cat.slug} className="group overflow-hidden">
+                    <Link
+                      href={categoryHref}
+                      className={cn(
+                        'text-sm text-secondary hover:text-primary',
+                        'flex items-center gap-2.5 transition-all duration-300 ease-out',
+                        'group-hover:translate-x-1.5 py-2 -my-2 min-h-11',
+                      )}
+                    >
                     <span className="text-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 select-none" aria-hidden="true">
                       {cat.icon}
                     </span>
-                    <span className="relative py-0.5">
+                    <span className="relative">
                       {locale === 'ar' ? cat.nameAr : cat.name}
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
                     </span>
                   </Link>
                 </li>
-              ))}
+                );
+              })}
               <li className="pt-2">
                 <Link
-                  href="/shop"
-                  className="text-xs text-[var(--gold)] hover:text-[var(--gold)] font-semibold tracking-wider uppercase flex items-center gap-1.5 group/all transition-colors"
+                  href={`/${locale}/categories`}
+                  className="inline-flex items-center gap-1.5 px-3 py-3 -my-3 text-xs text-[var(--gold)] hover:text-[var(--gold)] font-semibold tracking-wider uppercase group/all transition-colors"
                 >
-                  <span>{locale === 'ar' ? 'عرض جميع المنتجات' : 'View All Products'}</span>
+                  <span>{locale === 'ar' ? 'عرض جميع الأقسام' : 'View All Categories'}</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/all:translate-x-1" />
                 </Link>
               </li>
@@ -229,13 +298,13 @@ export default function Footer() {
                     className={cn(
                       'text-sm text-secondary hover:text-primary',
                       'flex items-center gap-2 transition-all duration-300 ease-out',
-                      'group-hover:translate-x-1.5',
+                      'group-hover:translate-x-1.5 py-2 -my-2 min-h-11',
                     )}
                   >
                     <span className="w-1 h-1 rounded-full bg-muted transition-all duration-300 group-hover:bg-[var(--gold)] group-hover:scale-125" />
-                    <span className="relative py-0.5 ml-1">
+                    <span className="relative ml-1">
                       {locale === 'ar' ? item.labelAr : item.label}
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
                     </span>
                   </Link>
                 </li>
@@ -253,7 +322,7 @@ export default function Footer() {
               <li className="group">
                 <a
                   href={`tel:${SITE_CONFIG.phone}`}
-                  className="flex items-center gap-3 text-secondary hover:text-primary transition-colors w-fit"
+                  className="flex items-center gap-3 py-1 -my-1 text-secondary hover:text-primary transition-colors w-fit min-h-11"
                 >
                   <div className="w-8 h-8 rounded-full bg-surface-raised border border-muted flex items-center justify-center transition-colors group-hover:border-[var(--gold)] group-hover:bg-[var(--gold-subtle)]">
                     <Phone className="w-3.5 h-3.5 text-[var(--gold)] shrink-0" aria-hidden="true" />
@@ -264,7 +333,7 @@ export default function Footer() {
               <li className="group">
                 <a
                   href={`mailto:${SITE_CONFIG.email}`}
-                  className="flex items-center gap-3 text-secondary hover:text-primary transition-colors w-fit"
+                  className="flex items-center gap-3 py-1 -my-1 text-secondary hover:text-primary transition-colors w-fit min-h-11"
                 >
                   <div className="w-8 h-8 rounded-full bg-surface-raised border border-muted flex items-center justify-center transition-colors group-hover:border-[var(--gold)] group-hover:bg-[var(--gold-subtle)]">
                     <Mail className="w-3.5 h-3.5 text-[var(--gold)] shrink-0" aria-hidden="true" />
@@ -278,7 +347,7 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col gap-4 pt-1">
                   {SITE_CONFIG.branches.map((branch, idx) => (
-                    <div key={idx} className="leading-relaxed font-light text-wrap-pretty">
+                    <div key={idx} className="leading-relaxed font-normal text-wrap-pretty">
                       <span className="block font-medium text-primary text-xs">{locale === 'ar' ? branch.nameAr : branch.name}</span>
                       <span className="text-xs">{locale === 'ar' ? branch.addressAr : branch.address}</span>
                     </div>
@@ -294,7 +363,7 @@ export default function Footer() {
                 <span className="w-1.5 h-1.5 rounded-full bg-fresh animate-pulse" />
                 {locale === 'ar' ? 'ساعات العمل' : 'Boutique Hours'}
               </p>
-              <div className="space-y-2 text-sm text-secondary font-light">
+              <div className="space-y-2 text-sm text-secondary font-normal">
                 <div className="flex justify-between">
                   <span>{locale === 'ar' ? 'السبت – الخميس:' : 'Sat – Thu:'}</span>
                   <span className="font-medium text-primary">
@@ -316,21 +385,21 @@ export default function Footer() {
 
       {/* ── Bottom Bar (Pristine Details) ── */}
       <div className="border-t border-muted bg-base relative z-10">
-        <div className="container-brand py-8 flex flex-col md:flex-row items-center justify-between gap-5 text-sm text-muted font-sans font-light">
+        <div className="container-brand py-8 flex flex-col md:flex-row items-center justify-between gap-5 text-sm text-muted font-sans font-normal">
           <p>
             {locale === 'ar' 
               ? `© ${year} الطلخاوي. صُنع لعشاق اللحوم الفاخرة. جميع الحقوق محفوظة.` 
               : `© ${year} El Talkhawy. Crafted for Gourmet Meat Enthusiasts. All rights reserved.`}
           </p>
           <div className="flex items-center gap-6">
-            <Link href={`/${locale}/privacy`} className="hover:text-[var(--gold)] transition-colors relative group py-0.5">
+            <Link href={`/${locale}/privacy`} className="hover:text-[var(--gold)] transition-colors relative group py-3 -my-3 min-h-11 inline-flex items-center">
               <span>{locale === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-px bg-[var(--gold)]/50 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute bottom-2 left-0 w-0 h-px bg-[var(--gold)]/50 transition-all duration-300 group-hover:w-full" />
             </Link>
             <span className="w-1.5 h-1.5 rounded-full bg-surface-raised" />
-            <Link href={`/${locale}/terms`} className="hover:text-[var(--gold)] transition-colors relative group py-0.5">
+            <Link href={`/${locale}/terms`} className="hover:text-[var(--gold)] transition-colors relative group py-3 -my-3 min-h-11 inline-flex items-center">
               <span>{locale === 'ar' ? 'شروط الخدمة' : 'Terms of Service'}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-px bg-[var(--gold)]/50 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute bottom-2 left-0 w-0 h-px bg-[var(--gold)]/50 transition-all duration-300 group-hover:w-full" />
             </Link>
           </div>
         </div>

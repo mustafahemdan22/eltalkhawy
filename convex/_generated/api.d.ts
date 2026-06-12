@@ -8,9 +8,21 @@
  * @module
  */
 
+import type * as cart from "../cart.js";
+import type * as categories from "../categories.js";
+import type * as contact from "../contact.js";
+import type * as dashboard from "../dashboard.js";
 import type * as http from "../http.js";
-import type * as myFunctions from "../myFunctions.js";
+import type * as media from "../media.js";
+import type * as newsletter from "../newsletter.js";
+import type * as orders from "../orders.js";
+import type * as products from "../products.js";
+import type * as promoCodes from "../promoCodes.js";
+import type * as reviews from "../reviews.js";
+import type * as seed from "../seed.js";
+import type * as settings from "../settings.js";
 import type * as users from "../users.js";
+import type * as wishlist from "../wishlist.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +31,21 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  cart: typeof cart;
+  categories: typeof categories;
+  contact: typeof contact;
+  dashboard: typeof dashboard;
   http: typeof http;
-  myFunctions: typeof myFunctions;
+  media: typeof media;
+  newsletter: typeof newsletter;
+  orders: typeof orders;
+  products: typeof products;
+  promoCodes: typeof promoCodes;
+  reviews: typeof reviews;
+  seed: typeof seed;
+  settings: typeof settings;
   users: typeof users;
+  wishlist: typeof wishlist;
 }>;
 
 /**

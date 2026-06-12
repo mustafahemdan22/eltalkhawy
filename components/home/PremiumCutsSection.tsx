@@ -3,22 +3,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Crown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Badge } from '@/components/ui/Badge';
 import { formatPrice } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
 export default function PremiumCutsSection() {
   const { locale, dict } = useLocale();
   const premiumCuts = useQuery(api.products.list, { isPremiumCut: true });
   const display = premiumCuts?.slice(0, 3) ?? [];
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = shouldReduceMotion
+    ? { hidden: {}, show: {} }
+    : { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
+  const cardVariants = shouldReduceMotion
+    ? { hidden: {}, show: {} }
+    : { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
   const getBadge = (slug: string): string => {
     if (slug.includes('ribeye')) return dict.home?.premiumCuts.items.ribeye.badge ?? 'Premium';
@@ -56,8 +59,8 @@ export default function PremiumCutsSection() {
               {dict.home?.premiumCuts.description}
             </p>
             <Link
-              href={`/${locale}/shop?category=premium-cuts`}
-              className="inline-flex items-center gap-3 text-[var(--gold)] hover:text-[var(--gold-hover)] font-semibold uppercase tracking-wider text-sm group"
+              href={`/${locale}/categories/premium-cuts`}
+              className="inline-flex items-center gap-3 px-4 py-3 min-h-11 text-[var(--gold)] hover:text-[var(--gold-hover)] font-semibold uppercase tracking-wider text-sm group"
             >
               {dict.home?.premiumCuts.discover}
               <ArrowRight className={locale === 'ar' ? "w-4 h-4 transition-transform group-hover:-translate-x-1 rotate-180" : "w-4 h-4 transition-transform group-hover:translate-x-1"} />
@@ -67,7 +70,7 @@ export default function PremiumCutsSection() {
 
         {/* Feature Grid */}
         {premiumCuts === undefined ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="rounded-card overflow-hidden bg-surface border border-muted animate-pulse">
                 <div className="h-56 bg-surface-raised/80" />
@@ -81,11 +84,11 @@ export default function PremiumCutsSection() {
           </div>
         ) : display.length === 0 ? null : (
           <motion.div
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+            variants={containerVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-40px' }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6"
           >
             {display.map((cut) => {
               const firstPrice = cut.variants[0]?.price ?? cut.basePrice;
@@ -94,18 +97,19 @@ export default function PremiumCutsSection() {
                 <motion.article
                   key={cut.slug}
                   variants={cardVariants}
-                  className="group relative rounded-card overflow-hidden bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-black/50 transition-all duration-350 hover:shadow-gold"
+                  className="group relative rounded-card overflow-hidden bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-[var(--gold)]/40 transition-all duration-350 hover:shadow-gold"
                 >
                   <Link href={`/${locale}/shop/${cut.slug}`} className="block" aria-label={locale === 'ar' ? cut.nameAr : cut.name}>
                     {/* Image */}
-                    <div className="relative h-56 overflow-hidden bg-surface-raised/80">
+                    <div className="relative h-56 overflow-hidden bg-surface-raised/80" data-theme="dark">
                       <Image
                         src={cut.images[0]?.startsWith('http') ? cut.images[0] : 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=85'}
                         alt={`${cut.name} — ${getNote(cut.slug, cut.description)}`}
                         fill
+                        loading="lazy"
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)]/80 via-transparent to-transparent" />
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                         style={{

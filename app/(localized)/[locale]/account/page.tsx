@@ -52,7 +52,7 @@ export default function AccountPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-base py-14 md:py-20">
+      <main id="main-content" className="min-h-screen bg-base py-14 md:py-20">
         <div className="container-brand">
 
           {isLoading ? (
@@ -65,15 +65,15 @@ export default function AccountPage() {
                 <User className="w-7 h-7 text-[var(--gold)]" />
               </div>
               <h3 className="font-display text-lg font-bold text-primary">{dict.account?.signInTitle}</h3>
-              <p className="text-sm text-secondary max-w-xs mt-2 font-light">
+              <p className="text-sm text-secondary max-w-xs mt-2 font-normal">
                 {dict.account?.signInDescription}
               </p>
               <Button
-                onClick={() => router.push('/sign-in')}
-                className="mt-6 h-11 px-7 uppercase tracking-wider text-sm cursor-pointer"
-              >
-                {dict.account?.signInButton}
-              </Button>
+                  onClick={() => router.push(`/${locale}/sign-in`)}
+                  className="mt-6 h-11 px-7 uppercase tracking-wider text-sm cursor-pointer"
+                >
+                  {dict.account?.signInButton}
+                </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12 items-start">
@@ -156,7 +156,7 @@ export default function AccountPage() {
                           const statusColors: Record<string, string> = {
                             success: 'bg-success-bg text-success border border-success-border',
                             warning: 'bg-warning-bg text-warning border border-warning-border',
-                            frozen:  'bg-sky-500/10 text-sky-400 border border-sky-500/20',
+                            frozen:  'bg-[var(--info-bg)] text-[var(--info)] border border-[var(--info-border)]',
                             fresh:   'bg-fresh-bg text-fresh border border-fresh-border',
                             error:   'bg-error-bg text-error border border-error-border',
                           };
@@ -211,7 +211,24 @@ export default function AccountPage() {
                                         <Package className="w-4 h-4 text-[var(--gold)]/60 shrink-0" />
                                         <div className="min-w-0">
                                           <span className="font-semibold text-primary block truncate">{item.productName}</span>
-                                          <span className="text-xs text-muted">{item.variantWeight}</span>
+                                          <span className="text-xs text-muted block">{item.variantWeight}</span>
+                                          {(item.isGrilled || item.starterName) && (
+                                            <div className="flex flex-col gap-0.5 text-3xs text-[var(--gold)] mt-0.5 font-sans font-medium">
+                                              {item.isGrilled && (
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                  <span>🔥 {locale === 'ar' ? 'تسوية وشوي (+٥٠ ج.م)' : 'Grill Prep (+EGP 50)'}</span>
+                                                  {item.grillComment && (
+                                                    <span className="text-muted italic">({item.grillComment})</span>
+                                                  )}
+                                                </div>
+                                              )}
+                                              {item.starterName && (
+                                                <div>
+                                                  <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                       <span className="w-16 text-center text-secondary font-mono">×{item.quantity}</span>
@@ -236,10 +253,14 @@ export default function AccountPage() {
                                     </div>
                                     <div className="flex justify-between text-xs">
                                       <Link
-                                        href={`/shop/${order.items[0]?.productId}`}
-                                        className="text-[var(--gold)] hover:text-[var(--gold-hover)] inline-flex items-center gap-1 transition-colors"
+                                        href={
+                                          order.items[0]?.productSlug
+                                            ? `/${locale}/shop/${order.items[0].productSlug}`
+                                            : `/${locale}/categories`
+                                        }
+                                        className="inline-flex items-center gap-1 px-3 py-2 -my-2 min-h-10 text-[var(--gold)] hover:text-[var(--gold-hover)] transition-colors"
                                       >
-                                        {dict.shop?.addToCart || 'Reorder'} <ArrowRight className="w-3 h-3" />
+                                        {dict.account?.reorder || 'Reorder'} <ArrowRight className="w-3 h-3" />
                                       </Link>
                                     </div>
                                   </div>
@@ -254,8 +275,8 @@ export default function AccountPage() {
                         <div className="w-12 h-12 rounded-full bg-surface-raised border border-muted flex items-center justify-center">
                           <Package className="w-5 h-5 text-secondary" />
                         </div>
-                        <p className="text-sm text-secondary font-light">{dict.account?.noOrdersDescription}</p>
-                        <Button onClick={() => router.push('/shop')} className="uppercase tracking-wider text-sm h-11">
+                        <p className="text-sm text-secondary font-normal">{dict.account?.noOrdersDescription}</p>
+                        <Button onClick={() => router.push(`/${locale}/categories`)} className="uppercase tracking-wider text-sm h-11">
                           {dict.account?.shopNow}
                         </Button>
                       </div>

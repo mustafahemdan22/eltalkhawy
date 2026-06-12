@@ -1,5 +1,11 @@
-import { query, mutation } from './_generated/server';
+import { query, mutation, QueryCtx, MutationCtx } from './_generated/server';
 import { v } from 'convex/values';
+
+async function verifyOwnership(ctx: QueryCtx | MutationCtx, userId: string): Promise<void> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) throw new Error('Not authenticated');
+  if (identity.subject !== userId) throw new Error('Not authorized');
+}
 
 /* ─────────────────────────────────────────
    QUERIES
@@ -9,6 +15,7 @@ import { v } from 'convex/values';
 export const get = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const cart = await ctx.db
       .query('cart')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -50,8 +57,13 @@ export const add = mutation({
     variantWeight: v.string(),
     quantity:      v.number(),
     price:         v.number(),
+    isGrilled:     v.optional(v.boolean()),
+    grillComment:  v.optional(v.string()),
+    starterName:   v.optional(v.string()),
+    starterPrice:  v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const existingCart = await ctx.db
       .query('cart')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -67,17 +79,24 @@ export const add = mutation({
             variantWeight: args.variantWeight,
             quantity:      args.quantity,
             price:         args.price,
+            isGrilled:     args.isGrilled,
+            grillComment:  args.grillComment,
+            starterName:   args.starterName,
+            starterPrice:  args.starterPrice,
           },
         ],
       });
     }
 
-    // Cart exists, check if item with same variant already exists
+    // Cart exists, check if item with same variant and options already exists
     const items = [...existingCart.items];
     const existingIndex = items.findIndex(
       (item) =>
         item.productId === args.productId &&
-        item.variantWeight === args.variantWeight,
+        item.variantWeight === args.variantWeight &&
+        (item.isGrilled ?? false) === (args.isGrilled ?? false) &&
+        (item.grillComment ?? '') === (args.grillComment ?? '') &&
+        (item.starterName ?? '') === (args.starterName ?? ''),
     );
 
     if (existingIndex > -1) {
@@ -92,6 +111,10 @@ export const add = mutation({
         variantWeight: args.variantWeight,
         quantity:      args.quantity,
         price:         args.price,
+        isGrilled:     args.isGrilled,
+        grillComment:  args.grillComment,
+        starterName:   args.starterName,
+        starterPrice:  args.starterPrice,
       });
     }
 
@@ -109,6 +132,7 @@ export const updateQuantity = mutation({
     quantity:      v.number(),
   },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const cart = await ctx.db
       .query('cart')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -136,6 +160,7 @@ export const remove = mutation({
     variantWeight: v.string(),
   },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const cart = await ctx.db
       .query('cart')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))
@@ -157,6 +182,7 @@ export const remove = mutation({
 export const clear = mutation({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
+    await verifyOwnership(ctx, args.userId);
     const cart = await ctx.db
       .query('cart')
       .withIndex('by_userId', (q) => q.eq('userId', args.userId))

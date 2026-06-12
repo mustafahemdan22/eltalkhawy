@@ -1,26 +1,1458 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   EL TALKHAWY — PREMIUM DESIGN SYSTEM
+   Fonts: Libre Baskerville (display serif) + Nunito Sans (body)
+          + Fira Code (mono/prices) + Cairo (Arabic)
+
+   Two themes sharing one brand DNA:
+     [data-theme="dark"]   → Dark Luxury Butcher (default)
+     [data-theme="light"]  → Light Warm Premium
+   ============================================================ */
+
+/* ============================================================
+   1. DARK LUXURY BUTCHER (default)
+      Vibe: warm dark like an upscale steakhouse
+      Base: deep warm charcoal  |  Text: warm cream
+      Accent: restrained gold   |  Brand: deep burgundy
+   ============================================================ */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ── Surface hierarchy ── */
+  --bg-base: #0c0b0a;
+  --bg-surface: #161513;
+  --bg-surface-raised: #1f1d1b;
+  --bg-surface-hover: #272522;
+  --bg-overlay: rgba(8, 7, 6, 0.75);
+  --bg-overlay-dark: #0c0b0a;
+  --bg-inset: #080706;
+
+  /* ── Borders ── */
+  --border-default: #35302b;
+  --border-muted: #272522;
+  --border-subtle: #1f1d1b;
+  --border-hover: #443f38;
+
+  /* ── Text ── */
+  --text-primary: #f2eee6;
+  --text-secondary: #c4beb4;
+  --text-muted: #a09888;
+  --text-disabled: #60574d;
+  --text-inverse: #0c0b0a;
+  --text-placeholder: #70675c;
+
+  /* ── Brand: Deep Culinary Maroon ── */
+  --brand: #8b1e30;
+  --brand-hover: #a3253a;
+  --brand-active: #6e1725;
+  --brand-fg: #fff5f7;
+  --brand-subtle: rgba(139, 30, 48, 0.15);
+
+  /* ── Accent: Warm Premium Gold ── */
+  --gold: #c5a059;
+  --gold-hover: #d4b371;
+  --gold-active: #b08d4b;
+  --gold-muted: #9e7f43;
+  --gold-fg: #0c0b0a;
+  --gold-subtle: rgba(197, 160, 89, 0.15);
+  --gold-border: rgba(197, 160, 89, 0.38);
+  --gold-glow: 0 0 12px rgba(197, 160, 89, 0.12);
+  --gold-glow-strong: 0 0 24px rgba(197, 160, 89, 0.18);
+
+  /* ── Status ── */
+  --fresh: #3a9b5e;
+  --fresh-bg: rgba(58, 155, 94, 0.12);
+  --fresh-border: rgba(58, 155, 94, 0.32);
+
+  --frozen: #3a8bc4;
+  --frozen-bg: rgba(58, 139, 196, 0.12);
+  --frozen-border: rgba(58, 139, 196, 0.32);
+
+  --error: #c0392b;
+  --error-bg: rgba(192, 57, 43, 0.12);
+  --error-border: rgba(192, 57, 43, 0.32);
+
+  --success: #27ae60;
+  --success-bg: rgba(39, 174, 96, 0.12);
+  --success-border: rgba(39, 174, 96, 0.32);
+
+  --warning: #d4882a;
+  --warning-bg: rgba(212, 136, 42, 0.12);
+  --warning-border: rgba(212, 136, 42, 0.32);
+
+  --info: #3a8bc4;
+  --info-bg: rgba(58, 139, 196, 0.12);
+  --info-border: rgba(58, 139, 196, 0.32);
+
+  /* ── eCommerce: Price & Product tokens ── */
+  --price-current: #d4aa40;
+  --price-original: #7a7264;
+  --price-sale: #c0392b;
+  --price-sale-bg: rgba(192, 57, 43, 0.10);
+  --price-unit: #a09888;
+
+  --stock-in: #3a9b5e;
+  --stock-in-bg: rgba(58, 155, 94, 0.12);
+  --stock-low: #d4882a;
+  --stock-low-bg: rgba(212, 136, 42, 0.12);
+  --stock-out: #c0392b;
+  --stock-out-bg: rgba(192, 57, 43, 0.12);
+
+  --badge-discount-bg: #8b1e30;
+  --badge-discount-fg: #fff5f7;
+  --badge-bestseller-bg: #c9a227;
+  --badge-bestseller-fg: #0c0b0a;
+  --badge-premium-border: rgba(201, 162, 39, 0.42);
+  --badge-premium-bg: rgba(201, 162, 39, 0.1);
+  --badge-premium-fg: #c9a227;
+  --badge-gold-bg: #ead390;
+  --badge-gold-fg: #6b4d14;
+
+  /* ── eCommerce: UI tokens ── */
+  --rating-star: #c9a227;
+  --rating-star-empty: #35302b;
+  --rating-count: #a09888;
+
+  --delivery-icon: #c9a227;
+  --trust-icon: #c9a227;
+  --trust-bg: rgba(201, 162, 39, 0.08);
+
+  --wishlist-active: #c03060;
+  --wishlist-active-bg: rgba(192, 48, 96, 0.15);
+  --wishlist-border: rgba(192, 48, 96, 0.3);
+
+  --nav-bg: rgba(12, 11, 10, 0.93);
+  --nav-border: #272522;
+  --nav-blur: 14px;
+
+  --footer-bg: #080706;
+  --footer-border: #1f1d1b;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.38);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-raised: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 56px rgba(0, 0, 0, 0.7);
+  --shadow-gold: 0 0 12px rgba(201, 162, 39, 0.10);
+  --shadow-gold-lg: 0 0 24px rgba(201, 162, 39, 0.16);
+  --shadow-inset-gold: inset 0 0 0 1px rgba(201, 162, 39, 0.28);
+
+  /* ── Radii ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-card: 10px;
+  --radius-xl: 14px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* ── Layout ── */
+  --nav-height: 72px;
+  --max-content: 1280px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+/* ============================================================
+   2. LIGHT WARM PREMIUM (butcher paper)
+      Vibe: warm cream like artisan butcher paper
+      Base: warm off-white  |  Text: deep warm brown
+      Accent: warm gold     |  Brand: rich cherry-red
+   ============================================================ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ── Surface hierarchy ── */
+  --bg-base: #faf6ef;
+  --bg-surface: #f4eee4;
+  --bg-surface-raised: #ece3d6;
+  --bg-surface-hover: #e4d9c8;
+  --bg-overlay: rgba(28, 23, 18, 0.55);
+  --bg-overlay-dark: #0c0b0a;
+  --bg-inset: #f0e8dc;
+
+  /* ── Borders ── */
+  --border-default: #d4c4a8;
+  --border-muted: #e3d8c6;
+  --border-subtle: #ece3d6;
+  --border-hover: #c8b89a;
+
+  /* ── Text ── */
+  --text-primary: #1c1712;
+  --text-secondary: #3d3428;
+  --text-muted: #7a6a58;
+  --text-disabled: #a89878;
+  --text-inverse: #faf6ef;
+  --text-placeholder: #a89878;
+
+  /* ── Brand: Deep Culinary Maroon ── */
+  --brand: #8b1e30;
+  --brand-hover: #6e1725;
+  --brand-active: #53111c;
+  --brand-fg: #fff5f7;
+  --brand-subtle: rgba(139, 30, 48, 0.09);
+
+  /* ── Accent: Warm Premium Gold ── */
+  --gold: #b08d4b;
+  --gold-hover: #c5a059;
+  --gold-active: #9e7f43;
+  --gold-muted: #c8b89a;
+  --gold-fg: #faf6ef;
+  --gold-subtle: rgba(176, 141, 75, 0.1);
+  --gold-border: rgba(176, 141, 75, 0.3);
+  --gold-glow: 0 0 12px rgba(176, 141, 75, 0.10);
+  --gold-glow-strong: 0 0 24px rgba(176, 141, 75, 0.16);
+
+  /* ── Status ── */
+  --fresh: #1d6b39;
+  --fresh-bg: #d4f0de;
+  --fresh-border: rgba(29, 107, 57, 0.35);
+
+  --frozen: #1a5fa0;
+  --frozen-bg: #d0e8f8;
+  --frozen-border: rgba(26, 95, 160, 0.35);
+
+  --error: #a0281e;
+  --error-bg: #fce8e6;
+  --error-border: rgba(160, 40, 30, 0.35);
+
+  --success: #1d7a44;
+  --success-bg: #d0f0de;
+  --success-border: rgba(29, 122, 68, 0.35);
+
+  --warning: #b0680e;
+  --warning-bg: #fdecd0;
+  --warning-border: rgba(176, 104, 14, 0.35);
+
+  --info: #1a5fa0;
+  --info-bg: #d0e8f8;
+  --info-border: rgba(26, 95, 160, 0.35);
+
+  /* ── eCommerce: Price & Product ── */
+  --price-current: #8a6b1c;
+  --price-original: #a89878;
+  --price-sale: #a0281e;
+  --price-sale-bg: rgba(160, 40, 30, 0.08);
+  --price-unit: #8a7a68;
+
+  --stock-in: #1d7a44;
+  --stock-in-bg: #d0f0de;
+  --stock-low: #b0680e;
+  --stock-low-bg: #fdecd0;
+  --stock-out: #a0281e;
+  --stock-out-bg: #fce8e6;
+
+  --badge-discount-bg: #9a1b2e;
+  --badge-discount-fg: #fff5f7;
+  --badge-bestseller-bg: #a07820;
+  --badge-bestseller-fg: #faf6ef;
+  --badge-premium-border: rgba(160, 120, 32, 0.4);
+  --badge-premium-bg: rgba(160, 120, 32, 0.08);
+  --badge-premium-fg: #a07820;
+  --badge-gold-bg: #f0e8d8;
+  --badge-gold-fg: #6b4d14;
+
+  /* ── eCommerce: UI tokens ── */
+  --rating-star: #c9a227;
+  --rating-star-empty: #e3d8c6;
+  --rating-count: #8a7a68;
+
+  --delivery-icon: #a07820;
+  --trust-icon: #a07820;
+  --trust-bg: rgba(160, 120, 32, 0.08);
+
+  --wishlist-active: #c03060;
+  --wishlist-active-bg: rgba(192, 48, 96, 0.08);
+  --wishlist-border: rgba(192, 48, 96, 0.2);
+
+  --nav-bg: rgba(250, 246, 239, 0.92);
+  --nav-border: #ece3d6;
+  --nav-blur: 12px;
+
+  --footer-bg: #1c1712;
+  --footer-border: #3d3428;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px rgba(28, 23, 18, 0.06);
+  --shadow-card: 0 2px 12px rgba(28, 23, 18, 0.08);
+  --shadow-card-hover: 0 8px 28px rgba(28, 23, 18, 0.14);
+  --shadow-raised: 0 12px 40px rgba(28, 23, 18, 0.16);
+  --shadow-xl: 0 16px 56px rgba(28, 23, 18, 0.2);
+  --shadow-gold: 0 0 12px rgba(160, 120, 32, 0.8);
+  --shadow-gold-lg: 0 0 24px rgba(160, 120, 32, 0.12);
+  --shadow-inset-gold: inset 0 0 1px rgba(160, 120, 32, 0.25);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+/* ============================================================
+   3. BASE RESET + GLOBAL STYLES
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans, 'Nunito Sans', system-ui, sans-serif);
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100dvh;
+  letter-spacing: 0.005em;
+  transition: background-color 0.3s var(--ease-premium),
+              color 0.3s var(--ease-premium);
+}
+
+html[dir="rtl"] body {
+  font-family: var(--font-arabic, 'Cairo', 'Tajawal', sans-serif);
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--brand-subtle);
+  color: var(--text-primary);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-muted);
+}
+
+/* ── OpenType rendering ── */
+body {
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Focus Rings ── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* ── @starting-style for entry animations ── */
+@starting-style {
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+  }
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+
+/* ============================================================
+   4. TYPOGRAPHY SYSTEM
+   ============================================================ */
+.font-display {
+  font-family: var(--font-display, 'Libre Baskerville', Georgia, serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans, 'Nunito Sans', system-ui, sans-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono, 'Fira Code', monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic, 'Cairo', sans-serif);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-weight: 700;
+  text-wrap: balance;
+  letter-spacing: -0.015em;
+}
+
+article p {
+  text-wrap: pretty;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* ============================================================
+   5. UTILITY CLASSES — FLUID LAYOUT SYSTEM
+   ============================================================ */
+:root {
+  /* Fluid Spacing Scale */
+  --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem); /* 4px to 6px */
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem); /* 8px to 12px */
+  --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem); /* 16px to 24px */
+  --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem); /* 24px to 36px */
+  --space-xl: clamp(2rem, 1.6rem + 2vw, 3rem); /* 32px to 48px */
+  --space-2xl: clamp(3rem, 2.4rem + 3vw, 4.5rem); /* 48px to 72px */
+  --space-3xl: clamp(4rem, 3.2rem + 4vw, 6rem); /* 64px to 96px */
+  --space-4xl: clamp(5rem, 4rem + 5vw, 8rem); /* 80px to 128px */
+
+  /* Fluid Typography */
+  --text-fluid-hero: clamp(3rem, 5vw + 1rem, 5.5rem);
+  --text-fluid-h1: clamp(2.5rem, 4vw + 1rem, 4rem);
+  --text-fluid-h2: clamp(2rem, 3vw + 1rem, 3rem);
+  --text-fluid-h3: clamp(1.5rem, 2vw + 1rem, 2.25rem);
+  --text-fluid-body: clamp(1rem, 0.5vw + 0.875rem, 1.125rem);
+}
+
+.text-fluid-hero { font-size: var(--text-fluid-hero); line-height: 1.05; letter-spacing: -0.02em; }
+.text-fluid-h1 { font-size: var(--text-fluid-h1); line-height: 1.1; letter-spacing: -0.015em; }
+.text-fluid-h2 { font-size: var(--text-fluid-h2); line-height: 1.2; letter-spacing: -0.01em; }
+.text-fluid-h3 { font-size: var(--text-fluid-h3); line-height: 1.3; }
+.text-fluid-body { font-size: var(--text-fluid-body); line-height: 1.6; }
+
+/* ── Container ── */
+.container-brand {
+  width: 100%;
+  max-width: var(--max-content);
+  margin-inline: auto;
+  padding-inline: var(--space-lg);
+}
+
+/* ── Section spacing ── */
+.section-gap {
+  padding-block: var(--space-3xl);
+}
+
+.section-gap-lg {
+  padding-block: var(--space-4xl);
+}
+
+/* ── Gold divider ── */
+.divider-gold {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border: none;
+  width: 100%;
+}
+
+/* ── Section label (above headings) ── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.section-label::before,
+.section-label::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.6;
+}
+
+/* ── Gold emphasis (replaces removed gradient text) ── */
+.text-gold-emphasis {
+  color: var(--gold);
+}
+
+.text-brand-emphasis {
+  color: var(--brand);
+}
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--bg-surface) 0%,
+      var(--bg-surface-raised) 50%,
+      var(--bg-surface) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ── Elevated surface (replaces removed glass) ── */
+.surface-elevated {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Product card hover lift ── */
+.card-lift {
+  transition: transform var(--duration-base) var(--ease-premium),
+    box-shadow var(--duration-base) var(--ease-premium);
+}
+
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-raised);
+}
+
+/* ── Image scale zoom ── */
+.img-zoom {
+  overflow: hidden;
+}
+
+.img-zoom img {
+  transition: transform 0.6s var(--ease-premium);
+}
+
+.img-zoom:hover img {
+  transform: scale(1.06);
+}
+
+/* ── Overlay gradients ── */
+.overlay-hero {
+  background: linear-gradient(180deg, rgba(8, 7, 6, 0) 40%, rgba(8, 7, 6, 0.92) 100%);
+}
+
+.overlay-hero-side {
+  background: linear-gradient(90deg, rgba(8, 7, 6, 0.88) 0%, rgba(8, 7, 6, 0) 60%);
+}
+
+.overlay-card {
+  background: linear-gradient(180deg, rgba(8, 7, 6, 0) 50%, rgba(8, 7, 6, 0.88) 100%);
+}
+
+.overlay-bottom {
+  background: linear-gradient(0deg, rgba(8, 7, 6, 0.7) 0%, transparent 60%);
+}
+
+/* ── Line clamp utilities ── */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* ── No scrollbar ── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Animate in ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s var(--ease-premium) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s var(--ease-premium) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.35s var(--ease-premium) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s var(--ease-premium) both;
+}
+
+/* ── Custom rounded-button class ── */
+.rounded-button {
+  border-radius: var(--radius-md, 8px) !important;
+}
+
+/* ── Price styling ── */
+.price-current {
+  color: var(--price-current);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.price-original {
+  color: var(--price-original);
+  font-size: 0.8125rem;
+  text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
+}
+
+.price-sale {
+  color: var(--price-sale);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--price-sale-bg);
+  padding: 0 0.25rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.price-unit {
+  color: var(--price-unit);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stock status ── */
+.stock-in-stock {
+  color: var(--stock-in);
+  background: var(--stock-in-bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.stock-low-stock {
+  color: var(--stock-low);
+  background: var(--stock-low-bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.stock-out-of-stock {
+  color: var(--stock-out);
+  background: var(--stock-out-bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+/* ── Navbar backdrop ── */
+.nav-glass {
+  background: var(--nav-bg);
+  backdrop-filter: blur(var(--nav-blur));
+  -webkit-backdrop-filter: blur(var(--nav-blur));
+  border-bottom: 1px solid var(--nav-border);
+}
+
+
+/* ============================================================
+   6. ENHANCED ANIMATIONS & HOVER EFFECTS
+   ============================================================ */
+
+/* ── Pulse gold ── */
+@keyframes pulseGold {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.4);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulseGold 2s ease-in-out infinite;
+}
+
+/* ── Shimmer gold sweep ── */
+@keyframes shimmerGold {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 162, 39, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerGold 3s ease-in-out infinite;
+}
+
+/* ── Scale pulse (for badge highlight) ── */
+@keyframes scalePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-scale-pulse {
+  animation: scalePulse 2s ease-in-out infinite;
+}
+
+/* ── Border glow rotate ── */
+@keyframes borderGlow {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
+}
+
+/* ── Float / drift (gentle vertical) ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Draw line in (for ::before underline) ── */
+@keyframes drawIn {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* ── Shimmer text (removed — use .text-gold-emphasis instead) ── */
+
+/* ── Icon bounce ── */
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.hover-bounce:hover {
+  animation: iconBounce 0.3s ease-in-out;
+}
+
+/* ── Ripple effect (for buttons) ── */
+@keyframes ripple {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 0.5;
+  }
+  to {
+    width: 200%;
+    height: 200%;
+    opacity: 0;
+  }
+}
+
+/* ── Scale on click ── */
+@keyframes clickPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.animate-click-pop {
+  animation: clickPop 0.3s var(--ease-premium);
+}
+
+
+/* ============================================================
+   7. PSEUDO-ELEMENT UTILITY CLASSES
+   ============================================================ */
+
+/* ── Animated underline (link hover) ── */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.3s var(--ease-premium);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+.link-underline-left::after {
+  left: auto;
+  right: 0;
+}
+
+.link-underline-center::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.link-underline-center:hover::after {
+  left: 25%;
+  width: 50%;
+}
+
+/* ── Gold top accent bar ── */
+.accent-bar {
+  position: relative;
+}
+
+.accent-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-premium);
+}
+
+.accent-bar:hover::before {
+  opacity: 1;
+}
+
+/* ── Corner brackets (decorative) ── */
+.corner-accent {
+  position: relative;
+}
+
+.corner-accent::before,
+.corner-accent::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+}
+
+.corner-accent::before {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+  transform: translate(-4px, -4px);
+}
+
+.corner-accent::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+  transform: translate(4px, 4px);
+}
+
+.corner-accent:hover::before,
+.corner-accent:hover::after {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: 200% 0;
+  transition: background-position 0.6s var(--ease-premium);
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-theme="light"] .shine::before {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(12, 11, 10, 0.06) 45%,
+    rgba(12, 11, 10, 0.06) 55%,
+    transparent 65%,
+    transparent 100%
+  );
+}
+
+.shine:hover::before {
+  background-position: -200% 0;
+}
+
+/* ── Checkmark pulse ── */
+@keyframes checkPulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(201, 162, 39, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0); }
+}
+
+.animate-check-pulse {
+  animation: checkPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Badge shimmer sweep ── */
+@keyframes badgeSweep {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(200%) rotate(25deg); }
+}
+
+.badge-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.badge-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: translateX(-100%) rotate(25deg);
+  animation: badgeSweep 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-theme="light"] .badge-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(12, 11, 10, 0.1),
+    transparent
+  );
+}
+
+
+/* ============================================================
+   8. CARD GLOW EFFECTS
+   ============================================================ */
+
+/* ── Border glow on hover ── */
+.card-border-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.card-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 20%,
+    rgba(0, 0, 0, 0.9) 50%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-premium);
+ 
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.card-border-glow:hover::before {
+  opacity: 1;
+}
+
+/* ── Subtle inner shadow on hover ── */
+.card-inner-glow {
+  transition: box-shadow 0.3s var(--ease-premium);
+}
+
+.card-inner-glow:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(201, 162, 39, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+
+/* ============================================================
+   9. QUANTITY BUTTON STYLES (cart)
+   ============================================================ */
+
+.qty-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.qty-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold-subtle);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-premium);
+  border-radius: inherit;
+}
+
+.qty-btn:hover::before {
+  opacity: 1;
+}
+
+.qty-btn:active {
+  transform: scale(0.92);
+}
+
+
+/* ============================================================
+   10. PRODUCT IMAGE OVERLAYS
+   ============================================================ */
+
+.product-img-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.product-img-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(201, 162, 39, 0) 0%,
+    rgba(201, 162, 39, 0.06) 50%,
+    rgba(201, 162, 39, 0) 100%
+  ) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-premium);
+  pointer-events: none;
+}
+
+.product-img-frame:hover::after {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   11. VARIANT SELECTOR
+   ============================================================ */
+
+.variant-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.variant-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(201, 162, 39, 0.06) 50%,
+    transparent 60%
+  );
+  background-size: 200% 200%;
+  background-position: 100% 100%;
+  transition: background-position 0.4s var(--ease-premium);
+}
+
+.variant-btn:hover::before {
+  background-position: 0% 0%;
+}
+
+
+/* ============================================================
+   12. SOCIAL ICON HOVER
+   ============================================================ */
+
+.social-icon-ring {
+  position: relative;
+  isolation: isolate;
+}
+
+.social-icon-ring::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+}
+
+.social-icon-ring:hover::before {
+  opacity: 0.6;
+  transform: scale(1);
+}
+
+
+/* ============================================================
+   13. NAV LINK ACTIVE INDICATOR
+   ============================================================ */
+
+.nav-link-indicator {
+  position: relative;
+}
+
+.nav-link-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 1px;
+  transition: transform 0.25s var(--ease-premium);
+}
+
+.nav-link-indicator:hover::after,
+.nav-link-indicator.active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+
+/* ============================================================
+   14. MEGA MENU DECORATION
+   ============================================================ */
+
+.mega-menu-accent {
+  position: relative;
+}
+
+.mega-menu-accent::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-premium);
+}
+
+.mega-menu-accent.show::before {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   15. PRICE TAG ANIMATION
+   ============================================================ */
+
+.price-update {
+  animation: priceFlash 0.4s var(--ease-premium);
+}
+
+@keyframes priceFlash {
+  0% { color: var(--gold-hover); transform: scale(1.1); }
+  100% { color: var(--price-current); transform: scale(1); }
+}
+
+
+/* ============================================================
+   16. CART ITEM ENTRANCE
+   ============================================================ */
+
+@keyframes cartItemEnter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cart-item-enter {
+  animation: cartItemEnter 0.3s var(--ease-premium) both;
+}
+
+.cart-item-enter:nth-child(1) { animation-delay: 0.02s; }
+.cart-item-enter:nth-child(2) { animation-delay: 0.05s; }
+.cart-item-enter:nth-child(3) { animation-delay: 0.08s; }
+.cart-item-enter:nth-child(4) { animation-delay: 0.11s; }
+.cart-item-enter:nth-child(5) { animation-delay: 0.14s; }
+
+
+/* ============================================================
+   17. BUTTON PRESS
+   ============================================================ */
+
+.btn-press:active {
+  transform: scale(0.94);
+  transition: transform 0.08s ease;
+}
+
+
+/* ============================================================
+   18. BADGE VARIANTS
+   ============================================================ */
+
+.badge-premium-accent {
+  position: relative;
+}
+
+.badge-premium-accent::before {
+  content: '✦';
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8px;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-premium);
+}
+
+.badge-premium-accent:hover::before {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   19. DISCOUNT BADGE SHIMMER
+   ============================================================ */
+
+.badge-discount-animate {
+  animation: pulseGold 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   20. SEAMLESS MARQUEE TICKER
+   ============================================================ */
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 25s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+[dir="rtl"] .marquee-track {
+  animation: marquee-scroll-rtl 25s linear infinite;
+}
+
+@keyframes marquee-scroll-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+/* ============================================================
+   21. INTERACTIVE HAMBURGER ICON
+   ============================================================ */
+
+.hamburger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  position: relative;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  transition: color 0.25s var(--ease-premium);
+}
+
+@media (min-width: 768px) {
+  .hamburger-btn {
+    display: none !important;
+  }
+}
+
+.hamburger-btn:hover {
+  color: var(--text-primary);
+}
+
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: currentColor;
+  position: relative;
+  transition: background-color 0.25s ease-in-out;
+}
+
+.hamburger-line::before,
+.hamburger-line::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background-color: currentColor;
+  left: 0;
+  transition: transform 0.25s ease-in-out, top 0.25s ease-in-out;
+}
+
+.hamburger-line::before {
+  top: -6px;
+}
+
+.hamburger-line::after {
+  top: 6px;
+}
+
+/* Morph to "X" when open */
+.hamburger-btn[aria-expanded="true"] .hamburger-line {
+  background-color: transparent !important;
+}
+
+.hamburger-btn[aria-expanded="true"] .hamburger-line::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburger-btn[aria-expanded="true"] .hamburger-line::after {
+  top: 0;
+  transform: rotate(-45deg);
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { Truck, ShieldCheck, Award, RotateCcw } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { TRUST_FEATURES } from '@/lib/constants';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -12,13 +12,16 @@ const ICON_MAP: Record<string, React.ElementType> = {
   RotateCcw,
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
 export default function WhyChooseUs() {
   const { locale, dict } = useLocale();
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = shouldReduceMotion
+    ? { hidden: {}, show: {} }
+    : { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
+  const cardVariants = shouldReduceMotion
+    ? { hidden: {}, show: {} }
+    : { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
   const STATS = [
     { value: '38+',    label: dict.home?.whyChooseUs.stats.years || 'Years of Service' },
@@ -44,9 +47,6 @@ export default function WhyChooseUs() {
       <div className="container-brand relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-            <span className="section-label text-[var(--gold)] mb-4 justify-center">
-            {dict.home?.whyChooseUs.label}
-          </span>
           <h2
             id="why-heading"
             className="font-display text-3xl sm:text-4xl font-bold text-primary"
@@ -75,11 +75,11 @@ export default function WhyChooseUs() {
 
         {/* Feature cards */}
         <motion.div
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+          variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6"
         >
           {TRUST_FEATURES.map(({ icon, title, titleAr, description, descriptionAr }) => {
             const Icon = ICON_MAP[icon] ?? ShieldCheck;
@@ -87,7 +87,7 @@ export default function WhyChooseUs() {
               <motion.div
                 key={title}
                 variants={cardVariants}
-                  className="group p-7 rounded-card bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-black/50 hover:bg-surface-raised transition-all duration-350"
+                  className="group p-7 rounded-card bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-[var(--gold)]/40 hover:bg-surface-raised transition-all duration-350"
               >
                 {/* Icon */}
               <div className="w-12 h-12 rounded-lg bg-[var(--gold-subtle)] border border-[var(--gold-border)] flex items-center justify-center mb-5 transition-colors">

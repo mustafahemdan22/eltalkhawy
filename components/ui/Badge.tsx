@@ -26,15 +26,15 @@ const variantStyles: Record<BadgeVariant, string> = {
   frozen:
     'bg-[var(--frozen-bg)] text-[var(--frozen)] border border-[var(--frozen-border)]',
   discount:
-    'bg-[var(--badge-discount-bg)] text-[var(--badge-discount-fg)] border-none',
+    'bg-[var(--badge-discount-bg)] text-[var(--badge-discount-fg)] border-none badge-shimmer',
   gold:
     'bg-[var(--badge-gold-bg)] text-[var(--badge-gold-fg)] border-none',
   new:
     'bg-surface-raised/50 text-primary border border-muted',
   bestseller:
-    'bg-[var(--badge-bestseller-bg)] text-[var(--badge-bestseller-fg)] font-semibold border-none',
+    'bg-[var(--badge-bestseller-bg)] text-[var(--badge-bestseller-fg)] font-semibold border-none badge-shimmer',
   premium:
-    'border border-[var(--badge-premium-border)] text-[var(--badge-premium-fg)] bg-[var(--badge-premium-bg)]',
+    'border border-[var(--badge-premium-border)] text-[var(--badge-premium-fg)] bg-[var(--badge-premium-bg)] badge-premium-accent',
   'out-of-stock':
     'bg-surface-raised/50 text-secondary border border-muted',
   'in-stock':

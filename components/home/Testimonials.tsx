@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -64,6 +64,7 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   const { locale, dict } = useLocale();
+  const shouldReduceMotion = useReducedMotion();
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
 
@@ -75,6 +76,13 @@ export default function Testimonials() {
   const next = () => go((current + 1) % TESTIMONIALS.length);
 
   const t = TESTIMONIALS[current];
+
+  const initialX = direction === 'right' ? (locale === 'ar' ? -48 : 48) : (locale === 'ar' ? 48 : -48);
+  const exitX = direction === 'right' ? (locale === 'ar' ? 48 : -48) : (locale === 'ar' ? -48 : 48);
+  const initial = shouldReduceMotion ? {} : { opacity: 0, x: initialX };
+  const animate = shouldReduceMotion ? {} : { opacity: 1, x: 0 };
+  const exit = shouldReduceMotion ? {} : { opacity: 0, x: exitX };
+  const transition = shouldReduceMotion ? {} : { duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] as const };
 
   return (
     <section
@@ -88,15 +96,12 @@ export default function Testimonials() {
         )}
         aria-hidden="true"
       >
-        "
+        &quot;
       </div>
 
       <div className="container-brand relative z-10">
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="section-label text-[var(--gold)] mb-4 justify-center">
-            {dict.home?.testimonials.label}
-          </span>
           <h2
             id="testimonials-heading"
             className="font-display text-3xl sm:text-4xl font-bold text-primary"
@@ -111,10 +116,10 @@ export default function Testimonials() {
             <motion.div
               key={t.id}
               custom={direction}
-              initial={{ opacity: 0, x: direction === 'right' ? (locale === 'ar' ? -48 : 48) : (locale === 'ar' ? 48 : -48) }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction === 'right' ? (locale === 'ar' ? 48 : -48) : (locale === 'ar' ? -48 : 48) }}
-              transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+              initial={initial}
+              animate={animate}
+              exit={exit}
+              transition={transition}
               className="bg-surface border border-muted rounded-card p-8 md:p-10 relative"
             >
               <Quote
@@ -134,7 +139,7 @@ export default function Testimonials() {
 
               <blockquote>
                 <p className="text-primary text-lg md:text-xl leading-relaxed font-medium">
-                  "{locale === 'ar' ? t.textAr : t.text}"
+                  &quot;{locale === 'ar' ? t.textAr : t.text}&quot;
                 </p>
               </blockquote>
 
@@ -173,13 +178,15 @@ export default function Testimonials() {
                   aria-selected={i === current}
                   aria-label={`Testimonial ${i + 1}`}
                   onClick={() => go(i)}
-                  className={cn(
+                  className="w-11 h-11 flex items-center justify-center transition-colors rounded-full hover:bg-surface-raised"
+                >
+                  <span className={cn(
                     'rounded-full transition-all duration-250',
                     i === current
                       ? 'w-7 h-2.5 bg-[var(--gold)]'
-                      : 'w-2.5 h-2.5 bg-muted hover:bg-[var(--border-default)]',
-                  )}
-                />
+                      : 'w-2.5 h-2.5 bg-muted',
+                  )} />
+                </button>
               ))}
             </div>
 

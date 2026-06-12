@@ -25,6 +25,21 @@ export function discountedPrice(price: number, discountPercent: number) {
   return price - (price * discountPercent) / 100;
 }
 
+/**
+ * Apply a product-level discount percent to a single variant price.
+ * Returns the variant price when there is no discount.
+ * Accepts a generic variant shape so the helper works with both
+ * `ProductVariant` and any future derived type.
+ */
+export function discountedVariantPrice<P, V extends { price: number }>(
+  product: P & { discount?: number | null },
+  variant: V,
+): number {
+  const discount = product.discount ?? 0;
+  if (!discount) return variant.price;
+  return discountedPrice(variant.price, discount);
+}
+
 /** Truncate text */
 export function truncate(text: string, length: number) {
   return text.length > length ? text.slice(0, length) + '…' : text;

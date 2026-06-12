@@ -11,31 +11,21 @@ export default function SkeletonCard() {
         'relative before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-[var(--bg-surface-raised)]/10 before:to-transparent',
       )}
     >
-      {/* Image slot */}
       <div className="relative aspect-product bg-surface-raised" />
-
-      {/* Info slot */}
-      <div className="flex flex-col p-6 gap-4">
-        {/* Title */}
-        <div className="space-y-2">
-          <div className="h-4 bg-surface-raised rounded w-5/6" />
-          <div className="h-4 bg-surface-raised rounded w-2/3" />
+      <div className="flex flex-col p-4 sm:p-5 gap-3.5 flex-1">
+        <div className="space-y-1.5 min-h-[2.5rem]">
+          <div className="h-3.5 bg-surface-raised rounded w-5/6" />
+          <div className="h-3.5 bg-surface-raised rounded w-2/3" />
         </div>
-
-        {/* Rating spacer */}
-        <div className="h-3 bg-surface-raised rounded w-1/3" />
-
-        {/* Weight selector spacing */}
-        <div className="flex gap-2">
-          <div className="h-6 bg-surface-raised rounded w-12" />
-          <div className="h-6 bg-surface-raised rounded w-12" />
+        <div className="flex gap-1.5">
+          <div className="h-7 bg-surface-raised rounded-pill w-12" />
+          <div className="h-7 bg-surface-raised rounded-pill w-12" />
         </div>
-
-        {/* Price row */}
-        <div className="h-5 bg-surface-raised rounded w-1/2" />
-
-        {/* Button */}
-        <div className="h-11 bg-surface-raised rounded w-full" />
+        <div className="mt-auto space-y-1.5 min-h-[2.25rem]">
+          <div className="h-3 bg-surface-raised rounded w-2/3" />
+          <div className="h-4 bg-surface-raised rounded w-1/2" />
+        </div>
+        <div className="h-10 bg-surface-raised rounded-button w-full" />
       </div>
     </div>
   );
