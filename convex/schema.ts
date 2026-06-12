@@ -4,7 +4,7 @@ import { v } from 'convex/values';
 export default defineSchema({
   /* ──────────────────────────────────────
      USERS
-     Synced from Clerk via webhook
+     Synced from Clerk via ensureUser mutation
   ────────────────────────────────────── */
   users: defineTable({
     clerkId:   v.string(),

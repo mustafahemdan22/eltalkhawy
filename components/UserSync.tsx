@@ -12,8 +12,8 @@ import { api } from '@/convex/_generated/api';
  * Calls the secure `ensureUser` mutation which derives identity from
  * `ctx.auth` server-side — no sensitive data is sent from the client.
  *
- * This acts as a reliable fallback in case the Clerk webhook is delayed
- * or misconfigured. It is safe to call repeatedly (idempotent upsert).
+ * Primary method for syncing Clerk users to Convex (no webhook required).
+ * It is safe to call repeatedly (idempotent upsert).
  */
 export default function UserSync() {
   const { isLoaded, isSignedIn } = useUser();

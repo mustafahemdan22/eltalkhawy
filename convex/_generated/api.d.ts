@@ -12,7 +12,6 @@ import type * as cart from "../cart.js";
 import type * as categories from "../categories.js";
 import type * as contact from "../contact.js";
 import type * as dashboard from "../dashboard.js";
-import type * as http from "../http.js";
 import type * as media from "../media.js";
 import type * as newsletter from "../newsletter.js";
 import type * as orders from "../orders.js";
@@ -35,7 +34,6 @@ declare const fullApi: ApiFromModules<{
   categories: typeof categories;
   contact: typeof contact;
   dashboard: typeof dashboard;
-  http: typeof http;
   media: typeof media;
   newsletter: typeof newsletter;
   orders: typeof orders;

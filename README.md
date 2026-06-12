@@ -33,8 +33,6 @@ Then:
 4. Uncomment the Clerk provider in `convex/auth.config.ts`
 5. Paste the Issuer URL as `CLERK_JWT_ISSUER_DOMAIN` to your dev deployment environment variable settings on the Convex dashboard (see [docs](https://docs.convex.dev/auth/clerk#configuring-dev-and-prod-instances))
 
-If you want to sync Clerk user data via webhooks, check out this [example repo](https://github.com/thomasballinger/convex-clerk-users-table/).
-
 ## Learn more
 
 To learn more about developing your project with Convex, check out:

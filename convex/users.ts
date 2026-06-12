@@ -51,7 +51,7 @@ export const upsertFromClerk = internalMutation({
 /**
  * Secure client-callable user sync.
  * Derives identity entirely from ctx.auth — no client-supplied userId/email.
- * Serves as a reliable fallback when the Clerk webhook is delayed or misconfigured.
+ * Primary method for syncing Clerk users to Convex (no webhook required).
  */
 export const ensureUser = mutation({
   args: {},
