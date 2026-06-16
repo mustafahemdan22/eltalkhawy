@@ -1,0 +1,317 @@
+{
+  "images\\categories\\bbq_banner.png": {
+    "publicId": "categories/bbq_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\beef_banner.png": {
+    "publicId": "categories/beef_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\buffalo_banner.png": {
+    "publicId": "categories/buffalo_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\frozen_banner.png": {
+    "publicId": "categories/frozen_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\goat_banner.png": {
+    "publicId": "categories/goat_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\lamb_banner.png": {
+    "publicId": "categories/lamb_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\offers_banner.png": {
+    "publicId": "categories/offers_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\organ_banner.png": {
+    "publicId": "categories/organ_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\premium_cuts_banner.png": {
+    "publicId": "categories/premium_cuts_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\categories\\veal_banner.png": {
+    "publicId": "categories/veal_banner",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_brisket.png": {
+    "publicId": "products/beef_brisket",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_burger_patties.png": {
+    "publicId": "products/beef_burger_patties",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_cubes.png": {
+    "publicId": "products/beef_cubes",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_liver.png": {
+    "publicId": "products/beef_liver",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_placeholder.png": {
+    "publicId": "products/beef_placeholder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_ribs.png": {
+    "publicId": "products/beef_ribs",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_shank.png": {
+    "publicId": "products/beef_shank",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\beef_tenderloin.png": {
+    "publicId": "products/beef_tenderloin",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_liver.png": {
+    "publicId": "products/buffalo_liver",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_minced.png": {
+    "publicId": "products/buffalo_minced",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_ribs.png": {
+    "publicId": "products/buffalo_ribs",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_shank.png": {
+    "publicId": "products/buffalo_shank",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_steak.png": {
+    "publicId": "products/buffalo_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\buffalo_stew.png": {
+    "publicId": "products/buffalo_stew",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_bavette.png": {
+    "publicId": "products/french_bavette",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_charolais.png": {
+    "publicId": "products/french_charolais",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_entrecote.png": {
+    "publicId": "products/french_entrecote",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_limousin.png": {
+    "publicId": "products/french_limousin",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_onglet.png": {
+    "publicId": "products/french_onglet",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\french_ribeye.png": {
+    "publicId": "products/french_ribeye",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\frozen_minced_beef.png": {
+    "publicId": "products/frozen_minced_beef",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_chops.png": {
+    "publicId": "products/goat_chops",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_leg.png": {
+    "publicId": "products/goat_leg",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_meat.png": {
+    "publicId": "products/goat_meat",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_minced.png": {
+    "publicId": "products/goat_minced",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_shank.png": {
+    "publicId": "products/goat_shank",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\goat_shoulder.png": {
+    "publicId": "products/goat_shoulder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\kebab.png": {
+    "publicId": "products/kebab",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\kofta_meat.png": {
+    "publicId": "products/kofta_meat",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_chops.png": {
+    "publicId": "products/lamb_chops",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_neck.png": {
+    "publicId": "products/lamb_neck",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_placeholder.png": {
+    "publicId": "products/lamb_placeholder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_ribs.png": {
+    "publicId": "products/lamb_ribs",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_shank.png": {
+    "publicId": "products/lamb_shank",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\lamb_shoulder.png": {
+    "publicId": "products/lamb_shoulder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\leg_of_lamb.png": {
+    "publicId": "products/leg_of_lamb",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\minced_beef.png": {
+    "publicId": "products/minced_beef",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\minced_lamb.png": {
+    "publicId": "products/minced_lamb",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\placeholder.png": {
+    "publicId": "products/placeholder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\ribeye_steak.png": {
+    "publicId": "products/ribeye_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\sausages.png": {
+    "publicId": "products/sausages",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\sirloin_steak.png": {
+    "publicId": "products/sirloin_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\tomahawk_steak.png": {
+    "publicId": "products/tomahawk_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\t_bone_steak.png": {
+    "publicId": "products/t_bone_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_chops.png": {
+    "publicId": "products/veal_chops",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_liver.png": {
+    "publicId": "products/veal_liver",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_minced.png": {
+    "publicId": "products/veal_minced",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_shank.png": {
+    "publicId": "products/veal_shank",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_shoulder.png": {
+    "publicId": "products/veal_shoulder",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_steak.png": {
+    "publicId": "products/veal_steak",
+    "url": "",
+    "success": false
+  },
+  "images\\products\\veal_stew.png": {
+    "publicId": "products/veal_stew",
+    "url": "",
+    "success": false
+  },
+  "hero_premium_meat.png": {
+    "publicId": "hero/hero_premium_meat",
+    "url": "",
+    "success": false
+  },
+  "convex.svg": {
+    "publicId": "general/convex",
+    "url": "",
+    "success": false
+  }
+}
