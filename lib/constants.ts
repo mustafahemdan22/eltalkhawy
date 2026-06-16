@@ -56,7 +56,6 @@ export const CATEGORIES = [
     description: 'Fresh beef cuts prepared daily.',
     descriptionAr: 'قطعيات لحم بقري طازجة يتم تجهيزها يوميًا.',
     icon: '🥩',
-    image: '/images/categories/beef_banner.png',
     subcategories: [
       { slug: 'ribeye', name: 'Ribeye', nameAr: 'ريب آي' },
       { slug: 'tenderloin', name: 'Tenderloin', nameAr: 'تندرلوين' },
@@ -74,7 +73,6 @@ export const CATEGORIES = [
     description: 'Fresh buffalo meat with a rich local taste.',
     descriptionAr: 'لحم جاموسي طازج بطعم بلدي غني.',
     icon: '🐃',
-    image: '/images/categories/buffalo_banner.png',
     subcategories: [],
   },
   {
@@ -84,7 +82,6 @@ export const CATEGORIES = [
     description: 'Fresh lamb cuts for everyday cooking and special meals.',
     descriptionAr: 'قطعيات لحم ضاني طازجة للطبخ اليومي والعزومات.',
     icon: '🐑',
-    image: '/images/categories/lamb_banner.png',
     subcategories: [
       { slug: 'lamb-chops', name: 'Lamb Chops', nameAr: 'ريش ضاني' },
       { slug: 'leg', name: 'Leg of Lamb', nameAr: 'فخذة ضاني' },
@@ -100,7 +97,6 @@ export const CATEGORIES = [
     description: 'Lean local goat meat with a distinctive flavour.',
     descriptionAr: 'لحم ماعز بلدي قليل الدهن بطعم مميز.',
     icon: '🐐',
-    image: '/images/categories/goat_banner.png',
     subcategories: [],
   },
   {
@@ -110,7 +106,6 @@ export const CATEGORIES = [
     description: 'Tender veal cuts for a softer, lighter taste.',
     descriptionAr: 'قطعيات لحم عجل طرية بطعم خفيف.',
     icon: '🐄',
-    image: '/images/categories/veal_banner.png',
     subcategories: [],
   },
   {
@@ -120,7 +115,6 @@ export const CATEGORIES = [
     description: 'Ready-to-grill cuts including kofta, burgers, ribs, and more.',
     descriptionAr: 'قطعيات جاهزة للشوي مثل الكفتة والبرجر والريش وغيرها.',
     icon: '🔥',
-    image: '/images/categories/bbq_banner.png',
     subcategories: [],
   },
   {
@@ -130,7 +124,6 @@ export const CATEGORIES = [
     description: 'Selected cuts for special meals and premium cooking.',
     descriptionAr: 'قطعيات مختارة للوجبات المميزة والطهي الخاص.',
     icon: '⭐',
-    image: '/images/categories/premium_cuts_banner.png',
     subcategories: [],
   },
   {
@@ -140,7 +133,6 @@ export const CATEGORIES = [
     description: 'Fresh traditional organ meats prepared daily.',
     descriptionAr: 'أحشاء ومشتقات طازجة يتم تجهيزها يوميًا.',
     icon: '🫀',
-    image: '/images/categories/organ_banner.png',
     subcategories: [
       { slug: 'liver', name: 'Liver', nameAr: 'كبدة' },
       { slug: 'brain', name: 'Brain', nameAr: 'مخ' },
@@ -159,7 +151,6 @@ export const CATEGORIES = [
     description: 'Frozen selections packed for quality and convenience.',
     descriptionAr: 'منتجات مجمدة بجودة عالية وسهولة في الاستخدام.',
     icon: '❄️',
-    image: '/images/categories/frozen_banner.png',
     subcategories: [],
   },
   {
@@ -169,7 +160,6 @@ export const CATEGORIES = [
     description: 'Bundles and special deals for better value.',
     descriptionAr: 'عروض وباكدجات خاصة بأفضل قيمة.',
     icon: '🏷️',
-    image: '/images/categories/offers_banner.png',
     subcategories: [],
   },
 ] as const;
