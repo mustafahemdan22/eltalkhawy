@@ -297,37 +297,41 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Auth */}
+            {/* Auth — rendered client-side only to prevent Clerk hydration mismatch */}
             <div className="hidden md:flex items-center gap-2 ms-1">
-              <SignedIn>
+              {mounted && (
                 <>
-                  {isAdmin && (
+                  <SignedIn>
+                    <>
+                      {isAdmin && (
+                        <Link
+                          href={`/${locale}/admin`}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
+                        >
+                          {locale === 'ar' ? 'التحكم' : 'Admin'}
+                        </Link>
+                      )}
+                      <UserButton
+                        appearance={{
+                          elements: {
+                            avatarBox: 'w-9 h-9 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
+                          },
+                        }}
+                      />
+                    </>
+                  </SignedIn>
+                  <SignedOut>
                     <Link
-                      href={`/${locale}/admin`}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
+                      href={`/${locale}/sign-in`}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-button text-sm text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+                      aria-label={locale === 'ar' ? 'تسجيل الدخول' : 'Sign in'}
                     >
-                      {locale === 'ar' ? 'التحكم' : 'Admin'}
+                      <User className="w-4 h-4" aria-hidden="true" />
+                      <span className="hidden md:inline">{locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}</span>
                     </Link>
-                  )}
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        avatarBox: 'w-9 h-9 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
-                      },
-                    }}
-                  />
+                  </SignedOut>
                 </>
-              </SignedIn>
-              <SignedOut>
-                <Link
-                  href={`/${locale}/sign-in`}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-button text-sm text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
-                  aria-label={locale === 'ar' ? 'تسجيل الدخول' : 'Sign in'}
-                >
-                  <User className="w-4 h-4" aria-hidden="true" />
-                  <span className="hidden md:inline">{locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}</span>
-                </Link>
-              </SignedOut>
+              )}
             </div>
 
             {/* Mobile hamburger */}

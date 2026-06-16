@@ -11,7 +11,7 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
-import { cn, formatPrice, localImageUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -326,8 +326,8 @@ export default function CartPage() {
                     const finalPrice = rawPrice + grillFee + starterFee;
                     const maxStock = variant?.stock ?? 99;
                     const imgUrl = item.product.images[0]
-                      ? localImageUrl(item.product.images[0], { width: 300, height: 350 })
-                      : '/images/products/placeholder.png';
+                      ? cloudinaryImageUrl(item.product.images[0], { width: 300, height: 350, crop: 'fill', gravity: 'auto' })
+                      : cloudinaryImageUrl('products/beef_cubes', { width: 300, height: 350, crop: 'fill', gravity: 'auto' });
 
                     return (
                       <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 md:py-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">

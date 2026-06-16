@@ -8,7 +8,7 @@ import type { Id, Doc } from '@/convex/_generated/dataModel';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
-import { cn, formatPrice, localImageUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -416,8 +416,8 @@ export default function CheckoutPage() {
                       const starterFee = item.starterPrice ?? 0;
                       const unitPrice = rawPrice + grillFee + starterFee;
                        const imgUrl = item.product.images[0]
-                         ? localImageUrl(item.product.images[0], { width: 120, height: 140 })
-                         : '/images/products/placeholder.png';
+                         ? cloudinaryImageUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill', gravity: 'auto' })
+                         : cloudinaryImageUrl('products/beef_cubes', { width: 120, height: 140, crop: 'fill', gravity: 'auto' });
 
                       return (
                         <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className={cn('py-4 flex items-center justify-between gap-5', isRtl && 'flex-row-reverse')}>

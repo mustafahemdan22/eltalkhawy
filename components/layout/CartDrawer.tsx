@@ -10,7 +10,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ShoppingCart, Plus, Minus, ArrowRight } from 'lucide-react';
-import { cn, formatPrice, localImageUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -170,9 +170,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     router.push(`${localePrefix}/checkout`);
   };
 
-  const PLACEHOLDER_IMAGES = {
-    default: '/images/products/placeholder.png',
-  };
 
   const drawerVariants = {
     hidden: { x: isRtl ? '-100%' : '100%' },
@@ -236,8 +233,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   const finalPrice = rawPrice + grillFee + starterFee;
 
                   const imgUrl = item.product.images[0]
-                    ? localImageUrl(item.product.images[0], { width: 120, height: 140 })
-                    : PLACEHOLDER_IMAGES.default;
+                    ? cloudinaryImageUrl(item.product.images[0], { width: 120, height: 160, crop: 'fill', gravity: 'auto' })
+                    : cloudinaryImageUrl('products/beef_cubes', { width: 120, height: 160, crop: 'fill', gravity: 'auto' });
 
                   return (
                     <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 flex gap-4 cart-item-enter">

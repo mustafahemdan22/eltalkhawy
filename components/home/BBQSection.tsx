@@ -7,6 +7,11 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useLocale } from '@/components/LocaleProvider';
+import { cloudinaryImageUrl } from '@/lib/utils';
+
+const PLACEHOLDER = cloudinaryImageUrl('products/placeholder', { preset: 'productCard' });
+const BBQ_BG_1    = cloudinaryImageUrl('products/kebab',       { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
+const BBQ_BG_2    = cloudinaryImageUrl('products/beef_brisket',{ width: 800, height: 540, crop: 'fill', gravity: 'auto' });
 
 export default function BBQSection() {
   const { locale, dict } = useLocale();
@@ -84,7 +89,7 @@ export default function BBQSection() {
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-raised">
                            <Image
-                             src={p.images[0] || '/images/products/placeholder.png'}
+                             src={p.images[0] ? cloudinaryImageUrl(p.images[0], { width: 112, height: 112, crop: 'fill', gravity: 'auto' }) : PLACEHOLDER}
                              alt={locale === 'ar' ? p.nameAr : p.name}
                              width={56}
                              height={56}
@@ -134,8 +139,8 @@ export default function BBQSection() {
           >
             <div className={locale === 'ar' ? "absolute left-6 top-6 bottom-0 right-12 rounded-card overflow-hidden" : "absolute right-6 top-6 bottom-0 left-12 rounded-card overflow-hidden"}>
               <Image
-                src="/images/products/placeholder.png"
-                alt="Premium raw steak"
+                src={BBQ_BG_1}
+                alt="Premium grill cuts"
                 fill
                 loading="lazy"
                 className="object-cover opacity-60"
@@ -143,8 +148,8 @@ export default function BBQSection() {
             </div>
             <div className={locale === 'ar' ? "absolute right-0 top-12 bottom-12 left-12 rounded-card overflow-hidden shadow-raised border border-muted" : "absolute left-0 top-12 bottom-12 right-12 rounded-card overflow-hidden shadow-raised border border-muted"} data-theme="dark">
               <Image
-                src="/images/products/placeholder.png"
-                alt="Premium raw meat cuts on butcher block"
+                src={BBQ_BG_2}
+                alt="Premium beef brisket on butcher block"
                 fill
                 loading="lazy"
                 className="object-cover"

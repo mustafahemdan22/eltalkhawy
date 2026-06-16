@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Badge } from '@/components/ui/Badge';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cloudinaryImageUrl } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
 
 export default function PremiumCutsSection() {
@@ -103,7 +103,10 @@ export default function PremiumCutsSection() {
                     {/* Image */}
                     <div className="relative h-56 overflow-hidden bg-surface-raised/80" data-theme="dark">
                        <Image
-                         src={cut.images[0] || '/images/products/placeholder.png'}
+                         src={cut.images[0]
+                           ? cloudinaryImageUrl(cut.images[0], { width: 640, height: 448, crop: 'fill', gravity: 'auto' })
+                           : cloudinaryImageUrl('products/beef_cubes', { width: 640, height: 448, crop: 'fill', gravity: 'auto' })
+                         }
                          alt={`${cut.name} — ${getNote(cut.slug, cut.description)}`}
                          fill
                          loading="lazy"

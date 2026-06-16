@@ -453,7 +453,7 @@ export default mutation({
       description: 'Thinly sliced veal escalopes, tender and delicate. Perfect for schnitzel or pan-frying.',
       descriptionAr: 'شرائح عجل رقيقة طرية. مثالية للشنتزل أو القلي السريع.',
       categorySlug: 'veal', subcategory: null,
-      images: ['/images/products/veal_steak.png'], basePrice: 520,
+      images: ['products/veal_steak'], basePrice: 520,
       variants: [
         { weight: '400g', price: 208, stock: 10 },
         { weight: '800g', price: 416, stock: 6 },
@@ -756,7 +756,7 @@ export default mutation({
       description: 'Rich in marrow and collagen, perfect for slow-braising and tagines.',
       descriptionAr: 'غنية بالنخاع والكولاجين، مثالية للطهي البطيء والطواجن.',
       categorySlug: 'beef', subcategory: 'beef-shanks',
-      images: ['/images/products/beef_shank.png'], basePrice: 310,
+      images: ['products/beef_shank'], basePrice: 310,
       variants: [
         { weight: '1kg', price: 310, stock: 15 },
       ],
