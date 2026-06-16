@@ -1,8 +1,6 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '@/convex/_generated/api';
 import { useToast } from '@/components/ui/Toast';
 import { useLocale } from '@/components/LocaleProvider';
 import { cn } from '@/lib/utils';
@@ -18,7 +16,7 @@ interface MediaUploaderProps {
   multiple?: boolean;
   accept?: string;
   className?: string;
-  onUploaded?: (mediaId: string) => void;
+  onUploaded?: (publicId: string) => void;
 }
 
 export default function MediaUploader({
@@ -29,9 +27,6 @@ export default function MediaUploader({
 }: MediaUploaderProps) {
   const { showToast } = useToast();
   const { dict } = useLocale();
-
-  const generateUploadUrl = useMutation(api.media.generateUploadUrl);
-  const saveMedia = useMutation(api.media.save);
 
   const [isDragging, setIsDragging] = useState(false);
   const [uploads, setUploads] = useState<Array<{
@@ -70,38 +65,30 @@ export default function MediaUploader({
         });
 
         try {
-          const postUrl = await generateUploadUrl();
-          const res = await fetch(postUrl, {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('folder', folder);
+
+          const res = await fetch('/api/cloudinary/upload', {
             method: 'POST',
-            headers: { 'Content-Type': file.type },
-            body: file,
+            body: formData,
           });
-          if (!res.ok) throw new Error('Upload failed');
-          const { storageId } = (await res.json()) as { storageId: string };
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.error || 'Upload failed');
+          }
+
+          const { publicId } = await res.json();
 
           setUploads((u) => {
             const next = [...u];
             const i = next.findIndex((x) => x.name === file.name && x.status === 'uploading');
-            if (i !== -1) next[i] = { ...next[i], progress: 80 };
-            return next;
-          });
-
-          const mediaId = await saveMedia({
-            storageId: storageId as never,
-            filename: file.name,
-            mimeType: file.type,
-            size: file.size,
-            folder,
-          });
-
-          setUploads((u) => {
-            const next = [...u];
-            const i = next.findIndex((x) => x.name === file.name);
             if (i !== -1) next[i] = { ...next[i], progress: 100, status: 'done' };
             return next;
           });
 
-          onUploaded?.(mediaId);
+          onUploaded?.(publicId);
           showToast(`${dict.admin.media.toast.uploaded}: ${file.name}`, 'success');
           // Auto-clear success rows after 2.5s
           setTimeout(() => {
@@ -118,7 +105,7 @@ export default function MediaUploader({
         }
       }
     },
-    [folder, generateUploadUrl, saveMedia, showToast, dict, onUploaded],
+    [folder, showToast, dict, onUploaded],
   );
 
   return (

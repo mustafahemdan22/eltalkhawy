@@ -102,13 +102,13 @@ export default function PremiumCutsSection() {
                   <Link href={`/${locale}/shop/${cut.slug}`} className="block" aria-label={locale === 'ar' ? cut.nameAr : cut.name}>
                     {/* Image */}
                     <div className="relative h-56 overflow-hidden bg-surface-raised/80" data-theme="dark">
-                      <Image
-                        src={cut.images[0]?.startsWith('http') ? cut.images[0] : 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=85'}
-                        alt={`${cut.name} — ${getNote(cut.slug, cut.description)}`}
-                        fill
-                        loading="lazy"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                      />
+                       <Image
+                         src={cut.images[0] || '/images/products/placeholder.png'}
+                         alt={`${cut.name} — ${getNote(cut.slug, cut.description)}`}
+                         fill
+                         loading="lazy"
+                         className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)]/80 via-transparent to-transparent" />
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"

@@ -83,14 +83,14 @@ export default function BBQSection() {
                         className="group flex items-center gap-5 p-5 rounded-lg bg-surface ring-1 ring-inset ring-[var(--border-muted)] hover:ring-[var(--gold)]/50 hover:shadow-gold hover:bg-surface-raised transition-all duration-300"
                       >
                         <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-raised">
-                          <Image
-                            src={p.images[0]?.startsWith('http') ? p.images[0] : 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=600&q=80'}
-                            alt={locale === 'ar' ? p.nameAr : p.name}
-                            width={56}
-                            height={56}
-                            loading="lazy"
-                            className="w-full h-full object-cover"
-                          />
+                           <Image
+                             src={p.images[0] || '/images/products/placeholder.png'}
+                             alt={locale === 'ar' ? p.nameAr : p.name}
+                             width={56}
+                             height={56}
+                             loading="lazy"
+                             className="w-full h-full object-cover"
+                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-base font-semibold text-primary truncate group-hover:text-[var(--gold)] transition-colors">
@@ -134,7 +134,7 @@ export default function BBQSection() {
           >
             <div className={locale === 'ar' ? "absolute left-6 top-6 bottom-0 right-12 rounded-card overflow-hidden" : "absolute right-6 top-6 bottom-0 left-12 rounded-card overflow-hidden"}>
               <Image
-                src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80"
+                src="/images/products/placeholder.png"
                 alt="Premium raw steak"
                 fill
                 loading="lazy"
@@ -143,7 +143,7 @@ export default function BBQSection() {
             </div>
             <div className={locale === 'ar' ? "absolute right-0 top-12 bottom-12 left-12 rounded-card overflow-hidden shadow-raised border border-muted" : "absolute left-0 top-12 bottom-12 right-12 rounded-card overflow-hidden shadow-raised border border-muted"} data-theme="dark">
               <Image
-                src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80"
+                src="/images/products/placeholder.png"
                 alt="Premium raw meat cuts on butcher block"
                 fill
                 loading="lazy"

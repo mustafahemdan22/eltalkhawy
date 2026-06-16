@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
-import { cn } from '@/lib/utils';
+import { cn, cloudinaryImageUrl } from '@/lib/utils';
 
 export default function HeroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -21,6 +21,8 @@ export default function HeroSection() {
   const initialHidden = shouldReduceMotion ? {} : { opacity: 0, y: 20 };
   const animateVisible = shouldReduceMotion ? {} : { opacity: 1, y: 0 };
   const transitionBase = shouldReduceMotion ? {} : { duration: 0.6 };
+
+  const heroImageUrl = cloudinaryImageUrl('hero/hero_premium_meat', { preset: 'hero' });
 
   return (
     <section
@@ -37,7 +39,7 @@ export default function HeroSection() {
         aria-hidden="true"
       >
         <Image
-          src="/hero_premium_meat.png"
+          src={heroImageUrl}
           alt="Premium meat cuts on dark stone surface"
           fill
           priority

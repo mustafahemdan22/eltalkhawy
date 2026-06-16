@@ -11,8 +11,9 @@ import OrderStatusTimeline, { type OrderStatusTimelineEntry } from '@/components
 import { MapPin, Phone, User, CreditCard, Tag, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { STARTERS } from '@/lib/constants';
+import { Id } from '@/convex/_generated/dataModel';
 
-function OrderItemName({ productId, fallbackName, locale }: { productId: any; fallbackName: string; locale: 'en' | 'ar' }) {
+function OrderItemName({ productId, fallbackName, locale }: { productId: Id<'products'>; fallbackName: string; locale: 'en' | 'ar' }) {
   const product = useQuery(api.products.get, { id: productId });
   if (product === undefined) return <span className="animate-pulse bg-[var(--bg-surface-raised)]/80 h-4 w-32 inline-block rounded" />;
   if (product === null) return <span>{fallbackName}</span>;

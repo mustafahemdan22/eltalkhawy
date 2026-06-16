@@ -300,21 +300,23 @@ export default function Navbar() {
             {/* Auth */}
             <div className="hidden md:flex items-center gap-2 ms-1">
               <SignedIn>
-                {isAdmin && (
-                  <Link
-                    href={`/${locale}/admin`}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
-                  >
-                    {locale === 'ar' ? 'التحكم' : 'Admin'}
-                  </Link>
-                )}
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: 'w-9 h-9 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
-                    },
-                  }}
-                />
+                <>
+                  {isAdmin && (
+                    <Link
+                      href={`/${locale}/admin`}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
+                    >
+                      {locale === 'ar' ? 'التحكم' : 'Admin'}
+                    </Link>
+                  )}
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: 'w-9 h-9 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
+                      },
+                    }}
+                  />
+                </>
               </SignedIn>
               <SignedOut>
                 <Link
@@ -500,23 +502,25 @@ export default function Navbar() {
                 </div>
 
                 <SignedIn>
-                  <Link
-                    href={`/${locale}/account`}
-                    className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-secondary hover:bg-surface-raised hover:text-primary transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <User className="w-4 h-4" aria-hidden="true" />
-                    {locale === 'ar' ? 'حسابي' : 'My Account'}
-                  </Link>
-                  {isAdmin && (
+                  <>
                     <Link
-                      href={`/${locale}/admin`}
-                      className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-[var(--gold)] hover:bg-[var(--gold-subtle)] transition-colors"
+                      href={`/${locale}/account`}
+                      className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-secondary hover:bg-surface-raised hover:text-primary transition-colors"
                       onClick={() => setMobileOpen(false)}
                     >
-                      {locale === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}
+                      <User className="w-4 h-4" aria-hidden="true" />
+                      {locale === 'ar' ? 'حسابي' : 'My Account'}
                     </Link>
-                  )}
+                    {isAdmin && (
+                      <Link
+                        href={`/${locale}/admin`}
+                        className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm text-[var(--gold)] hover:bg-[var(--gold-subtle)] transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {locale === 'ar' ? 'لوحة التحكم' : 'Admin Dashboard'}
+                      </Link>
+                    )}
+                  </>
                 </SignedIn>
                 <SignedOut>
                   <Link

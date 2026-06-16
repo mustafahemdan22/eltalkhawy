@@ -6,8 +6,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { CATEGORIES, CATEGORY_IMAGES, withImageSize } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import { CATEGORIES, CATEGORY_IMAGES } from '@/lib/constants';
+import { cn, cloudinaryImageUrl } from '@/lib/utils';
 import { useLocale } from '@/components/LocaleProvider';
 
 function formatPrice(value: number, locale: 'en' | 'ar'): string {
@@ -82,7 +82,8 @@ export default function FeaturedCategories() {
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6"
         >
           {CATEGORIES.map((cat) => {
-            const img = withImageSize(CATEGORY_IMAGES[cat.slug] ?? '', { width: 600 });
+            const publicId = CATEGORY_IMAGES[cat.slug];
+            const img = publicId ? cloudinaryImageUrl(publicId, { width: 600, height: 750, crop: 'fill', gravity: 'auto' }) : '';
             const isAnimal = ['beef', 'buffalo', 'lamb', 'goat', 'veal'].includes(cat.slug);
             const categoryHref = isAnimal ? `/${locale}/animal/${cat.slug}` : `/${locale}/categories/${cat.slug}`;
             const catStats = statsBySlug.get(cat.slug);

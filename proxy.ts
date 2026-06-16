@@ -1,32 +1,94 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { i18n } from '@/i18n-config';
-import { match as matchLocale } from '@formatjs/intl-localematcher';
-import Negotiator from 'negotiator';
 
-function getLocale(request: NextRequest): string {
-  const negotiatorHeaders: Record<string, string> = {};
-  request.headers.forEach((value, key) => { negotiatorHeaders[key] = value; });
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-  return matchLocale(languages, i18n.locales, i18n.defaultLocale);
+const isAdminRoute = createRouteMatcher(['/(.*)/admin/(.*)']);
+const isCheckoutRoute = createRouteMatcher(['/(.*)/checkout']);
+const _isApiRoute = createRouteMatcher(['/(.*)/api/(.*)']);
+
+const PUBLIC_PATHS = ['/(.*)/sign-in', '/(.*)/sign-up', '/(.*)/api/webhooks/(.*)'];
+
+// Global rate limit store (use Redis in production)
+declare global {
+  var checkoutRateLimit: Map<string, number[]> | undefined;
 }
 
-const excludedPrefixes = ['/_next/', '/api/', '/_static/', '/_vercel', '/icon', '/favicon'];
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, redirectToSignIn, sessionClaims } = await auth();
+  const url = req.nextUrl;
+  const locale = url.pathname.split('/')[1] || 'en';
+  const _isPublicPath = PUBLIC_PATHS.some(pattern => 
+    new RegExp(`^${pattern.replace('(.*)', '([^/]+)')}$`).test(url.pathname)
+  );
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Skip non-page routes
-  if (excludedPrefixes.some((p) => pathname.startsWith(p))) return;
-
-  // Redirect root to detected locale
-  if (!i18n.locales.some((loc) => pathname.startsWith(`/${loc}/`) || pathname === `/${loc}`)) {
-    const locale = getLocale(request);
-    const url = new URL(`/${locale}${pathname}${request.nextUrl.search}`, request.url);
-    return NextResponse.redirect(url);
+  // Rate limiting for checkout (using in-memory map for simplicity; use Redis in production)
+  if (isCheckoutRoute(req)) {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const now = Date.now();
+    const key = `checkout:${ip}`;
+    
+    if (!global.checkoutRateLimit) global.checkoutRateLimit = new Map();
+    const limit = global.checkoutRateLimit;
+    
+    const requests = limit.get(key) || [];
+    const recent = requests.filter(t => now - t < 60_000);
+    
+    if (recent.length >= 10) {
+      return new NextResponse(JSON.stringify({ error: 'Too many requests' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+      });
+    }
+    
+    recent.push(now);
+    limit.set(key, recent);
   }
-}
+
+  // Admin route protection
+  if (isAdminRoute(req)) {
+    if (!userId) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
+    
+    // Check admin role via Clerk session claims (publicMetadata)
+    const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
+    if (role !== 'admin') {
+      return NextResponse.redirect(new URL(`/${locale}`, req.url));
+    }
+  }
+
+  // Redirect root to default locale
+  if (url.pathname === '/') {
+    return NextResponse.redirect(new URL(`/en`, req.url));
+  }
+
+  // Security headers
+  const res = NextResponse.next();
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('X-Frame-Options', 'DENY');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.headers.set(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.pstmrk.it https://*.clerk.accounts.dev",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: https://images.unsplash.com",
+      "connect-src 'self' https://*.convex.cloud https://*.clerk.accounts.dev wss://*.convex.cloud",
+      "frame-src https://*.clerk.accounts.dev",
+      "form-action 'self'",
+      "base-uri 'self'",
+    ].join('; ')
+  );
+
+  return res;
+});
 
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: [
+    '/((?!.*\\..*|_next|convex|api/convex).*)',
+    '/',
+    '/(api|trpc)(.*)',
+  ],
 };

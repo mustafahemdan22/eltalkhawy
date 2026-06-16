@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getCloudinaryUrl, CLOUDINARY_PRESETS } from './cloudinary';
 
 /** Merge Tailwind classes safely */
 export function cn(...inputs: ClassValue[]) {
@@ -55,38 +56,48 @@ export function slugify(text: string) {
     .replace(/^-+|-+$/g, '');
 }
 
-/** Generate Cloudinary URL with transforms */
-export function cloudinaryUrl(
+/** Generate Cloudinary image URL with transformations */
+export function cloudinaryImageUrl(
   publicId: string,
   options: {
     width?: number;
     height?: number;
-    crop?: 'fill' | 'fit' | 'scale' | 'pad';
     quality?: number | 'auto';
-    format?: 'auto' | 'webp' | 'avif';
-    gravity?: 'auto' | 'face' | 'center';
+    format?: 'auto' | 'webp' | 'avif' | 'jpg' | 'png';
+    crop?: 'fill' | 'fit' | 'scale' | 'thumb' | 'crop';
+    gravity?: 'auto' | 'face' | 'center' | 'north' | 'south' | 'east' | 'west';
+    preset?: keyof typeof CLOUDINARY_PRESETS;
   } = {},
-) {
-  const {
-    width,
-    height,
-    crop = 'fill',
-    quality = 'auto',
-    format = 'auto',
-    gravity = 'auto',
-  } = options;
+): string {
+  if (!publicId) return '';
+  if (publicId.startsWith('http')) return publicId;
 
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'el-talkhawy';
-  const transforms: string[] = [];
+  const { preset, ...transformOptions } = options;
 
-  if (width)   transforms.push(`w_${width}`);
-  if (height)  transforms.push(`h_${height}`);
-  if (gravity) transforms.push(`g_${gravity}`);
-  transforms.push(`c_${crop}`, `q_${quality}`, `f_${format}`);
+  if (preset && CLOUDINARY_PRESETS[preset]) {
+    return getCloudinaryUrl(publicId, { ...CLOUDINARY_PRESETS[preset], ...transformOptions });
+  }
 
-  const transformStr = transforms.join(',');
+  return getCloudinaryUrl(publicId, transformOptions);
+}
 
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformStr}/${publicId}`;
+/** @deprecated Use cloudinaryImageUrl instead. Kept for backward compatibility during migration. */
+export function localImageUrl(
+  src: string,
+  options: {
+    width?: number;
+    height?: number;
+    quality?: number;
+  } = {},
+): string {
+  if (!src || src.startsWith('http')) return src;
+  const { width, height, quality = 80 } = options;
+  const params = new URLSearchParams();
+  if (width) params.set('w', width.toString());
+  if (height) params.set('h', height.toString());
+  params.set('q', quality.toString());
+  const sep = src.includes('?') ? '&' : '?';
+  return `${src}${sep}${params.toString()}`;
 }
 
 /** Format a date */

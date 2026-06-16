@@ -6,17 +6,21 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useToast } from '@/components/ui/Toast';
 import { useLocale } from '@/components/LocaleProvider';
-import { cn } from '@/lib/utils';
+import { cn, cloudinaryImageUrl } from '@/lib/utils';
 import { X, Link as LinkIcon, Library, Plus, Loader2 } from 'lucide-react';
 import MediaUploader from './MediaUploader';
 import type { Id } from '@/convex/_generated/dataModel';
 
 interface FormImagePickerProps {
-  value:        string[];                          // array of URLs
+  value:        string[];                          // array of Cloudinary public IDs
   onChange:     (urls: string[]) => void;
   maxItems?:    number;
   help?:        string;
   folder?:      'products' | 'banners' | 'categories' | 'general';
+}
+
+function getPreviewUrl(publicId: string): string {
+  return cloudinaryImageUrl(publicId, { preset: 'adminPreview' });
 }
 
 export default function FormImagePicker({
@@ -36,14 +40,14 @@ export default function FormImagePicker({
   const mediaList = useQuery(api.media.list, { folder });
 
   const addUrl = () => {
-    const url = urlInput.trim();
-    if (!url) return;
-    if (value.includes(url)) {
+    const publicId = urlInput.trim();
+    if (!publicId) return;
+    if (value.includes(publicId)) {
       showToast(locale === 'ar' ? 'تمت الإضافة بالفعل' : 'Already added', 'info');
       return;
     }
     if (value.length >= maxItems) return;
-    onChange([...value, url]);
+    onChange([...value, publicId]);
     setUrlInput('');
   };
 
@@ -62,9 +66,9 @@ export default function FormImagePicker({
       {/* Existing images */}
       {value.length > 0 && (
         <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {value.map((url, i) => (
+          {value.map((publicId, i) => (
             <li
-              key={`${url}-${i}`}
+              key={`${publicId}-${i}`}
               className={cn(
                 'group relative aspect-square overflow-hidden rounded-card',
                 'border border-[var(--border-subtle)] bg-[var(--bg-surface-raised)]',
@@ -72,7 +76,7 @@ export default function FormImagePicker({
               )}
             >
               <Image
-                src={url}
+                src={getPreviewUrl(publicId)}
                 alt=""
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -116,16 +120,16 @@ export default function FormImagePicker({
         </ul>
       )}
 
-      {/* Add by URL */}
+      {/* Add by Cloudinary Public ID */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <LinkIcon className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" aria-hidden />
           <input
-            type="url"
+            type="text"
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addUrl(); } }}
-            placeholder="https://images.example.com/photo.jpg"
+            placeholder="products/beef/ribeye_steak"
             className="h-11 w-full ps-10 pe-3 rounded-button bg-[var(--bg-surface-raised)] border border-[var(--border-default)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]/40"
             disabled={value.length >= maxItems}
           />
@@ -137,7 +141,7 @@ export default function FormImagePicker({
           className="inline-flex items-center justify-center gap-2 h-11 px-4 rounded-button text-sm font-semibold border border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-default)]"
         >
           <Plus className="h-4 w-4" aria-hidden />
-          URL
+          Add ID
         </button>
         <button
           type="button"
@@ -205,15 +209,15 @@ export default function FormImagePicker({
                   {mediaList.map((m) => (
                     <MediaLibraryItem
                       key={m._id}
-                      storageId={m.storageId}
+                      publicId={m.publicId} // Cloudinary public ID
                       filename={m.filename}
-                      onPick={async (url) => {
-                        if (value.includes(url)) {
+                      onPick={async (publicId) => {
+                        if (value.includes(publicId)) {
                           showToast(locale === 'ar' ? 'تمت الإضافة بالفعل' : 'Already added', 'info');
                           return;
                         }
                         if (value.length >= maxItems) return;
-                        onChange([...value, url]);
+                        onChange([...value, publicId]);
                         showToast(dict.admin.media.toast.uploaded, 'success');
                       }}
                     />
@@ -229,37 +233,31 @@ export default function FormImagePicker({
 }
 
 function MediaLibraryItem({
-  storageId,
+  publicId,
   filename,
   onPick,
 }: {
-  storageId: string;
-  filename:  string;
-  onPick:    (url: string) => void;
+  publicId: string;
+  filename: string;
+  onPick:   (publicId: string) => void;
 }) {
   const { locale } = useLocale();
-  const url = useQuery(api.media.url, { storageId: storageId as Id<'_storage'> });
+  const previewUrl = getPreviewUrl(publicId);
   const [copied, setCopied] = useState(false);
 
   return (
     <li className="group relative aspect-square overflow-hidden rounded-card border border-[var(--border-subtle)] bg-[var(--bg-surface-raised)]">
-      {url ? (
-        <Image
-          src={url}
-          alt={filename}
-          fill
-          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 200px"
-          className="object-cover"
-          unoptimized
-        />
-      ) : (
-        <div className="absolute inset-0 animate-pulse bg-[var(--bg-surface-raised)]" />
-      )}
+      <Image
+        src={previewUrl}
+        alt={filename}
+        fill
+        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 200px"
+        className="object-cover"
+      />
       <div className="absolute inset-x-0 bottom-0 p-1.5 bg-[var(--bg-overlay)]/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
         <button
           type="button"
-          onClick={() => url && onPick(url)}
-          disabled={!url}
+          onClick={() => onPick(publicId)}
           className="flex-1 inline-flex items-center justify-center h-7 rounded-button bg-[var(--gold)] text-[var(--gold-fg)] text-2xs font-bold uppercase tracking-wider hover:bg-[var(--gold-hover)]"
         >
           {locale === 'ar' ? 'إضافة' : 'Add'}
@@ -267,17 +265,15 @@ function MediaLibraryItem({
         <button
           type="button"
           onClick={async () => {
-            if (!url) return;
             try {
-              await navigator.clipboard.writeText(url);
+              await navigator.clipboard.writeText(publicId);
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             } catch { /* ignore */ }
           }}
-          disabled={!url}
           className="h-7 w-7 inline-flex items-center justify-center rounded-button bg-white/10 hover:bg-white/20 text-white"
-          aria-label="Copy URL"
-          title="Copy URL"
+          aria-label="Copy Public ID"
+          title="Copy Public ID"
         >
           {copied ? '✓' : '⧉'}
         </button>

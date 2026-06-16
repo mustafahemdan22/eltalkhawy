@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+const cloudinaryCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr';
+
 const nextConfig: NextConfig = {
   async redirects() {
     return [
@@ -25,13 +27,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        port: '',
-        pathname: '/**',
+        hostname: 'images.unsplash.com',
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
+        hostname: 'res.cloudinary.com',
+        pathname: `/${cloudinaryCloudName}/**`,
       },
     ],
     formats: ['image/avif', 'image/webp'],

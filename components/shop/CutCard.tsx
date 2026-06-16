@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Eye, ShoppingCart, Check, ArrowRight } from 'lucide-react';
-import { cn, formatPrice, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, discountedPrice, cloudinaryImageUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import type { AnimalCutEntry } from '@/lib/animal-cuts';
 
@@ -57,6 +57,8 @@ export default function CutCard({
     }
   };
 
+  const imageUrl = cloudinaryImageUrl(cut.image, { width: 600, height: 450, crop: 'fill', gravity: 'auto' });
+
   return (
     <article
       className={cn(
@@ -72,7 +74,7 @@ export default function CutCard({
       <Link href={href} className="block relative" tabIndex={-1} aria-hidden="true">
         <div className="relative aspect-[4/3] overflow-hidden bg-surface-raised/80" data-theme="dark">
           <Image
-            src={cut.image}
+            src={imageUrl}
             alt={isRtl ? cut.nameAr : cut.name}
             fill
             priority={priority}
@@ -93,11 +95,7 @@ export default function CutCard({
                 -{product.discount}%
               </span>
             )}
-            {!product && cut.price && (
-              <span className="text-2xs font-bold uppercase tracking-wider text-[var(--gold-fg)] bg-[var(--gold)]/90 px-2.5 py-1 rounded shadow-sm">
-                {isRtl ? 'متوفر' : 'Available'}
-              </span>
-            )}
+
           </div>
 
           {product && !product.isAvailable && (

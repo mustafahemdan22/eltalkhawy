@@ -13,6 +13,7 @@ import type * as categories from "../categories.js";
 import type * as contact from "../contact.js";
 import type * as dashboard from "../dashboard.js";
 import type * as media from "../media.js";
+import type * as migrateDb from "../migrateDb.js";
 import type * as newsletter from "../newsletter.js";
 import type * as orders from "../orders.js";
 import type * as products from "../products.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   contact: typeof contact;
   dashboard: typeof dashboard;
   media: typeof media;
+  migrateDb: typeof migrateDb;
   newsletter: typeof newsletter;
   orders: typeof orders;
   products: typeof products;

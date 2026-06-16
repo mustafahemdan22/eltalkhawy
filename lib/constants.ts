@@ -36,7 +36,6 @@ export const SITE_CONFIG = {
     tiktok: 'https://tiktok.com/@eltalkhawy',
     whatsapp: 'https://wa.me/2017407',
   },
-  cloudinaryCloud: 'el-talkhawy',
   deliveryMin: 2000,
   deliveryCost: 50,
   vatRate: 0.14,
@@ -57,7 +56,7 @@ export const CATEGORIES = [
     description: 'Fresh beef cuts prepared daily.',
     descriptionAr: 'قطعيات لحم بقري طازجة يتم تجهيزها يوميًا.',
     icon: '🥩',
-    image: 'el-talkhawy/categories/beef-banner',
+    image: '/images/categories/beef_banner.png',
     subcategories: [
       { slug: 'ribeye', name: 'Ribeye', nameAr: 'ريب آي' },
       { slug: 'tenderloin', name: 'Tenderloin', nameAr: 'تندرلوين' },
@@ -75,7 +74,7 @@ export const CATEGORIES = [
     description: 'Fresh buffalo meat with a rich local taste.',
     descriptionAr: 'لحم جاموسي طازج بطعم بلدي غني.',
     icon: '🐃',
-    image: 'el-talkhawy/categories/buffalo-banner',
+    image: '/images/categories/buffalo_banner.png',
     subcategories: [],
   },
   {
@@ -85,7 +84,7 @@ export const CATEGORIES = [
     description: 'Fresh lamb cuts for everyday cooking and special meals.',
     descriptionAr: 'قطعيات لحم ضاني طازجة للطبخ اليومي والعزومات.',
     icon: '🐑',
-    image: 'el-talkhawy/categories/lamb-banner',
+    image: '/images/categories/lamb_banner.png',
     subcategories: [
       { slug: 'lamb-chops', name: 'Lamb Chops', nameAr: 'ريش ضاني' },
       { slug: 'leg', name: 'Leg of Lamb', nameAr: 'فخذة ضاني' },
@@ -101,7 +100,7 @@ export const CATEGORIES = [
     description: 'Lean local goat meat with a distinctive flavour.',
     descriptionAr: 'لحم ماعز بلدي قليل الدهن بطعم مميز.',
     icon: '🐐',
-    image: 'el-talkhawy/categories/goat-banner',
+    image: '/images/categories/goat_banner.png',
     subcategories: [],
   },
   {
@@ -111,7 +110,7 @@ export const CATEGORIES = [
     description: 'Tender veal cuts for a softer, lighter taste.',
     descriptionAr: 'قطعيات لحم عجل طرية بطعم خفيف.',
     icon: '🐄',
-    image: 'el-talkhawy/categories/veal-banner',
+    image: '/images/categories/veal_banner.png',
     subcategories: [],
   },
   {
@@ -121,7 +120,7 @@ export const CATEGORIES = [
     description: 'Ready-to-grill cuts including kofta, burgers, ribs, and more.',
     descriptionAr: 'قطعيات جاهزة للشوي مثل الكفتة والبرجر والريش وغيرها.',
     icon: '🔥',
-    image: 'el-talkhawy/categories/bbq-banner',
+    image: '/images/categories/bbq_banner.png',
     subcategories: [],
   },
   {
@@ -131,7 +130,7 @@ export const CATEGORIES = [
     description: 'Selected cuts for special meals and premium cooking.',
     descriptionAr: 'قطعيات مختارة للوجبات المميزة والطهي الخاص.',
     icon: '⭐',
-    image: 'el-talkhawy/categories/premium-cuts-banner',
+    image: '/images/categories/premium_cuts_banner.png',
     subcategories: [],
   },
   {
@@ -141,7 +140,7 @@ export const CATEGORIES = [
     description: 'Fresh traditional organ meats prepared daily.',
     descriptionAr: 'أحشاء ومشتقات طازجة يتم تجهيزها يوميًا.',
     icon: '🫀',
-    image: 'el-talkhawy/categories/organ-banner',
+    image: '/images/categories/organ_banner.png',
     subcategories: [
       { slug: 'liver', name: 'Liver', nameAr: 'كبدة' },
       { slug: 'brain', name: 'Brain', nameAr: 'مخ' },
@@ -160,7 +159,7 @@ export const CATEGORIES = [
     description: 'Frozen selections packed for quality and convenience.',
     descriptionAr: 'منتجات مجمدة بجودة عالية وسهولة في الاستخدام.',
     icon: '❄️',
-    image: 'el-talkhawy/categories/frozen-banner',
+    image: '/images/categories/frozen_banner.png',
     subcategories: [],
   },
   {
@@ -170,7 +169,7 @@ export const CATEGORIES = [
     description: 'Bundles and special deals for better value.',
     descriptionAr: 'عروض وباكدجات خاصة بأفضل قيمة.',
     icon: '🏷️',
-    image: 'el-talkhawy/categories/offers-banner',
+    image: '/images/categories/offers_banner.png',
     subcategories: [],
   },
 ] as const;
@@ -198,28 +197,35 @@ export const SORT_OPTIONS = [
 export type SortValue = (typeof SORT_OPTIONS)[number]['value'];
 
 export const CATEGORY_IMAGES: Record<string, string> = {
-  beef: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f',
-  buffalo: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd',
-  lamb: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617',
-  goat: 'https://images.unsplash.com/photo-1574672280600-4accfa5b6f98',
-  veal: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64',
-  'bbq-cuts': 'https://images.unsplash.com/photo-1544025162-d76694265947',
-  'premium-cuts': 'https://images.unsplash.com/photo-1546833998-877b37c2e5c6',
-  'organ-meats': 'https://images.unsplash.com/photo-1529042410759-befb1204b468',
-  frozen: 'https://images.unsplash.com/photo-1572441713132-51c75654db73',
-  offers: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b',
+  beef: 'categories/beef_banner',
+  buffalo: 'categories/buffalo_banner',
+  lamb: 'categories/lamb_banner',
+  goat: 'categories/goat_banner',
+  veal: 'categories/veal_banner',
+  'bbq-cuts': 'categories/bbq_banner',
+  'premium-cuts': 'categories/premium_cuts_banner',
+  'organ-meats': 'categories/organ_banner',
+  frozen: 'categories/frozen_banner',
+  offers: 'categories/offers_banner',
 };
 
 export function withImageSize(
-  src: string,
-  opts: { width?: number; quality?: number } = {},
+  publicId: string,
+  opts: { width?: number; height?: number; quality?: number | 'auto'; crop?: 'fill' | 'fit' | 'scale' } = {},
 ): string {
-  if (!src) return src;
-  if (src.includes('res.cloudinary.com')) return src;
-  const w = opts.width ?? 1200;
-  const q = opts.quality ?? 80;
-  const sep = src.includes('?') ? '&' : '?';
-  return `${src}${sep}w=${w}&q=${q}`;
+  if (!publicId) return '';
+  if (publicId.startsWith('http')) return publicId;
+
+  const { width, height, quality = 'auto', crop = 'fill' } = opts;
+  const params = new URLSearchParams();
+  if (width) params.set('w', width.toString());
+  if (height) params.set('h', height.toString());
+  params.set('q', quality.toString());
+  params.set('c', crop);
+  params.set('g', 'auto');
+  params.set('f', 'auto');
+  const sep = publicId.includes('?') ? '&' : '?';
+  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr'}/image/upload/${params.toString()}/${publicId}`;
 }
 
 export const TRUST_FEATURES = [

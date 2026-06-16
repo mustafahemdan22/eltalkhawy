@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, ShoppingCart, Zap } from 'lucide-react';
-import { cn, formatPrice, discountedPrice, cloudinaryUrl } from '@/lib/utils';
+import { cn, formatPrice, discountedPrice, cloudinaryImageUrl } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { StarRating } from '@/components/ui/StarRating';
@@ -13,9 +13,9 @@ import { useLocale } from '@/components/LocaleProvider';
 import { useToast } from '@/components/ui/Toast';
 
 const PLACEHOLDER_IMAGES: Record<string, string> = {
-  beef:    'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=600&q=80',
-  lamb:    'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=600&q=80',
-  default: 'https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=600&q=80',
+  beef:    'products/placeholders/beef_placeholder',
+  lamb:    'products/placeholders/lamb_placeholder',
+  default: 'products/placeholders/placeholder',
 };
 
 interface ProductCardProps {
@@ -55,8 +55,8 @@ export default function ProductCard({
   const currentPrice = selectedVariant?.price ?? product.basePrice;
   const finalPrice = product.discount ? discountedPrice(currentPrice, product.discount) : currentPrice;
   const imageUrl = product.images[0]
-    ? (product.images[0].startsWith('http') ? product.images[0] : cloudinaryUrl(product.images[0], { width: 600, height: 700, crop: 'fill' }))
-    : PLACEHOLDER_IMAGES.default;
+    ? cloudinaryImageUrl(product.images[0], { preset: 'productCard' })
+    : cloudinaryImageUrl(PLACEHOLDER_IMAGES.default, { preset: 'productCard' });
 
   const handleAddToCart = useCallback(() => {
     if (!product.isAvailable || !selectedVariant) return;

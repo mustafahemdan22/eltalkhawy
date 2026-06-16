@@ -12,7 +12,7 @@ import ProductCard from '@/components/shop/ProductCard';
 import { StarRating } from '@/components/ui/StarRating';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { cn, formatPrice, cloudinaryUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import {
   Heart,
@@ -206,11 +206,11 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   // Placeholder support
   const PLACEHOLDER_IMAGES = {
-    default: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80',
+    default: 'products/placeholders/placeholder',
   };
   const imageUrl = product.images[0]
-    ? (product.images[0].startsWith('http') ? product.images[0] : cloudinaryUrl(product.images[0], { width: 800, height: 900, crop: 'fill' }))
-    : PLACEHOLDER_IMAGES.default;
+    ? cloudinaryImageUrl(product.images[0], { preset: 'productDetail' })
+    : cloudinaryImageUrl(PLACEHOLDER_IMAGES.default, { preset: 'productDetail' });
 
   const handleToggleWishlist = async (productId?: string | React.MouseEvent) => {
     if (!user) {
@@ -412,8 +412,10 @@ export default function ProductDetailPage({ params }: PageProps) {
                       </span>
                     )
                   ) : (
-                    <span className="text-sm font-semibold text-error bg-error-bg px-2.5 py-1 rounded-full border border-error-border">
-                      {dict.productDetail?.unavailable || 'Unavailable'}
+                    <span className="text-sm font-semibold text-warning bg-warning-bg px-2.5 py-1 rounded-full border border-warning-border">
+                      {isStatic
+                        ? (dict.productDetail?.comingSoon || 'Coming Soon')
+                        : (dict.productDetail?.unavailable || 'Unavailable')}
                     </span>
                   )}
                 </div>
@@ -558,7 +560,8 @@ export default function ProductDetailPage({ params }: PageProps) {
                 )}
 
                 {/* Add to Cart button */}
-                <div className="flex-1 flex gap-4">
+                <div className="flex-1 flex flex-col gap-3">
+                  <div className="flex gap-4">
                   <Button
                     variant={addedToCart ? 'secondary' : 'primary'}
                     disabled={!product.isAvailable || !selectedVariant || selectedVariant.stock === 0}
@@ -577,7 +580,9 @@ export default function ProductDetailPage({ params }: PageProps) {
                     )}
                   >
                     {!product.isAvailable
-                      ? (dict.productDetail?.unavailable || 'Unavailable')
+                      ? (isStatic
+                          ? (dict.productDetail?.comingSoon || 'Coming Soon')
+                          : (dict.productDetail?.unavailable || 'Unavailable'))
                       : selectedVariant && selectedVariant.stock === 0
                       ? (dict.productDetail?.outOfStock || 'Out of Stock')
                       : addedToCart
@@ -599,6 +604,23 @@ export default function ProductDetailPage({ params }: PageProps) {
                   >
                     <Heart className={cn('w-5 h-5 transition-transform duration-300', isWishlisted && 'fill-current scale-110')} />
                   </button>
+                  </div>
+
+                  {/* Browse category link for static cuts */}
+                  {isStatic && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => router.push(`/${locale}/categories/${product.categorySlug}`)}
+                      fullWidth
+                      className="h-11 text-sm tracking-wider uppercase font-semibold cursor-pointer"
+                    >
+                      {(() => {
+                        const categoryObj = CATEGORIES.find(c => c.slug === product.categorySlug);
+                        const catName = categoryObj ? (locale === 'ar' ? categoryObj.nameAr : categoryObj.name) : product.categorySlug;
+                        return locale === 'ar' ? `تصفح منتجات ${catName}` : `Browse ${catName} Products`;
+                      })()}
+                    </Button>
+                  )}
                 </div>
               </div>
 

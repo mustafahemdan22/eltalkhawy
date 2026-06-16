@@ -134,21 +134,6 @@ export const isAdmin = query({
     return user?.role === 'admin';
   },
 });
-export const debugMe = query({
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-
-    const user = identity
-      ? await ctx.db
-          .query("users")
-          .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-          .unique()
-      : null;
-
-    return { identity, user };
-  },
-});
-
 export const hasAnyAdmin = query({
   args: {},
   handler: async (ctx) => {
@@ -166,12 +151,22 @@ export const bootstrap = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error('Not authenticated');
 
-    const existingAdmins = (await ctx.db.query("users").collect()).filter((u) => u.role === 'admin');
+    const existingAdmins = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("role"), "admin"))
+      .collect();
     if (existingAdmins.length > 0) throw new Error('An admin already exists');
 
     const expected = process.env.ADMIN_BOOTSTRAP_KEY;
     if (!expected) throw new Error('ADMIN_BOOTSTRAP_KEY not configured');
     if (args.bootstrapKey !== expected) throw new Error('Invalid bootstrap key');
+
+    // Rate limit: track attempts in a separate table
+    const recentAttempt = await ctx.db
+      .query("bootstrapAttempts")
+      .filter((q) => q.gt(q.field("at"), Date.now() - 5 * 60 * 1000))
+      .unique();
+    if (recentAttempt) throw new Error('Too many attempts, try again in 5 minutes');
 
     const user = await ctx.db
       .query("users")
@@ -180,6 +175,15 @@ export const bootstrap = mutation({
     if (!user) throw new Error('User not found in database');
 
     await ctx.db.patch(user._id, { role: 'admin' });
+
+    // Log the bootstrap attempt
+    await ctx.db.insert("bootstrapAttempts", {
+      clerkId: identity.subject,
+      userId: user._id,
+      at: Date.now(),
+      success: true,
+    });
+
     return true;
   },
 });

@@ -10,7 +10,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { useUser } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ShoppingCart, Plus, Minus, ArrowRight } from 'lucide-react';
-import { cn, formatPrice, cloudinaryUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, localImageUrl, discountedPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -171,7 +171,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   };
 
   const PLACEHOLDER_IMAGES = {
-    default: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=120&q=80',
+    default: '/images/products/placeholder.png',
   };
 
   const drawerVariants = {
@@ -236,7 +236,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   const finalPrice = rawPrice + grillFee + starterFee;
 
                   const imgUrl = item.product.images[0]
-                    ? (item.product.images[0].startsWith('http') ? item.product.images[0] : cloudinaryUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill' }))
+                    ? localImageUrl(item.product.images[0], { width: 120, height: 140 })
                     : PLACEHOLDER_IMAGES.default;
 
                   return (

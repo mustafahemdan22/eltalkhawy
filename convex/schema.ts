@@ -208,18 +208,21 @@ export default defineSchema({
     .index('by_code', ['code']),
 
   /* ──────────────────────────────────────
-     MEDIA (Convex file storage)
+     MEDIA (Cloudinary)
      Owner-uploaded images (product photos,
-     banners, etc.) — referenced by storageId
-  ────────────────────────────────────── */
+     banners, etc.) — referenced by Cloudinary public ID
+   ────────────────────────────────────── */
   media: defineTable({
-    storageId: v.id('_storage'),         // Convex file storage ID
-    filename:  v.string(),               // original filename
-    mimeType:  v.string(),               // image/png, image/jpeg, image/webp
-    size:      v.number(),               // bytes
-    altText:   v.union(v.string(), v.null()),
-    folder:    v.union(v.literal('products'), v.literal('banners'), v.literal('categories'), v.literal('general')),
+    publicId:   v.string(),              // Cloudinary public ID
+    filename:   v.string(),              // original filename
+    mimeType:   v.string(),              // image/png, image/jpeg, image/webp
+    size:       v.number(),              // bytes
+    altText:    v.union(v.string(), v.null()),
+    folder:     v.union(v.literal('products'), v.literal('banners'), v.literal('categories'), v.literal('general')),
     uploadedBy: v.union(v.id('users'), v.null()),
+    width:      v.union(v.number(), v.null()),
+    height:     v.union(v.number(), v.null()),
+    format:     v.union(v.string(), v.null()),
   })
     .index('by_folder', ['folder']),
 
@@ -245,7 +248,7 @@ export default defineSchema({
 
   /* ──────────────────────────────────────
      CONTACT MESSAGES
-   ────────────────────────────────────── */
+    ────────────────────────────────────── */
   contactMessages: defineTable({
     name:      v.string(),
     email:     v.string(),
@@ -255,5 +258,16 @@ export default defineSchema({
     isRead:    v.boolean(),
   })
     .index('by_created', ['createdAt']),
+
+  /* ──────────────────────────────────────
+     BOOTSTRAP ATTEMPTS (audit log)
+    ────────────────────────────────────── */
+  bootstrapAttempts: defineTable({
+    clerkId: v.string(),
+    userId:  v.id('users'),
+    at:      v.number(),
+    success: v.boolean(),
+  })
+    .index('by_at', ['at']),
 
 });

@@ -40,11 +40,37 @@ export const list = query({
   },
 });
 
-/** Resolve a storageId to a temporary URL the browser can load. */
-export const url = query({
-  args: { storageId: v.id('_storage') },
+/** Get Cloudinary URL for a public ID with optional transformations. */
+export const getUrl = query({
+  args: {
+    publicId: v.string(),
+    transformations: v.optional(v.object({
+      width: v.optional(v.number()),
+      height: v.optional(v.number()),
+      crop: v.optional(v.string()),
+      gravity: v.optional(v.string()),
+      quality: v.optional(v.string()),
+      format: v.optional(v.string()),
+    })),
+  },
   handler: async (ctx, args) => {
-    return await ctx.storage.getUrl(args.storageId);
+    await requireAdmin(ctx);
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr';
+    const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
+    
+    const parts: string[] = [];
+    if (args.transformations) {
+      if (args.transformations.width) parts.push(`w_${args.transformations.width}`);
+      if (args.transformations.height) parts.push(`h_${args.transformations.height}`);
+      if (args.transformations.crop) parts.push(`c_${args.transformations.crop}`);
+      if (args.transformations.gravity) parts.push(`g_${args.transformations.gravity}`);
+      if (args.transformations.quality) parts.push(`q_${args.transformations.quality}`);
+      if (args.transformations.format) parts.push(`f_${args.transformations.format}`);
+    }
+    
+    const transformation = parts.join(',');
+    const publicIdClean = args.publicId.startsWith('/') ? args.publicId.slice(1) : args.publicId;
+    return `${baseUrl}/${transformation}/${publicIdClean}`;
   },
 });
 
@@ -52,19 +78,10 @@ export const url = query({
    MUTATIONS
 ───────────────────────────────────────── */
 
-/** Issue a one-time upload URL that the browser can POST a file to. */
-export const generateUploadUrl = mutation({
-  args: {},
-  handler: async (ctx) => {
-    await requireAdmin(ctx);
-    return await ctx.storage.generateUploadUrl();
-  },
-});
-
-/** Persist an uploaded file to the media library. */
+/** Persist an uploaded file's Cloudinary public ID to the media library. */
 export const save = mutation({
   args: {
-    storageId: v.id('_storage'),
+    publicId:  v.string(),
     filename:  v.string(),
     mimeType:  v.string(),
     size:      v.number(),
@@ -75,6 +92,9 @@ export const save = mutation({
       v.literal('categories'),
       v.literal('general'),
     )),
+    width:     v.optional(v.number()),
+    height:    v.optional(v.number()),
+    format:    v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const clerkId = await requireAdmin(ctx);
@@ -84,13 +104,16 @@ export const save = mutation({
       .unique();
 
     const id = await ctx.db.insert('media', {
-      storageId:  args.storageId,
+      publicId:   args.publicId,
       filename:   args.filename,
       mimeType:   args.mimeType,
       size:       args.size,
       altText:    args.altText ?? null,
       folder:     args.folder ?? 'general',
       uploadedBy: user?._id ?? null,
+      width:      args.width ?? null,
+      height:     args.height ?? null,
+      format:     args.format ?? null,
     });
     return id;
   },
@@ -118,14 +141,16 @@ export const update = mutation({
   },
 });
 
-/** Delete a media item and free its storage. */
+/** Delete a media item from Cloudinary and the database. */
 export const remove = mutation({
   args: { mediaId: v.id('media') },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     const item = await ctx.db.get(args.mediaId);
     if (!item) throw new Error('Media not found');
-    await ctx.storage.delete(item.storageId);
+    
+    // Note: Actual Cloudinary deletion should be done via the API route
+    // This just removes the DB record
     await ctx.db.delete(args.mediaId);
     return args.mediaId;
   },

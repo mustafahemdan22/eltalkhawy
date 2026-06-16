@@ -14,16 +14,19 @@ import { FormSelect } from '@/components/admin/FormSelect';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 import EmptyState from '@/components/admin/EmptyState';
 import { Search, ImageIcon, Copy, Trash2, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, cloudinaryImageUrl } from '@/lib/utils';
 
 type MediaItem = {
   _id:        Id<'media'>;
-  storageId:  Id<'_storage'>;
+  publicId:   string;
   filename:   string;
   mimeType:   string;
   size:       number;
   folder:     'products' | 'banners' | 'categories' | 'general';
   altText:    string | null;
+  width:      number | null;
+  height:     number | null;
+  format:     string | null;
   _creationTime: number;
 };
 
@@ -164,7 +167,8 @@ function MediaCard({
   formatSize: (b: number) => string;
 }) {
   const { locale, dict } = useLocale();
-  const url = useQuery(api.media.url, { storageId: item.storageId });
+  const url = item.publicId ? cloudinaryImageUrl(item.publicId, { width: 400, crop: 'fit' }) : null;
+  
   return (
     <li
       className={cn(
