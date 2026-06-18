@@ -360,7 +360,10 @@ export default function Navbar() {
               <div className="container-brand py-4">
                 <div className="relative max-w-xl mx-auto">
                   <Search
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none"
+                    className={cn(
+                      'absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none',
+                      locale === 'ar' ? 'right-3.5' : 'left-3.5'
+                    )}
                     aria-hidden="true"
                   />
                   <input
@@ -370,7 +373,8 @@ export default function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={locale === 'ar' ? 'ابحث عن لحم بقري، ضأن، عجل...' : 'Search for beef, lamb, veal…'}
                     className={cn(
-                      'w-full pl-11 pr-4 py-3 rounded-button text-sm',
+                      'w-full py-3 rounded-button text-sm',
+                      locale === 'ar' ? 'pr-11 pl-4' : 'pl-11 pr-4',
                       'bg-surface-raised/80 border border-muted',
                       'text-primary placeholder:text-muted',
                       'focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/30',

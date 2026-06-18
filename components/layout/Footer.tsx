@@ -61,7 +61,8 @@ function NewsletterForm({ locale }: { locale: 'en' | 'ar' }) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your premium email address'}
           className={cn(
-            'w-full h-12 pl-5 pr-10 rounded-button text-sm font-sans',
+            'w-full h-12 rounded-button text-sm font-sans',
+            locale === 'ar' ? 'pr-5 pl-10' : 'pl-5 pr-10',
             'bg-surface/80 border border-muted backdrop-blur-sm',
             'text-primary placeholder:text-muted',
             'focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20',
@@ -71,7 +72,10 @@ function NewsletterForm({ locale }: { locale: 'en' | 'ar' }) {
           )}
           aria-label="Email address for newsletter"
         />
-        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse_gold" />
+        <div className={cn(
+          "absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--gold)] animate-pulse_gold",
+          locale === 'ar' ? 'left-3.5' : 'right-3.5'
+        )} />
       </div>
       <button
         type="submit"
@@ -91,7 +95,7 @@ function NewsletterForm({ locale }: { locale: 'en' | 'ar' }) {
         ) : (
           <>
             <span>{locale === 'ar' ? 'اشترك الآن' : 'Subscribe Now'}</span>
-            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+            <ArrowRight className={cn("w-3.5 h-3.5 transition-transform duration-300", locale === 'ar' ? "rotate-180 group-hover:-translate-x-1" : "group-hover:translate-x-1")} aria-hidden="true" />
           </>
         )}
       </button>
@@ -250,7 +254,8 @@ export default function Footer() {
                       className={cn(
                         'text-sm text-secondary hover:text-primary',
                         'flex items-center gap-2.5 transition-all duration-300 ease-out',
-                        'group-hover:translate-x-1.5 py-2 -my-2 min-h-11',
+                        locale === 'ar' ? 'group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5',
+                        'py-2 -my-2 min-h-11',
                       )}
                     >
                     <span className="text-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 select-none" aria-hidden="true">
@@ -270,7 +275,7 @@ export default function Footer() {
                   className="inline-flex items-center gap-1.5 px-3 py-3 -my-3 text-xs text-[var(--gold)] hover:text-[var(--gold)] font-semibold tracking-wider uppercase group/all transition-colors"
                 >
                   <span>{locale === 'ar' ? 'عرض جميع الأقسام' : 'View All Categories'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/all:translate-x-1" />
+                  <ArrowRight className={cn("w-3.5 h-3.5 transition-transform duration-300", locale === 'ar' ? "rotate-180 group-hover/all:-translate-x-1" : "group-hover/all:translate-x-1")} />
                 </Link>
               </li>
             </ul>
@@ -298,11 +303,12 @@ export default function Footer() {
                     className={cn(
                       'text-sm text-secondary hover:text-primary',
                       'flex items-center gap-2 transition-all duration-300 ease-out',
-                      'group-hover:translate-x-1.5 py-2 -my-2 min-h-11',
+                      locale === 'ar' ? 'group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5',
+                      'py-2 -my-2 min-h-11',
                     )}
                   >
                     <span className="w-1 h-1 rounded-full bg-muted transition-all duration-300 group-hover:bg-[var(--gold)] group-hover:scale-125" />
-                    <span className="relative ml-1">
+                    <span className={cn("relative", locale === 'ar' ? "mr-1" : "ml-1")}>
                       {locale === 'ar' ? item.labelAr : item.label}
                       <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
                     </span>

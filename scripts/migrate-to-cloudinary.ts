@@ -6,6 +6,24 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Manually load .env.local variables
+try {
+  const envPath = path.join(__dirname, '..', '.env.local');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    envContent.split(/\r?\n/).forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const [key, ...rest] = trimmed.split('=');
+      if (key && rest.length > 0) {
+        process.env[key.trim()] = rest.join('=').trim();
+      }
+    });
+  }
+} catch (e) {
+  console.warn('Failed to load .env.local manually:', e);
+}
+
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr',
   api_key: process.env.CLOUDINARY_API_KEY ?? '948429683924197',
@@ -165,9 +183,8 @@ async function migrate() {
     });
   }
   
-  // Save mapping to file for reference
   const mapping = results.reduce((acc, r) => {
-    const relativePath = path.relative(PUBLIC_DIR, r.localPath);
+    const relativePath = path.relative(PUBLIC_DIR, r.localPath).replace(/\\/g, '/');
     acc[relativePath] = {
       publicId: r.publicId,
       url: r.url,

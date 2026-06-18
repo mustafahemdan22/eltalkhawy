@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
-import { SITE_CONFIG } from '@/lib/constants';
+import { SITE_CONFIG, CATEGORIES, STARTERS } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
 import {
@@ -42,6 +42,7 @@ interface PopulatedCartItem {
     slug:         string;
     name:         string;
     nameAr:       string;
+    categorySlug: string;
     images:       string[];
     discount:     number | null;
     variants: Array<{
@@ -354,7 +355,10 @@ export default function CartPage() {
                                 )}
                                 {item.starterName && (
                                   <div>
-                                    <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                    <span>🍲 {(() => {
+                                      const starterObj = STARTERS.find(s => s.name === item.starterName || s.nameAr === item.starterName || s.id === item.starterName);
+                                      return starterObj ? (locale === 'ar' ? starterObj.nameAr : starterObj.name) : item.starterName;
+                                    })()} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
                                   </div>
                                 )}
                               </div>
@@ -364,7 +368,11 @@ export default function CartPage() {
                               <span className={cn('font-semibold px-2 py-0.5 rounded border', maxStock <= 0 ? 'text-error border-error-border bg-error-bg' : 'bg-surface-raised border-muted')}>
                                 {maxStock <= 0 ? (dict.cart?.outOfStock || 'Out of Stock') : item.variantWeight}
                               </span>
-                              <span className="text-muted">{locale === 'ar' ? item.product.name : item.product.nameAr}</span>
+                              {(() => {
+                                const categoryObj = CATEGORIES.find((c) => c.slug === item.product.categorySlug);
+                                const categoryName = categoryObj ? (locale === 'ar' ? categoryObj.nameAr : categoryObj.name) : '';
+                                return categoryName ? <span className="text-muted">{categoryName}</span> : null;
+                              })()}
                             </div>
                           </div>
                         </div>

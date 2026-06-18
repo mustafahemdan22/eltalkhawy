@@ -201,15 +201,15 @@
   --brand-subtle: rgba(139, 30, 48, 0.09);
 
   /* ── Accent: Warm Premium Gold ── */
-  --gold: #b08d4b;
-  --gold-hover: #c5a059;
-  --gold-active: #9e7f43;
+  --gold: #b7924d;
+  --gold-hover: #c4a867;
+  --gold-active: #9d7c3f;
   --gold-muted: #c8b89a;
-  --gold-fg: #faf6ef;
-  --gold-subtle: rgba(176, 141, 75, 0.1);
-  --gold-border: rgba(176, 141, 75, 0.3);
-  --gold-glow: 0 0 12px rgba(176, 141, 75, 0.10);
-  --gold-glow-strong: 0 0 24px rgba(176, 141, 75, 0.16);
+  --gold-fg: #1c1712;
+  --gold-subtle: rgba(183, 146, 77, 0.1);
+  --gold-border: rgba(183, 146, 77, 0.3);
+  --gold-glow: 0 0 12px rgba(183, 146, 77, 0.10);
+  --gold-glow-strong: 0 0 24px rgba(183, 146, 77, 0.16);
 
   /* ── Status ── */
   --fresh: #1d6b39;
@@ -322,6 +322,32 @@ body {
 
 html[dir="rtl"] body {
   font-family: var(--font-arabic, 'Cairo', 'Tajawal', sans-serif);
+  line-height: 1.75;
+}
+
+html[dir="rtl"] .font-display {
+  font-family: var(--font-arabic, 'Cairo', 'Tajawal', sans-serif);
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] h5,
+html[dir="rtl"] h6,
+html[dir="rtl"] .font-display,
+html[dir="rtl"] .font-sans,
+html[dir="rtl"] body {
+  letter-spacing: 0 !important;
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4,
+html[dir="rtl"] h5,
+html[dir="rtl"] h6 {
+  line-height: 1.35;
 }
 
 /* ── Selection ── */

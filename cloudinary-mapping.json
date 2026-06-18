@@ -1,98 +1,98 @@
 {
   "images\\categories\\bbq_banner.png": {
     "publicId": "categories/bbq_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581687/categories/bbq_banner.jpg",
+    "success": true
   },
   "images\\categories\\beef_banner.png": {
     "publicId": "categories/beef_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581695/categories/beef_banner.jpg",
+    "success": true
   },
   "images\\categories\\buffalo_banner.png": {
     "publicId": "categories/buffalo_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581703/categories/buffalo_banner.jpg",
+    "success": true
   },
   "images\\categories\\frozen_banner.png": {
     "publicId": "categories/frozen_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581710/categories/frozen_banner.jpg",
+    "success": true
   },
   "images\\categories\\goat_banner.png": {
     "publicId": "categories/goat_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581718/categories/goat_banner.jpg",
+    "success": true
   },
   "images\\categories\\lamb_banner.png": {
     "publicId": "categories/lamb_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581725/categories/lamb_banner.jpg",
+    "success": true
   },
   "images\\categories\\offers_banner.png": {
     "publicId": "categories/offers_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581733/categories/offers_banner.jpg",
+    "success": true
   },
   "images\\categories\\organ_banner.png": {
     "publicId": "categories/organ_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581742/categories/organ_banner.jpg",
+    "success": true
   },
   "images\\categories\\premium_cuts_banner.png": {
     "publicId": "categories/premium_cuts_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581751/categories/premium_cuts_banner.jpg",
+    "success": true
   },
   "images\\categories\\veal_banner.png": {
     "publicId": "categories/veal_banner",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581760/categories/veal_banner.jpg",
+    "success": true
   },
   "images\\products\\beef_brisket.png": {
     "publicId": "products/beef_brisket",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581248/products/beef_brisket.jpg",
+    "success": true
   },
   "images\\products\\beef_burger_patties.png": {
     "publicId": "products/beef_burger_patties",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581256/products/beef_burger_patties.jpg",
+    "success": true
   },
   "images\\products\\beef_cubes.png": {
     "publicId": "products/beef_cubes",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581264/products/beef_cubes.jpg",
+    "success": true
   },
   "images\\products\\beef_liver.png": {
     "publicId": "products/beef_liver",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581271/products/beef_liver.jpg",
+    "success": true
   },
   "images\\products\\beef_placeholder.png": {
     "publicId": "products/beef_placeholder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581284/products/beef_placeholder.jpg",
+    "success": true
   },
   "images\\products\\beef_ribs.png": {
     "publicId": "products/beef_ribs",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581292/products/beef_ribs.jpg",
+    "success": true
   },
   "images\\products\\beef_shank.png": {
     "publicId": "products/beef_shank",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581300/products/beef_shank.jpg",
+    "success": true
   },
   "images\\products\\beef_tenderloin.png": {
     "publicId": "products/beef_tenderloin",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581311/products/beef_tenderloin.jpg",
+    "success": true
   },
   "images\\products\\buffalo_liver.png": {
     "publicId": "products/buffalo_liver",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581323/products/buffalo_liver.jpg",
+    "success": true
   },
   "images\\products\\buffalo_minced.png": {
     "publicId": "products/buffalo_minced",
@@ -101,217 +101,217 @@
   },
   "images\\products\\buffalo_ribs.png": {
     "publicId": "products/buffalo_ribs",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581340/products/buffalo_ribs.jpg",
+    "success": true
   },
   "images\\products\\buffalo_shank.png": {
     "publicId": "products/buffalo_shank",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581349/products/buffalo_shank.jpg",
+    "success": true
   },
   "images\\products\\buffalo_steak.png": {
     "publicId": "products/buffalo_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581356/products/buffalo_steak.jpg",
+    "success": true
   },
   "images\\products\\buffalo_stew.png": {
     "publicId": "products/buffalo_stew",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581364/products/buffalo_stew.jpg",
+    "success": true
   },
   "images\\products\\french_bavette.png": {
     "publicId": "products/french_bavette",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581371/products/french_bavette.jpg",
+    "success": true
   },
   "images\\products\\french_charolais.png": {
     "publicId": "products/french_charolais",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581379/products/french_charolais.jpg",
+    "success": true
   },
   "images\\products\\french_entrecote.png": {
     "publicId": "products/french_entrecote",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581387/products/french_entrecote.jpg",
+    "success": true
   },
   "images\\products\\french_limousin.png": {
     "publicId": "products/french_limousin",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581395/products/french_limousin.jpg",
+    "success": true
   },
   "images\\products\\french_onglet.png": {
     "publicId": "products/french_onglet",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581408/products/french_onglet.jpg",
+    "success": true
   },
   "images\\products\\french_ribeye.png": {
     "publicId": "products/french_ribeye",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581417/products/french_ribeye.jpg",
+    "success": true
   },
   "images\\products\\frozen_minced_beef.png": {
     "publicId": "products/frozen_minced_beef",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581427/products/frozen_minced_beef.jpg",
+    "success": true
   },
   "images\\products\\goat_chops.png": {
     "publicId": "products/goat_chops",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581442/products/goat_chops.jpg",
+    "success": true
   },
   "images\\products\\goat_leg.png": {
     "publicId": "products/goat_leg",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581450/products/goat_leg.jpg",
+    "success": true
   },
   "images\\products\\goat_meat.png": {
     "publicId": "products/goat_meat",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581459/products/goat_meat.jpg",
+    "success": true
   },
   "images\\products\\goat_minced.png": {
     "publicId": "products/goat_minced",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581467/products/goat_minced.jpg",
+    "success": true
   },
   "images\\products\\goat_shank.png": {
     "publicId": "products/goat_shank",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581475/products/goat_shank.jpg",
+    "success": true
   },
   "images\\products\\goat_shoulder.png": {
     "publicId": "products/goat_shoulder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581484/products/goat_shoulder.jpg",
+    "success": true
   },
   "images\\products\\kebab.png": {
     "publicId": "products/kebab",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581493/products/kebab.jpg",
+    "success": true
   },
   "images\\products\\kofta_meat.png": {
     "publicId": "products/kofta_meat",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581501/products/kofta_meat.jpg",
+    "success": true
   },
   "images\\products\\lamb_chops.png": {
     "publicId": "products/lamb_chops",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581511/products/lamb_chops.jpg",
+    "success": true
   },
   "images\\products\\lamb_neck.png": {
     "publicId": "products/lamb_neck",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581520/products/lamb_neck.jpg",
+    "success": true
   },
   "images\\products\\lamb_placeholder.png": {
     "publicId": "products/lamb_placeholder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581528/products/lamb_placeholder.jpg",
+    "success": true
   },
   "images\\products\\lamb_ribs.png": {
     "publicId": "products/lamb_ribs",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581536/products/lamb_ribs.jpg",
+    "success": true
   },
   "images\\products\\lamb_shank.png": {
     "publicId": "products/lamb_shank",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581545/products/lamb_shank.jpg",
+    "success": true
   },
   "images\\products\\lamb_shoulder.png": {
     "publicId": "products/lamb_shoulder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581556/products/lamb_shoulder.jpg",
+    "success": true
   },
   "images\\products\\leg_of_lamb.png": {
     "publicId": "products/leg_of_lamb",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581564/products/leg_of_lamb.jpg",
+    "success": true
   },
   "images\\products\\minced_beef.png": {
     "publicId": "products/minced_beef",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581571/products/minced_beef.jpg",
+    "success": true
   },
   "images\\products\\minced_lamb.png": {
     "publicId": "products/minced_lamb",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581579/products/minced_lamb.jpg",
+    "success": true
   },
   "images\\products\\placeholder.png": {
     "publicId": "products/placeholder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581585/products/placeholder.jpg",
+    "success": true
   },
   "images\\products\\ribeye_steak.png": {
     "publicId": "products/ribeye_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581593/products/ribeye_steak.jpg",
+    "success": true
   },
   "images\\products\\sausages.png": {
     "publicId": "products/sausages",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581603/products/sausages.jpg",
+    "success": true
   },
   "images\\products\\sirloin_steak.png": {
     "publicId": "products/sirloin_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581611/products/sirloin_steak.jpg",
+    "success": true
   },
   "images\\products\\tomahawk_steak.png": {
     "publicId": "products/tomahawk_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581619/products/tomahawk_steak.jpg",
+    "success": true
   },
   "images\\products\\t_bone_steak.png": {
     "publicId": "products/t_bone_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581628/products/t_bone_steak.jpg",
+    "success": true
   },
   "images\\products\\veal_chops.png": {
     "publicId": "products/veal_chops",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581636/products/veal_chops.jpg",
+    "success": true
   },
   "images\\products\\veal_liver.png": {
     "publicId": "products/veal_liver",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581643/products/veal_liver.jpg",
+    "success": true
   },
   "images\\products\\veal_minced.png": {
     "publicId": "products/veal_minced",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581651/products/veal_minced.jpg",
+    "success": true
   },
   "images\\products\\veal_shank.png": {
     "publicId": "products/veal_shank",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581658/products/veal_shank.jpg",
+    "success": true
   },
   "images\\products\\veal_shoulder.png": {
     "publicId": "products/veal_shoulder",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581665/products/veal_shoulder.jpg",
+    "success": true
   },
   "images\\products\\veal_steak.png": {
     "publicId": "products/veal_steak",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581673/products/veal_steak.jpg",
+    "success": true
   },
   "images\\products\\veal_stew.png": {
     "publicId": "products/veal_stew",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781581680/products/veal_stew.jpg",
+    "success": true
   },
   "hero_premium_meat.png": {
     "publicId": "hero/hero_premium_meat",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781585473/hero/hero_premium_meat.jpg",
+    "success": true
   },
   "convex.svg": {
     "publicId": "general/convex",
-    "url": "",
-    "success": false
+    "url": "https://res.cloudinary.com/dfq1xxerr/image/upload/v1781585477/general/convex.svg",
+    "success": true
   }
 }

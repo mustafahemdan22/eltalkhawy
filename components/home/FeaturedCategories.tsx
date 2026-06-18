@@ -138,33 +138,17 @@ export default function FeaturedCategories() {
                       aria-hidden="true"
                     />
 
-                    {productCount !== undefined && productCount > 0 && (
-                      <div
-                        className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-pill bg-[var(--bg-overlay-dark)]/70 backdrop-blur-sm border border-[var(--border-subtle)] px-2.5 py-1 text-2xs font-semibold text-[var(--text-primary)]"
-                        aria-label={
-                          locale === 'ar'
-                            ? `${productCount} منتج`
-                            : `${productCount} products`
-                        }
-                      >
-                        <span aria-hidden="true">{cat.icon}</span>
-                        <span className="font-mono">{productCount}</span>
-                      </div>
-                    )}
+                  
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-4" data-theme="dark">
                     <div className="flex items-center gap-2">
-                      <span className="text-base leading-none" aria-hidden="true">
-                        {cat.icon}
-                      </span>
+                     
                       <span className="truncate text-sm font-bold leading-tight text-[var(--text-primary)] transition-colors group-hover:text-[var(--gold)]">
                         {locale === 'ar' ? cat.nameAr : cat.name}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-1 text-2xs text-[var(--text-secondary)] font-arabic">
-                      {locale === 'ar' ? cat.name : cat.nameAr}
-                    </p>
+                 
                     {priceLabel && (
                       <p className="mt-1.5 text-2xs font-mono font-semibold text-[var(--gold)] tracking-wide">
                         {priceLabel}

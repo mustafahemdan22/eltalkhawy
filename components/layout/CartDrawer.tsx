@@ -13,6 +13,7 @@ import { X, Trash2, ShoppingCart, Plus, Minus, ArrowRight } from 'lucide-react';
 import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { useLocale } from '@/components/LocaleProvider';
+import { STARTERS } from '@/lib/constants';
 
 interface CartDrawerProps {
   isOpen:    boolean;
@@ -44,6 +45,7 @@ interface PopulatedCartItem {
     slug:         string;
     name:         string;
     nameAr:       string;
+    categorySlug: string;
     images:       string[];
     discount:     number | null;
     variants: Array<{
@@ -264,7 +266,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             )}
                             {item.starterName && (
                               <div>
-                                <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                <span>🍲 {(() => {
+                                  const starterObj = STARTERS.find(s => s.name === item.starterName || s.nameAr === item.starterName || s.id === item.starterName);
+                                  return starterObj ? (locale === 'ar' ? starterObj.nameAr : starterObj.name) : item.starterName;
+                                })()} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
                               </div>
                             )}
                           </div>

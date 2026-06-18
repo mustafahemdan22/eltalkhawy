@@ -9,7 +9,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { cn, formatPrice } from '@/lib/utils';
-import { ORDER_STATUS } from '@/lib/constants';
+import { ORDER_STATUS, STARTERS } from '@/lib/constants';
 import { useUser, SignOutButton } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
 import {
@@ -37,8 +37,9 @@ export default function AccountPage() {
     api.orders.listUserOrders,
     user ? { userId: user.id } : 'skip'
   );
+  const allProducts = useQuery(api.products.list, {});
 
-  const isLoading = authLoaded === false || (user && orders === undefined);
+  const isLoading = authLoaded === false || (user && orders === undefined) || allProducts === undefined;
 
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-EG', {
@@ -210,7 +211,12 @@ export default function AccountPage() {
                                       <div className="flex items-center gap-3 flex-1 min-w-0">
                                         <Package className="w-4 h-4 text-[var(--gold)]/60 shrink-0" />
                                         <div className="min-w-0">
-                                          <span className="font-semibold text-primary block truncate">{item.productName}</span>
+                                          <span className="font-semibold text-primary block truncate">
+                                             {(() => {
+                                               const product = allProducts?.find((p) => p._id === item.productId);
+                                               return product ? (locale === 'ar' ? product.nameAr : product.name) : item.productName;
+                                             })()}
+                                          </span>
                                           <span className="text-xs text-muted block">{item.variantWeight}</span>
                                           {(item.isGrilled || item.starterName) && (
                                             <div className="flex flex-col gap-0.5 text-3xs text-[var(--gold)] mt-0.5 font-sans font-medium">
@@ -224,7 +230,10 @@ export default function AccountPage() {
                                               )}
                                               {item.starterName && (
                                                 <div>
-                                                  <span>🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                                  <span>🍲 {(() => {
+                                                     const starterObj = STARTERS.find(s => s.name === item.starterName || s.nameAr === item.starterName || s.id === item.starterName);
+                                                     return starterObj ? (locale === 'ar' ? starterObj.nameAr : starterObj.name) : item.starterName;
+                                                   })()} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
                                                 </div>
                                               )}
                                             </div>

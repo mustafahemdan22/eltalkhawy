@@ -9,7 +9,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
-import { SITE_CONFIG } from '@/lib/constants';
+import { SITE_CONFIG, STARTERS } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
 import {
@@ -38,6 +38,7 @@ interface CheckoutCartItem {
     slug:         string;
     name:         string;
     nameAr:       string;
+    categorySlug: string;
     images:       string[];
     discount:     number | null;
     variants: Array<{
@@ -224,7 +225,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-base flex flex-col">
         <Navbar />
         <main id="main-content" className="flex-grow flex items-center justify-center py-16 px-4">
-          <div className="max-w-md w-full p-10 rounded-2xl bg-surface border border-muted text-center shadow-raised relative overflow-hidden">
+          <div className="max-w-md w-full p-10 rounded-2xl bg-surface border border-muted text-center shadow-raised relative overflow-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[var(--success)]/2 blur-[80px] rounded-full pointer-events-none" />
             <div className="w-16 h-16 rounded-full bg-success-bg border border-success-border flex items-center justify-center text-success mx-auto mb-6">
               <CheckCircle2 className="w-8 h-8" />
@@ -238,7 +239,7 @@ export default function CheckoutPage() {
             <p className="text-sm text-secondary font-normal leading-relaxed max-w-sm mx-auto mb-8">
               {dict.checkout?.successDescription || 'Your order is being prepared.'}
             </p>
-            <div className="bg-surface-raised/80 border border-muted rounded-xl p-5 text-left text-sm mb-8 space-y-2.5 font-mono">
+            <div className={cn("bg-surface-raised/80 border border-muted rounded-xl p-5 text-sm mb-8 space-y-2.5 font-mono", isRtl ? "text-right" : "text-left")}>
               <div className={cn('flex justify-between', isRtl && 'flex-row-reverse')}>
                 <span className="text-secondary">{dict.checkout?.orderId || 'Order ID'}:</span>
                 <span className="font-bold text-[var(--gold)]">{successOrder.orderNumber}</span>
@@ -249,7 +250,13 @@ export default function CheckoutPage() {
               </div>
               <div className={cn('flex justify-between', isRtl && 'flex-row-reverse')}>
                 <span className="text-secondary">{dict.checkout?.payment || 'Payment'}:</span>
-                <span className="font-bold text-primary capitalize">{paymentMethod}</span>
+                <span className="font-bold text-primary">
+                  {(() => {
+                    if (paymentMethod === 'cash') return locale === 'ar' ? 'الدفع عند الاستلام' : (dict.checkout?.cash || 'Cash on Delivery');
+                    if (paymentMethod === 'card') return locale === 'ar' ? 'بطاقة ائتمان' : (dict.checkout?.card || 'Card');
+                    return locale === 'ar' ? 'محفظة إلكترونية' : (dict.checkout?.wallet || 'Wallet');
+                  })()}
+                </span>
               </div>
               <div className={cn('flex justify-between', isRtl && 'flex-row-reverse')}>
                 <span className="text-secondary">{dict.checkout?.estDelivery || 'Delivery'}:</span>
@@ -339,9 +346,9 @@ export default function CheckoutPage() {
                       <label htmlFor="city" className="text-3xs uppercase tracking-wider text-secondary font-semibold">{dict.checkout?.city || 'City'}</label>
                       <select id="city" value={city} onChange={(e) => setCity(e.target.value)}
                         className="h-11 px-5 rounded-button text-sm bg-surface-raised border border-muted text-primary focus:outline-none focus:border-[var(--gold)] transition-all">
-                        <option value="Cairo">Cairo (القاهرة)</option>
-                        <option value="Giza">Giza (الجيزة)</option>
-                        <option value="Alexandria">Alexandria (الإسكندرية)</option>
+                        <option value="Cairo">{locale === 'ar' ? 'القاهرة' : 'Cairo'}</option>
+                        <option value="Giza">{locale === 'ar' ? 'الجيزة' : 'Giza'}</option>
+                        <option value="Alexandria">{locale === 'ar' ? 'الإسكندرية' : 'Alexandria'}</option>
                       </select>
                     </div>
                   </div>
@@ -376,9 +383,9 @@ export default function CheckoutPage() {
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
-                      { id: 'cash' as const, label: dict.checkout?.cash || 'Cash', labelAr: 'الدفع عند الاستلام', icon: CircleDollarSign },
-                      { id: 'card' as const, label: dict.checkout?.card || 'Card', labelAr: 'بطاقة ائتمان', icon: CreditCard },
-                      { id: 'wallet' as const, label: dict.checkout?.wallet || 'Wallet', labelAr: 'محفظة إلكترونية', icon: Wallet },
+                      { id: 'cash' as const, label: locale === 'ar' ? 'الدفع عند الاستلام' : (dict.checkout?.cash || 'Cash'), icon: CircleDollarSign },
+                      { id: 'card' as const, label: locale === 'ar' ? 'بطاقة ائتمان' : (dict.checkout?.card || 'Card'), icon: CreditCard },
+                      { id: 'wallet' as const, label: locale === 'ar' ? 'محفظة إلكترونية' : (dict.checkout?.wallet || 'Wallet'), icon: Wallet },
                     ].map((method) => {
                       const Icon = method.icon;
                       return (
@@ -391,7 +398,6 @@ export default function CheckoutPage() {
                           </div>
                           <div>
                             <span className="text-sm font-semibold block">{method.label}</span>
-                            <span className="text-3xs text-muted tracking-wide block mt-0.5">{method.labelAr}</span>
                           </div>
                         </button>
                       );
@@ -432,7 +438,10 @@ export default function CheckoutPage() {
                                 <span className="text-3xs text-[var(--gold)] block font-medium">🔥 {locale === 'ar' ? 'تسوية وشوي (+٥٠ ج.م)' : 'Grill Prep (+EGP 50)'}</span>
                               )}
                               {item.starterName && (
-                                <span className="text-3xs text-[var(--gold)] block font-medium">🍲 {item.starterName} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
+                                <span className="text-3xs text-[var(--gold)] block font-medium">🍲 {(() => {
+                                  const starterObj = STARTERS.find(s => s.name === item.starterName || s.nameAr === item.starterName || s.id === item.starterName);
+                                  return starterObj ? (locale === 'ar' ? starterObj.nameAr : starterObj.name) : item.starterName;
+                                })()} (+{formatPrice(item.starterPrice ?? 0, locale)})</span>
                               )}
                             </div>
                           </div>

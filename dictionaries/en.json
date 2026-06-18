@@ -53,6 +53,13 @@
     "emptyDescription": "We couldn't find any products matching your current search criteria. Try adjusting your filters.",
     "clearAllFilters": "Clear All Filters",
     "priceRangeLabel": "Maximum price filter",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {start} to {end} of {total} cuts",
+      "limitLabel": "Show",
+      "pageOf": "Page {page} of {total}"
+    },
     "badges": {
       "bestSeller": "Best Seller",
       "premium": "Premium",
@@ -192,9 +199,13 @@
       "description": "We've been serving Egyptian families since 1985 — with the same commitment to quality, freshness, and trust.",
       "stats": {
         "years": "Years of Service",
+        "yearsVal": "38+",
         "customers": "Happy Customers",
+        "customersVal": "50k+",
         "freshness": "Freshness Rating",
-        "delivery": "Avg. Delivery Time"
+        "freshnessVal": "99%",
+        "delivery": "Avg. Delivery Time",
+        "deliveryVal": "2h"
       }
     },
     "testimonials": {

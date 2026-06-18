@@ -10,29 +10,29 @@ async function requireAdmin(ctx: QueryCtx): Promise<void> {
 }
 
 const IMG = {
-  ribeye:    'products/ribeye_steak',
-  lamb:      'products/leg_of_lamb',
+  ribeye:    'products/beef_ribeye-steak',
+  lamb:      'products/lamb_leg-of-lamb',
   cuts:      'products/beef_tenderloin',
-  minced:    'products/minced_beef',
+  minced:    'products/beef_minced',
   meat:      'products/beef_cubes',
-  kofta:     'products/kofta_meat',
+  kofta:     'products/bbq_kofta-meat',
   burgers:   'products/beef_burger_patties',
   goat:      'products/goat_meat',
   offal:     'products/beef_liver',
   frozen:    'products/frozen_minced_beef',
   butcher:   'products/beef_brisket',
-  steak:     'products/sirloin_steak',
-  tbone:     'products/t_bone_steak',
-  grill:     'products/sausages',
-  kebab:     'products/kebab',
+  steak:     'products/beef_sirloin-steak',
+  tbone:     'products/beef_t-bone-steak',
+  grill:     'products/bbq_sausages',
+  kebab:     'products/bbq_kebab',
   chops:     'products/lamb_chops',
-  frenchRibeye:      'products/french_ribeye',
+  frenchRibeye:      'products/beef_french-ribeye',
   frenchTenderloin:  'products/veal_steak',
-  frenchEntrecote:   'products/french_entrecote',
-  frenchBavette:     'products/french_bavette',
-  frenchOnglet:      'products/french_onglet',
-  frenchCharolais:   'products/french_charolais',
-  frenchLimousin:    'products/french_limousin',
+  frenchEntrecote:   'products/beef_french-entrecote',
+  frenchBavette:     'products/beef_french-bavette',
+  frenchOnglet:      'products/beef_french-onglet',
+  frenchCharolais:   'products/beef_french-charolais',
+  frenchLimousin:    'products/beef_french-limousin',
   frenchRibs:        'products/beef_ribs',
 };
 
@@ -88,7 +88,7 @@ export default mutation({
       description: 'Melt-in-your-mouth Wagyu tenderloin with A5 grade marbling. The ultimate luxury cut.',
       descriptionAr: 'تندرلوين واغيو يذوب في الفم مع نسبة دهون بدرجة A5. القطعة الأكثر فخامة.',
       categorySlug: 'beef', subcategory: 'tenderloin',
-      images: [IMG.meat], basePrice: 1500,
+      images: ['products/beef_wagyu-tenderloin'], basePrice: 1500,
       variants: [
         { weight: '250g', price: 375, stock: 8 },
         { weight: '500g', price: 750, stock: 5 },
@@ -323,7 +323,7 @@ export default mutation({
       description: 'Lean and flavourful buffalo steaks. A local Egyptian favourite, lower in fat than beef.',
       descriptionAr: 'ستيك جاموس قليل الدهون وغني بالنكهة. المفضل لدى المصريين، أقل دهوناً من لحم البقر.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.meat], basePrice: 380,
+      images: ['products/buffalo_steak'], basePrice: 380,
       variants: [
         { weight: '300g', price: 114, stock: 12 },
         { weight: '500g', price: 190, stock: 8 },
@@ -341,7 +341,7 @@ export default mutation({
       description: 'Fresh minced buffalo meat. Leaner than beef mince with a rich, distinctive taste.',
       descriptionAr: 'لحم جاموس مفروم طازج. أقل دهوناً من لحم البقر المفروم بنكهة مميزة غنية.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.minced], basePrice: 160,
+      images: ['products/buffalo_minced'], basePrice: 160,
       variants: [
         { weight: '500g', price: 80, stock: 20 },
         { weight: '1kg', price: 160, stock: 15 },
@@ -361,7 +361,7 @@ export default mutation({
       description: 'Tender and juicy lamb chops, perfect for grilling or pan-searing.',
       descriptionAr: 'ريش ضأن طرية وعصارية، مثالية للشوي أو القلي في المقلاة.',
       categorySlug: 'lamb', subcategory: 'lamb-chops',
-      images: [IMG.lamb], basePrice: 550,
+      images: [IMG.chops], basePrice: 550,
       variants: [
         { weight: '500g', price: 275, stock: 20 },
         { weight: '1kg', price: 550, stock: 12 },
@@ -396,7 +396,7 @@ export default mutation({
       description: 'Freshly minced lamb from selected cuts. Perfect for kofta, kebabs, and shepherd\'s pie.',
       descriptionAr: 'لحم ضأن مفروم طازج من قطع مختارة. مثالي للكفتة والكباب.',
       categorySlug: 'lamb', subcategory: 'minced-lamb',
-      images: [IMG.kofta], basePrice: 240,
+      images: ['products/minced_lamb'], basePrice: 240,
       variants: [
         { weight: '500g', price: 120, stock: 25 },
         { weight: '1kg', price: 240, stock: 18 },
@@ -414,7 +414,7 @@ export default mutation({
       description: 'Tender lamb shoulder, perfect for slow-roasting or braising. Rich flavour.',
       descriptionAr: 'كتف ضأن طري، مثالي للشواء البطيء. نكهة غنية لا تقاوم.',
       categorySlug: 'lamb', subcategory: 'shoulder',
-      images: [IMG.lamb], basePrice: 320,
+      images: ['products/lamb_shoulder'], basePrice: 320,
       variants: [
         { weight: '1kg', price: 320, stock: 8 },
         { weight: '2kg', price: 620, stock: 5 },
@@ -470,7 +470,7 @@ export default mutation({
       description: 'Premium veal cutlets with delicate flavour and tender texture. Bone-in for extra flavour.',
       descriptionAr: 'كسطليتة عجل فاخرة بنكهة دقيقة وقوام طري. بالعظمة لنكهة إضافية.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.meat], basePrice: 580,
+      images: ['products/veal_chops'], basePrice: 580,
       variants: [
         { weight: '500g', price: 290, stock: 10 },
         { weight: '1kg', price: 580, stock: 5 },
@@ -544,7 +544,7 @@ export default mutation({
       description: 'Fresh lamb brains, a delicacy. Delicate texture, perfect for pan-frying or in traditional dishes.',
       descriptionAr: 'مخ ضأن طازج، من الأطعمة الفاخرة. قوام دقيق، مثالي للقلي أو في الأطباق التقليدية.',
       categorySlug: 'organ-meats', subcategory: 'brain',
-      images: [IMG.offal], basePrice: 60,
+      images: ['products/organ_lamb-brain'], basePrice: 60,
       variants: [
         { weight: '250g', price: 15, stock: 10 },
         { weight: '500g', price: 30, stock: 6 },
@@ -561,7 +561,7 @@ export default mutation({
       description: 'Clean cow trotters, perfect for traditional Egyptian soups and stews. Rich in collagen.',
       descriptionAr: 'كوارع بقر نظيفة، مثالية للشوربات واليخنات المصرية التقليدية. غنية بالكولاجين.',
       categorySlug: 'organ-meats', subcategory: 'trotters',
-      images: [IMG.offal], basePrice: 45,
+      images: ['products/organ_cow-trotters'], basePrice: 45,
       variants: [
         { weight: '1kg', price: 45, stock: 15 },
         { weight: '2kg', price: 85, stock: 10 },
@@ -617,7 +617,7 @@ export default mutation({
       description: 'Showstopper bone-in ribeye with a long French-trimmed bone. 1kg of premium beef.',
       descriptionAr: 'ستيك ريب آي بالعظمة مع عظمة طويلة مشذبة. 1 كجم من لحم البقر الممتاز.',
       categorySlug: 'premium-cuts', subcategory: 'ribeye',
-      images: [IMG.meat], basePrice: 950,
+      images: ['products/premium_tomahawk-steak'], basePrice: 950,
       variants: [
         { weight: '1kg', price: 950, stock: 4 },
         { weight: '1.5kg', price: 1425, stock: 2 },
@@ -774,7 +774,7 @@ export default mutation({
       description: 'Meaty buffalo ribs with rich, distinctive flavour. Excellent for slow cooking or grilling.',
       descriptionAr: 'ضلوع جاموس لحمية بنكهة غنية ومميزة. ممتازة للطبخ البطيء أو الشوي.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.meat], basePrice: 260,
+      images: ['products/buffalo_ribs'], basePrice: 260,
       variants: [
         { weight: '500g', price: 130, stock: 14 },
         { weight: '1kg', price: 260, stock: 8 },
@@ -791,7 +791,7 @@ export default mutation({
       description: 'Bone-in buffalo shank, rich in collagen. Perfect for traditional Egyptian osso buco-style dishes.',
       descriptionAr: 'ساق جاموس بالعظم، غني بالكولاجين. مثالي لأطباق أوزو بوكو المصرية التقليدية.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.butcher], basePrice: 200,
+      images: ['products/buffalo_shank'], basePrice: 200,
       variants: [
         { weight: '1kg', price: 200, stock: 10 },
         { weight: '2kg', price: 380, stock: 5 },
@@ -808,7 +808,7 @@ export default mutation({
       description: 'Fresh buffalo liver with a milder, sweeter flavour than beef liver. A local delicacy.',
       descriptionAr: 'كبدة جاموس طازجة بنكهة أخف وألطف من كبدة البقر. طعام شهي محلي.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.offal], basePrice: 95,
+      images: ['products/buffalo_liver'], basePrice: 95,
       variants: [
         { weight: '500g', price: 48, stock: 18 },
         { weight: '1kg', price: 95, stock: 12 },
@@ -825,7 +825,7 @@ export default mutation({
       description: 'Premium lean chunks ideal for stews and traditional vegetable tagines.',
       descriptionAr: 'مكعبات لحم أحمر ممتازة، مثالية لليخني والطواجن البلدي بالخضار.',
       categorySlug: 'buffalo', subcategory: null,
-      images: [IMG.meat], basePrice: 260,
+      images: ['products/buffalo_stew'], basePrice: 260,
       variants: [
         { weight: '1kg', price: 260, stock: 12 },
       ],
@@ -843,7 +843,7 @@ export default mutation({
       description: 'Tender lamb ribs with a delicate balance of meat and fat. Excellent grilled or braised.',
       descriptionAr: 'ضلوع ضأن طرية بتوازن دقيق بين اللحم والدهن. ممتازة للشوي أو الطهي البطيء.',
       categorySlug: 'lamb', subcategory: 'lamb-ribs',
-      images: [IMG.meat], basePrice: 380,
+      images: ['products/lamb_ribs'], basePrice: 380,
       variants: [
         { weight: '500g', price: 190, stock: 16 },
         { weight: '1kg', price: 380, stock: 10 },
@@ -860,7 +860,7 @@ export default mutation({
       description: 'Bone-in lamb shank, ideal for slow-braising. Melts off the bone with rich, deep flavours.',
       descriptionAr: 'ساق ضأن بالعظم، مثالي للطبخ البطيء. يذوب من على العظم بنكهات عميقة وغنية.',
       categorySlug: 'lamb', subcategory: null,
-      images: [IMG.butcher], basePrice: 360,
+      images: ['products/lamb_shank'], basePrice: 360,
       variants: [
         { weight: '1kg', price: 360, stock: 9 },
         { weight: '2kg', price: 700, stock: 4 },
@@ -911,7 +911,7 @@ export default mutation({
       description: 'Exceptionally rich and gelatinous cut, ideal for soups and slow-braising.',
       descriptionAr: 'قطعة غنية بالجيلاتين والنكهة، مثالية للشوربة الفاخرة والطهي البطيء.',
       categorySlug: 'lamb', subcategory: null,
-      images: [IMG.meat], basePrice: 360,
+      images: ['products/lamb_neck'], basePrice: 360,
       variants: [
         { weight: '1kg', price: 360, stock: 10 },
       ],
@@ -929,7 +929,7 @@ export default mutation({
       description: 'Bone-in goat chops with bold, distinctive flavour. Excellent for grilling or stewing.',
       descriptionAr: 'ريش ماعز بالعظم بنكهة قوية ومميزة. ممتازة للشوي أو الطهي.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.chops], basePrice: 320,
+      images: ['products/goat_chops'], basePrice: 320,
       variants: [
         { weight: '500g', price: 160, stock: 12 },
         { weight: '1kg', price: 320, stock: 7 },
@@ -946,7 +946,7 @@ export default mutation({
       description: 'Bone-in goat pieces cut for stew. Perfect for traditional Egyptian mhammar and tagine dishes.',
       descriptionAr: 'قطع لحم ماعز بالعظم مقطعة للقديد. مثالية لأطباق المَحمَّر والطاجين المصري التقليدي.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.meat], basePrice: 290,
+      images: ['products/goat_meat'], basePrice: 290,
       variants: [
         { weight: '500g', price: 145, stock: 16 },
         { weight: '1kg', price: 290, stock: 10 },
@@ -963,7 +963,7 @@ export default mutation({
       description: 'Whole bone-in goat leg, ideal for special occasions. Serves 4-6 people generously.',
       descriptionAr: 'فخدة ماعز كاملة بالعظم، مثالية للمناسبات الخاصة. تكفي 4-6 أشخاص بسخاء.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.goat], basePrice: 420,
+      images: ['products/goat_leg'], basePrice: 420,
       variants: [
         { weight: '1.5kg', price: 630, stock: 5 },
         { weight: '2.5kg', price: 1050, stock: 3 },
@@ -980,7 +980,7 @@ export default mutation({
       description: 'Tender shoulder cut, best for braising and slow cooking.',
       descriptionAr: 'كتف طري، مناسب للطهي البطيء والتسوية على نار هادئة.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.goat], basePrice: 280,
+      images: ['products/goat_shoulder'], basePrice: 280,
       variants: [
         { weight: '1kg', price: 280, stock: 10 },
       ],
@@ -996,7 +996,7 @@ export default mutation({
       description: 'Flavorful, slow-braising cut rich in collagen.',
       descriptionAr: 'قطعة لحم غنية بالنكهة ومثالية للتسوية البطيئة على نار هادئة.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.goat], basePrice: 310,
+      images: ['products/goat_shank'], basePrice: 310,
       variants: [
         { weight: '1kg', price: 310, stock: 8 },
       ],
@@ -1012,7 +1012,7 @@ export default mutation({
       description: 'Lean minced goat meat, great for traditional kofta and pies.',
       descriptionAr: 'مفروم ماعز قليل الدهن، ممتاز للكفتة التقليدية والفطائر.',
       categorySlug: 'goat', subcategory: null,
-      images: [IMG.minced], basePrice: 320,
+      images: ['products/goat_minced'], basePrice: 320,
       variants: [
         { weight: '1kg', price: 320, stock: 10 },
       ],
@@ -1030,7 +1030,7 @@ export default mutation({
       description: 'Bone-in veal chops, delicate and tender. The premium choice for a refined meal.',
       descriptionAr: 'ريش عجل بالعظم، دقيقة وطري. الاختيار الفاخر لوجبة راقية.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.chops], basePrice: 640,
+      images: ['products/veal_chops'], basePrice: 640,
       variants: [
         { weight: '500g', price: 320, stock: 8 },
         { weight: '1kg', price: 640, stock: 4 },
@@ -1047,7 +1047,7 @@ export default mutation({
       description: 'Premium veal liver with a delicate, mild flavour. Lighter than beef liver, exceptional when pan-fried.',
       descriptionAr: 'كبدة عجل فاخرة بنكهة خفيفة ودقيقة. ألطف من كبدة البقر، استثنائية عند القلي في المقلاة.',
       categorySlug: 'veal', subcategory: 'liver',
-      images: [IMG.offal], basePrice: 220,
+      images: ['products/veal_liver'], basePrice: 220,
       variants: [
         { weight: '500g', price: 110, stock: 10 },
         { weight: '1kg', price: 220, stock: 6 },
@@ -1064,7 +1064,7 @@ export default mutation({
       description: 'Boneless veal pieces, perfect for blanquette, veal marsala, or a delicate veal curry.',
       descriptionAr: 'قطع لحم عجل بدون عظم، مثالية للبلانكيه وفيليه مارسالا والكاري الخفيف.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.meat], basePrice: 480,
+      images: ['products/veal_stew'], basePrice: 480,
       variants: [
         { weight: '500g', price: 240, stock: 12 },
         { weight: '1kg', price: 480, stock: 7 },
@@ -1081,7 +1081,7 @@ export default mutation({
       description: 'A versatile cut for roasting, stews, and everyday cooking.',
       descriptionAr: 'قطعة متعددة الاستخدامات، مناسبة للشوي واليخني والطبخ اليومي.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.meat], basePrice: 320,
+      images: ['products/veal_shoulder'], basePrice: 320,
       variants: [
         { weight: '1kg', price: 320, stock: 12 },
       ],
@@ -1097,7 +1097,7 @@ export default mutation({
       description: 'Light minced veal for burgers, kofta, and home cooking.',
       descriptionAr: 'لحم عجل مفروم خفيف، مناسب للبرجر والكفتة والطبخ المنزلي.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.minced], basePrice: 280,
+      images: ['products/veal_minced'], basePrice: 280,
       variants: [
         { weight: '1kg', price: 280, stock: 15 },
       ],
@@ -1113,7 +1113,7 @@ export default mutation({
       description: 'Tender and rich in gelatin, perfect for Osso Buco and rich stews.',
       descriptionAr: 'طرية للغاية وغنية بالجيلاتين، مثالية لطبق الأوسوبوكو واليخني الغني.',
       categorySlug: 'veal', subcategory: null,
-      images: [IMG.meat], basePrice: 380,
+      images: ['products/veal_shank'], basePrice: 380,
       variants: [
         { weight: '1kg', price: 380, stock: 10 },
       ],
@@ -1218,7 +1218,7 @@ export default mutation({
       description: 'Fresh beef kidneys with a rich, distinctive flavour. A traditional ingredient in many cuisines.',
       descriptionAr: 'كلاوي بقري طازجة بنكهة غنية ومميزة. مكوّن تقليدي في مطابخ كثيرة.',
       categorySlug: 'organ-meats', subcategory: 'kidney',
-      images: [IMG.offal], basePrice: 110,
+      images: ['products/organ_beef-kidney'], basePrice: 110,
       variants: [
         { weight: '500g', price: 55, stock: 14 },
         { weight: '1kg', price: 110, stock: 9 },
@@ -1235,7 +1235,7 @@ export default mutation({
       description: 'Lean, protein-rich beef heart. Tender when cooked properly with a deep, beefy flavour.',
       descriptionAr: 'قلب بقري قليل الدهون وغني بالبروتين. طري عند طهيه بشكل صحيح بنكهة لحمية عميقة.',
       categorySlug: 'organ-meats', subcategory: 'heart',
-      images: [IMG.offal], basePrice: 130,
+      images: ['products/organ_beef-heart'], basePrice: 130,
       variants: [
         { weight: '500g', price: 65, stock: 12 },
         { weight: '1kg', price: 130, stock: 7 },
@@ -1252,7 +1252,7 @@ export default mutation({
       description: 'Fresh beef tongue, a delicacy when slow-cooked. Tender texture and rich, distinctive taste.',
       descriptionAr: 'لسان بقري طازج، طعام شهي عند طهيه ببطء. قوام طري ونكهة مميزة غنية.',
       categorySlug: 'organ-meats', subcategory: 'tongue',
-      images: [IMG.offal], basePrice: 140,
+      images: ['products/organ_beef-tongue'], basePrice: 140,
       variants: [
         { weight: '1kg', price: 140, stock: 8 },
         { weight: '1.5kg', price: 210, stock: 4 },
@@ -1269,7 +1269,7 @@ export default mutation({
       description: 'Pre-cleaned beef tripe ready for cooking. Essential for traditional Egyptian kawareh and hawawshi.',
       descriptionAr: 'كرشة بقري منظفة مسبقاً وجاهزة للطبخ. أساسية للكوارع والحواوشي المصري التقليدي.',
       categorySlug: 'organ-meats', subcategory: 'tripe',
-      images: [IMG.offal], basePrice: 80,
+      images: ['products/organ_beef-tripe'], basePrice: 80,
       variants: [
         { weight: '1kg', price: 80, stock: 12 },
         { weight: '2kg', price: 150, stock: 7 },
@@ -1286,7 +1286,7 @@ export default mutation({
       description: 'Beef mombar ready to cook. Stuffed with rice, herbs, and spices. A traditional Egyptian delicacy.',
       descriptionAr: 'ممبار بقري جاهز للطبخ. محشي بالأرز والأعشاب والبهارات. طعام شهي مصري تقليدي.',
       categorySlug: 'organ-meats', subcategory: 'mombar',
-      images: [IMG.offal], basePrice: 150,
+      images: ['products/organ_beef-mombar'], basePrice: 150,
       variants: [
         { weight: '500g', price: 75, stock: 10 },
         { weight: '1kg', price: 150, stock: 6 },
@@ -1358,7 +1358,7 @@ export default mutation({
       description: '45-day dry-aged tomahawk steak. Intensely flavoured, buttery tender, and a true centrepiece.',
       descriptionAr: 'ستيك توماهوك معتق 45 يوماً. نكهة مركزة، طري كالزبدة، وقطعة العرض المثالية.',
       categorySlug: 'premium-cuts', subcategory: 'ribeye',
-      images: [IMG.meat], basePrice: 1280,
+      images: ['products/premium_tomahawk-steak'], basePrice: 1280,
       variants: [
         { weight: '1.2kg', price: 1536, stock: 3 },
         { weight: '1.8kg', price: 2304, stock: 2 },
@@ -1375,7 +1375,7 @@ export default mutation({
       description: 'A4-A5 grade Wagyu ribeye with legendary marbling. 300g of pure umami indulgence.',
       descriptionAr: 'ستيك ريب آي واغيو بدرجة A4-A5 مع توزيع دهني أسطوري. 300 جرام من النكهة الخالصة.',
       categorySlug: 'premium-cuts', subcategory: 'ribeye',
-      images: [IMG.meat], basePrice: 1850,
+      images: ['products/premium_wagyu-ribeye'], basePrice: 1850,
       variants: [
         { weight: '300g', price: 555, stock: 6 },
         { weight: '500g', price: 925, stock: 4 },
@@ -1392,7 +1392,7 @@ export default mutation({
       description: 'Premium bone-in ribeye for two. 1kg of dry-aged beef with the bone left in for extra flavour.',
       descriptionAr: 'ريب آي فاخر بالعظم لشخصين. 1 كجم من اللحم المعتق مع العظمة لنكهة إضافية.',
       categorySlug: 'premium-cuts', subcategory: 'ribeye',
-      images: [IMG.meat], basePrice: 1050,
+      images: ['products/premium_cote-de-boeuf'], basePrice: 1050,
       variants: [
         { weight: '1kg', price: 1050, stock: 5 },
         { weight: '1.4kg', price: 1470, stock: 3 },
@@ -1409,7 +1409,7 @@ export default mutation({
       description: 'The most tender cut of beef, hand-cut into 200g medallions. Restaurant-quality indulgence.',
       descriptionAr: 'أكثر قطع اللحم البقري طراوة، مقطعة يدوياً إلى ميداليات 200 جرام. جودة المطاعم الفاخرة.',
       categorySlug: 'premium-cuts', subcategory: 'tenderloin',
-      images: [IMG.steak], basePrice: 920,
+      images: [IMG.cuts], basePrice: 920,
       variants: [
         { weight: '2×200g', price: 368, stock: 10 },
         { weight: '4×200g', price: 736, stock: 6 },

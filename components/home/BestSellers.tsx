@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
@@ -12,12 +13,22 @@ import ProductCard from '@/components/shop/ProductCard';
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 import { useLocale } from '@/components/LocaleProvider';
 import { cn, discountedPrice } from '@/lib/utils';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function BestSellers() {
   const { locale, dict } = useLocale();
   const { user } = useUser();
   const router = useRouter();
   const products = useQuery(api.products.list, { isBestSeller: true });
+
+  const [page, setPage] = React.useState(1);
+  const limit = 4;
+
+  const displayProducts = React.useMemo(() => {
+    if (!products) return undefined;
+    const start = (page - 1) * limit;
+    return products.slice(start, start + limit);
+  }, [products, page]);
   const addToCartMutation = useMutation(api.cart.add);
   const toggleWishlistMutation = useMutation(api.wishlist.toggle);
   const shouldReduceMotion = useReducedMotion();
@@ -103,29 +114,40 @@ export default function BestSellers() {
         {/* Grid — uniform 2/3/4 cols, consistent gap-5 md:gap-6 */}
         {products === undefined ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: limit }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : products.length === 0 ? null : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-60px' }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6"
-          >
-            {products.map((product, i) => (
-              <motion.div key={product._id} variants={cardVariants}>
-                <ProductCard
-                  product={product}
-                  priority={i < 4}
-                  onAddToCart={handleAddToCart}
-                  onToggleWishlist={handleToggleWishlist}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="flex flex-col gap-10">
+            <motion.div
+              key={page}
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: '-60px' }}
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6"
+            >
+              {displayProducts?.map((product, i) => (
+                <motion.div key={product._id} variants={cardVariants}>
+                  <ProductCard
+                    product={product}
+                    priority={i < 4}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <Pagination
+              page={page}
+              limit={limit}
+              total={products.length}
+              totalPages={Math.ceil(products.length / limit)}
+              onPageChange={setPage}
+            />
+          </div>
         )}
       </div>
     </section>

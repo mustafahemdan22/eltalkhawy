@@ -123,8 +123,8 @@ export default function PromoBanners() {
                   <p className="text-base text-[var(--text-secondary)] mt-1">{promo.subtitle}</p>
 
                   <div className="flex items-center justify-between mt-5">
-                    <span className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-surface-raised/50 backdrop-blur-sm text-[var(--gold)] text-base font-bold" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-                      {dict.home?.promos.save} %{promo.discount}
+                    <span className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-surface-raised/50 backdrop-blur-sm text-[var(--gold)] text-base font-bold">
+                      {dict.home?.promos.save} {promo.discount}%
                     </span>
                     <span className="flex items-center gap-3 text-white group-hover:text-[var(--gold)] text-base font-medium group-hover:gap-4 transition-all">
                       {promo.cta}

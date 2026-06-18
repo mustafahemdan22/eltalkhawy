@@ -1,5 +1,23 @@
 import { query, mutation, QueryCtx } from './_generated/server';
 import { v } from 'convex/values';
+import { paginationArgs, paginateList } from './pagination';
+
+function getStartingPrice(product: {
+  basePrice: number;
+  discount?: number | null;
+  variants: Array<{ price: number }>;
+}) {
+  const lowestVariantPrice =
+    product.variants.length > 0
+      ? Math.min(...product.variants.map((variant) => variant.price))
+      : product.basePrice;
+
+  if (!product.discount) {
+    return lowestVariantPrice;
+  }
+
+  return lowestVariantPrice * (1 - product.discount / 100);
+}
 
 /* ─────────────────────────────────────────
    QUERIES
@@ -47,6 +65,108 @@ export const list = query({
   },
 });
 
+/** Paginated list of products with filters, search, and sorting */
+export const listPaginated = query({
+  args: {
+    categorySlug: v.optional(v.string()),
+    searchQuery:  v.optional(v.string()),
+    sortBy:       v.optional(v.string()),
+    isFeatured:   v.optional(v.boolean()),
+    isBBQ:        v.optional(v.boolean()),
+    includeBestSeller: v.optional(v.boolean()),
+    includePremiumCut: v.optional(v.boolean()),
+    includeFresh:      v.optional(v.boolean()),
+    includeFrozen:     v.optional(v.boolean()),
+    maxPrice:     v.optional(v.number()),
+    ...paginationArgs,
+  },
+  handler: async (ctx, args) => {
+    const queryBuilder = ctx.db.query('products');
+    let products = await queryBuilder
+      .filter((q) => q.eq(q.field('isAvailable'), true))
+      .collect();
+
+    if (args.categorySlug) {
+      products = products.filter((p) => p.categorySlug === args.categorySlug);
+    }
+    if (args.isFeatured !== undefined) {
+      products = products.filter((p) => p.isFeatured === args.isFeatured);
+    }
+    if (args.isBBQ !== undefined) {
+      products = products.filter((p) => p.isBBQ === args.isBBQ);
+    }
+
+    if (args.includeFresh || args.includeFrozen) {
+      products = products.filter((p) => {
+        if (args.includeFresh && p.isFresh) {
+          return true;
+        }
+
+        if (args.includeFrozen && p.isFrozen) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    if (args.includePremiumCut || args.includeBestSeller) {
+      products = products.filter((p) => {
+        if (args.includePremiumCut && p.isPremiumCut) {
+          return true;
+        }
+
+        if (args.includeBestSeller && p.isBestSeller) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    if (args.searchQuery) {
+      const q = args.searchQuery.toLowerCase().trim();
+      products = products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.nameAr.toLowerCase().includes(q) ||
+          p.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+
+    if (args.maxPrice !== undefined) {
+      const maxPrice = args.maxPrice;
+      products = products.filter((p) => getStartingPrice(p) <= maxPrice);
+    }
+
+    switch (args.sortBy) {
+      case 'newest':
+        products.sort((a, b) => b._creationTime - a._creationTime);
+        break;
+      case 'price-asc':
+        products.sort((a, b) => getStartingPrice(a) - getStartingPrice(b));
+        break;
+      case 'price-desc':
+        products.sort((a, b) => getStartingPrice(b) - getStartingPrice(a));
+        break;
+      case 'rating':
+        products.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'bestsellers':
+        products.sort((a, b) => {
+          if (a.isBestSeller && !b.isBestSeller) return -1;
+          if (!a.isBestSeller && b.isBestSeller) return 1;
+          return b.rating - a.rating;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return paginateList(products, args.page, args.limit);
+  },
+});
+
 /** Single product by slug */
 export const getBySlug = query({
   args: { slug: v.string() },
@@ -54,7 +174,7 @@ export const getBySlug = query({
     return await ctx.db
       .query('products')
       .withIndex('by_slug', (q) => q.eq('slug', args.slug))
-      .unique();
+      .first();
   },
 });
 

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { CATEGORIES } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { X, Filter } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -40,7 +39,7 @@ export default function FilterSidebar({
   onClose,
 }: FilterSidebarProps) {
   const { locale, dict } = useLocale();
-  const [maxPrice, setMaxPrice] = useState(priceRange[1]);
+  const maxPrice = priceRange[1];
 
   const handleStateToggle = (key: keyof typeof selectedStates) => {
     onChangeStates({
@@ -51,12 +50,10 @@ export default function FilterSidebar({
 
   const handleCategorySelect = (slug: string) => {
     onSelectCategory(slug);
-    if (onClose && !slug) onClose();
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
-    setMaxPrice(val);
     onChangePriceRange([priceRange[0], val]);
   };
 
@@ -110,7 +107,7 @@ export default function FilterSidebar({
             {CATEGORIES.map((cat) => (
               <li key={cat.slug}>
                 <button
-                  onClick={() => { onSelectCategory(cat.slug); if (onClose) onClose(); }}
+                  onClick={() => handleCategorySelect(cat.slug)}
                 className={cn(
                   'w-full text-left px-4 py-2.5 rounded text-sm transition-all duration-200 flex items-center justify-between',
                   selectedCategory === cat.slug
@@ -191,7 +188,7 @@ export default function FilterSidebar({
           {dict.shop?.priceRange || 'Price Budget'}
           </h3>
           <span className="font-mono text-xs text-[var(--gold)] font-bold bg-[var(--gold-subtle)] px-3 py-1 rounded border border-[var(--gold-border)]" dir="ltr">
-            {dict.shop?.max || 'Max'}: EGP {maxPrice}
+            {dict.shop?.max || 'Max'}: {formatPrice(maxPrice, locale)}
           </span>
         </div>
         <div className="pt-3 font-sans">
@@ -207,8 +204,8 @@ export default function FilterSidebar({
             aria-label={dict.shop?.priceRangeLabel || 'Maximum price filter'}
           />
           <div className="flex justify-between text-2xs text-muted mt-3 font-mono" dir="ltr">
-            <span>EGP 0</span>
-            <span>EGP 2,000+</span>
+            <span>{formatPrice(0, locale)}</span>
+            <span>{formatPrice(2000, locale)}+</span>
           </div>
         </div>
       </div>
@@ -236,8 +233,9 @@ export default function FilterSidebar({
         <div
           data-theme="dark"
           className={cn(
-            'absolute top-0 bottom-0 left-0 w-80 max-w-[85vw] bg-surface border-r border-muted p-6 shadow-raised transition-transform duration-300 flex flex-col',
-            isOpen ? 'translate-x-0' : '-translate-x-full',
+            'absolute top-0 bottom-0 w-80 max-w-[85vw] bg-surface p-6 shadow-raised transition-transform duration-300 flex flex-col',
+            locale === 'ar' ? 'right-0 border-l border-muted' : 'left-0 border-r border-muted',
+            isOpen ? 'translate-x-0' : (locale === 'ar' ? 'translate-x-full' : '-translate-x-full'),
           )}
         >
           {/* Close button */}

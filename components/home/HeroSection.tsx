@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion
 import { ArrowRight } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
 import { cn, cloudinaryImageUrl } from '@/lib/utils';
+import img from "../../public/hero_premium_meat.png"
 
 export default function HeroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -39,7 +40,7 @@ export default function HeroSection() {
         aria-hidden="true"
       >
         <Image
-          src={heroImageUrl}
+          src={img}
           alt="Premium meat cuts on dark stone surface"
           fill
           priority
@@ -53,19 +54,10 @@ export default function HeroSection() {
 
       {/* ── Content ── */}
       <motion.div
-        style={{ y: textY, opacity }}
         className="relative z-10 container-brand h-full flex flex-col justify-center"
       >
-        <div className="max-w-2xl">
-          <motion.div
-            initial={initialHidden}
-            animate={animateVisible}
-            transition={{ ...transitionBase, delay: 0.1 }}
-          >
-            <span className="section-label text-[var(--gold)] block mb-8">
-              {dict.home?.hero.label}
-            </span>
-          </motion.div>
+        <div className="">
+         
 
           <motion.h1
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
@@ -84,7 +76,7 @@ export default function HeroSection() {
             initial={initialHidden}
             animate={animateVisible}
             transition={{ ...transitionBase, delay: 0.4 }}
-            className="mt-10 text-fluid-body text-[var(--text-secondary)] leading-relaxed max-w-lg"
+            className="text-fluid-body text-[var(--text-secondary)] leading-relaxed max-w-lg"
           >
             {dict.home?.hero.subtitle}
           </motion.p>

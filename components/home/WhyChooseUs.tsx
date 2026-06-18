@@ -24,10 +24,10 @@ export default function WhyChooseUs() {
     : { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
   const STATS = [
-    { value: '38+',    label: dict.home?.whyChooseUs.stats.years || 'Years of Service' },
-    { value: '50k+',   label: dict.home?.whyChooseUs.stats.customers || 'Happy Customers' },
-    { value: '99%',    label: dict.home?.whyChooseUs.stats.freshness || 'Freshness Rating' },
-    { value: '2h',     label: dict.home?.whyChooseUs.stats.delivery || 'Avg. Delivery Time' },
+    { value: dict.home?.whyChooseUs.stats.yearsVal || '38+',    label: dict.home?.whyChooseUs.stats.years || 'Years of Service' },
+    { value: dict.home?.whyChooseUs.stats.customersVal || '50k+',   label: dict.home?.whyChooseUs.stats.customers || 'Happy Customers' },
+    { value: dict.home?.whyChooseUs.stats.freshnessVal || '99%',    label: dict.home?.whyChooseUs.stats.freshness || 'Freshness Rating' },
+    { value: dict.home?.whyChooseUs.stats.deliveryVal || '2h',     label: dict.home?.whyChooseUs.stats.delivery || 'Avg. Delivery Time' },
   ];
 
   return (

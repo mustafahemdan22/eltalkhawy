@@ -17,6 +17,7 @@ import type * as media from "../media.js";
 import type * as migrateDb from "../migrateDb.js";
 import type * as newsletter from "../newsletter.js";
 import type * as orders from "../orders.js";
+import type * as pagination from "../pagination.js";
 import type * as products from "../products.js";
 import type * as promoCodes from "../promoCodes.js";
 import type * as reviews from "../reviews.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   migrateDb: typeof migrateDb;
   newsletter: typeof newsletter;
   orders: typeof orders;
+  pagination: typeof pagination;
   products: typeof products;
   promoCodes: typeof promoCodes;
   reviews: typeof reviews;

@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useLocale } from '@/components/LocaleProvider';
-import { cloudinaryImageUrl } from '@/lib/utils';
+import { cloudinaryImageUrl, formatPrice } from '@/lib/utils';
 
 const PLACEHOLDER = cloudinaryImageUrl('products/placeholder', { preset: 'productCard' });
 const BBQ_BG_1    = cloudinaryImageUrl('products/kebab',       { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
@@ -105,7 +105,7 @@ export default function BBQSection() {
                         </div>
                         <div className="text-right shrink-0">
                           <span className="font-mono text-primary font-medium tracking-tight group-hover:text-[var(--gold)] transition-colors">
-                            EGP {firstPrice}
+                            {formatPrice(firstPrice, locale)}
                           </span>
                           <span className="text-2xs text-muted">
                             {dict.shop?.per} {p.variants[0]?.weight ?? p.unit}
