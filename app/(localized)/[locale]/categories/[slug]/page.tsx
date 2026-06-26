@@ -216,7 +216,7 @@ export default function CategoryDetailPage({ params, searchParams }: PageProps) 
             </div>
 
             <span className="text-[var(--gold)] text-3xs font-semibold tracking-[0.25em] uppercase block mb-4">
-              {categoryInfo.icon} {dict.categoryDetail.premiumCut}
+               {dict.categoryDetail.premiumCut}
             </span>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-primary flex items-baseline gap-4 flex-wrap">
               {locale === 'ar' ? categoryInfo.nameAr : categoryInfo.name}

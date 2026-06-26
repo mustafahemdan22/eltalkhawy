@@ -117,7 +117,6 @@ export default function FilterSidebar({
                 )}
               >
                 <span className="flex items-center gap-3">
-                  <span aria-hidden="true">{cat.icon}</span>
                   {locale === 'ar' ? cat.nameAr : cat.name}
                 </span>
                 <span className="text-xs text-muted font-arabic font-normal tracking-wide">

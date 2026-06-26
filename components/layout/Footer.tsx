@@ -258,9 +258,6 @@ export default function Footer() {
                         'py-2 -my-2 min-h-11',
                       )}
                     >
-                    <span className="text-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 select-none" aria-hidden="true">
-                      {cat.icon}
-                    </span>
                     <span className="relative">
                       {locale === 'ar' ? cat.nameAr : cat.name}
                       <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[var(--gold)]/40 transition-all duration-300 group-hover:w-full" />
