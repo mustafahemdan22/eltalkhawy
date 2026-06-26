@@ -214,7 +214,7 @@ export default function AnimalPage({ params }: PageProps) {
             </nav>
 
             <span className="text-[var(--gold)] text-xs font-semibold tracking-[0.2em] uppercase block mb-3">
-              {animalInfo.icon} {dict.animalPage.premiumCuts}
+              {dict.animalPage.premiumCuts}
             </span>
 
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
@@ -355,7 +355,7 @@ export default function AnimalPage({ params }: PageProps) {
           ) : (
             /* Empty state */
             <div className="flex flex-col items-center justify-center text-center py-20 px-4 rounded-2xl bg-surface border border-muted max-w-md mx-auto">
-              <span className="text-5xl mb-4 block opacity-30">{animalInfo.icon}</span>
+            
               <h3 className="font-display text-xl font-bold text-primary">
                 {dict.animalPage.noCutsYet}
               </h3>
@@ -412,9 +412,7 @@ export default function AnimalPage({ params }: PageProps) {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)]/90 via-[var(--bg-base)]/40 to-transparent" />
                           <div className="absolute bottom-4 left-5 right-5">
-                            <span className="text-[var(--gold)] text-2xs font-semibold tracking-widest uppercase block mb-1">
-                              {other.icon}
-                            </span>
+                          
                             <h3 className="font-display text-lg md:text-xl font-bold text-primary">
                               {isRtl ? other.nameAr : other.name}
                             </h3>
