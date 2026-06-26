@@ -82,13 +82,38 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Re-sync guest cart from localStorage each time the drawer opens
+      // This ensures we never show stale state if the storage event was missed
+      if (!user) {
+        try {
+          const raw = localStorage.getItem('et_guest_cart') ?? '[]';
+          setGuestCart(JSON.parse(raw));
+        } catch {
+          setGuestCart([]);
+        }
+      }
     } else {
       document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen, user]);
+
+  /* Sync guest cart state when localStorage changes (e.g. after add-to-cart) */
+  useEffect(() => {
+    if (user) return; // authenticated users rely on Convex reactive query
+    const syncGuestCart = () => {
+      try {
+        const raw = localStorage.getItem('et_guest_cart') ?? '[]';
+        setGuestCart(JSON.parse(raw));
+      } catch {
+        setGuestCart([]);
+      }
+    };
+    window.addEventListener('storage', syncGuestCart);
+    return () => window.removeEventListener('storage', syncGuestCart);
+  }, [user]);
 
   /* Close on Escape */
   useEffect(() => {
