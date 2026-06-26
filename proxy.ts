@@ -73,6 +73,7 @@ export default clerkMiddleware(async (auth, req) => {
       "default-src 'self'",
       // Clerk JS SDK + Cloudflare Turnstile CAPTCHA (required for email sign-in/sign-up)
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.pstmrk.it https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com",
+      "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       // Clerk CDN (provider logos + user avatars), Cloudinary (product images),

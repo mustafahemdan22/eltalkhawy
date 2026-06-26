@@ -46,7 +46,7 @@ export const NAV_LINKS = [
   { label: 'Categories', labelAr: 'التصنيفات', href: '/categories' },
   { label: 'About Us', labelAr: 'من نحن', href: '/about' },
   { label: 'Contact', labelAr: 'تواصل معنا', href: '/contact' },
-    { label: 'Orders', labelAr: 'طلباتي', href: '/orders' },
+  { label: 'Orders', labelAr: 'طلباتي', href: '/orders' },
 
 ] as const;
 
@@ -57,7 +57,6 @@ export const CATEGORIES = [
     nameAr: 'لحم بقري',
     description: 'Fresh beef cuts prepared daily.',
     descriptionAr: 'قطعيات لحم بقري طازجة يتم تجهيزها يوميًا.',
-    icon: '🥩',
     subcategories: [
       { slug: 'ribeye', name: 'Ribeye', nameAr: 'ريب آي' },
       { slug: 'tenderloin', name: 'Tenderloin', nameAr: 'تندرلوين' },
@@ -74,7 +73,7 @@ export const CATEGORIES = [
     nameAr: 'لحم جاموسي',
     description: 'Fresh buffalo meat with a rich local taste.',
     descriptionAr: 'لحم جاموسي طازج بطعم بلدي غني.',
-    icon: '🐃',
+
     subcategories: [],
   },
   {
@@ -83,7 +82,7 @@ export const CATEGORIES = [
     nameAr: 'لحم ضاني',
     description: 'Fresh lamb cuts for everyday cooking and special meals.',
     descriptionAr: 'قطعيات لحم ضاني طازجة للطبخ اليومي والعزومات.',
-    icon: '🐑',
+
     subcategories: [
       { slug: 'lamb-chops', name: 'Lamb Chops', nameAr: 'ريش ضاني' },
       { slug: 'leg', name: 'Leg of Lamb', nameAr: 'فخذة ضاني' },
@@ -122,7 +121,7 @@ export const CATEGORIES = [
     name: 'Premium Cuts',
     nameAr: 'قطعيات مميزة',
     description: 'Selected cuts for special meals and premium cooking.',
-   
+
     descriptionAr: 'قطعيات مختارة للوجبات المميزة والطهي الخاص.',
 
     subcategories: [],
@@ -151,7 +150,6 @@ export const CATEGORIES = [
     nameAr: 'منتجات مجمدة',
     description: 'Frozen selections packed for quality and convenience.',
     descriptionAr: 'منتجات مجمدة بجودة عالية وسهولة في الاستخدام.',
-    icon: '❄️',
     subcategories: [],
   },
   {
@@ -160,12 +158,11 @@ export const CATEGORIES = [
     nameAr: 'العروض',
     description: 'Bundles and special deals for better value.',
     descriptionAr: 'عروض وباكدجات خاصة بأفضل قيمة.',
-    icon: '🏷️',
     subcategories: [],
   },
 ] as const;
 
-export const WEIGHT_OPTIONS = ['250g', '500g', '1kg', '1.5kg', '2kg'] as const;
+export const WEIGHT_OPTIONS = [ '500g', '1kg', '1.5kg', '2kg'] as const;
 
 export const ORDER_STATUS = {
   pending: { label: 'Pending', labelAr: 'قيد الانتظار', color: 'warning' },

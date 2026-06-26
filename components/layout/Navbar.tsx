@@ -236,6 +236,16 @@ export default function Navbar() {
 
           {/* ── Right Actions ── */}
           <div className="flex items-center">
+            {/* Search Button */}
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className="hidden md:flex p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250 cursor-pointer"
+              aria-label={locale === 'ar' ? 'بحث' : 'Search'}
+              aria-expanded={searchOpen}
+            >
+              <Search className="w-5 h-5" aria-hidden="true" />
+            </button>
+
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
@@ -302,6 +312,13 @@ export default function Navbar() {
                         </Link>
                       )}
                       {/* Account icon — visible on all screen sizes */}
+                      <Link
+                        href={`/${locale}/account`}
+                        className="relative p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250"
+                        aria-label={locale === 'ar' ? 'حسابي' : 'My Account'}
+                      >
+                        <User className="w-5 h-5" aria-hidden="true" />
+                      </Link>
                     
                       <UserButton
                         appearance={{
