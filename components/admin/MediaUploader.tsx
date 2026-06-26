@@ -13,6 +13,10 @@ export type MediaFolder = 'products' | 'banners' | 'categories' | 'general';
 
 interface MediaUploaderProps {
   folder?: MediaFolder;
+  category?: string;
+  subcategory?: string;
+  productId?: string;
+  index?: string | number;
   multiple?: boolean;
   accept?: string;
   className?: string;
@@ -21,6 +25,10 @@ interface MediaUploaderProps {
 
 export default function MediaUploader({
   folder = 'general',
+  category,
+  subcategory,
+  productId,
+  index,
   multiple = true,
   className,
   onUploaded,
@@ -68,6 +76,10 @@ export default function MediaUploader({
           const formData = new FormData();
           formData.append('file', file);
           formData.append('folder', folder);
+          if (category) formData.append('category', category);
+          if (subcategory) formData.append('subcategory', subcategory);
+          if (productId) formData.append('productId', productId);
+          if (index !== undefined) formData.append('index', index.toString());
 
           const res = await fetch('/api/cloudinary/upload', {
             method: 'POST',

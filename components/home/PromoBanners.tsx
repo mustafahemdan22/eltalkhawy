@@ -6,7 +6,7 @@ import { Tag, ArrowRight, Clock } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Badge } from '@/components/ui/Badge';
 import { useLocale } from '@/components/LocaleProvider';
-import { cn } from '@/lib/utils';
+import { cn, getLocalImagePath } from '@/lib/utils';
 
 export default function PromoBanners() {
   const { locale, dict } = useLocale();
@@ -26,7 +26,7 @@ export default function PromoBanners() {
       badgeVariant: 'discount' as const,
       cta: dict.home?.promos.items.eid.cta || 'Shop Eid Offers',
       href: `/${locale}/categories/lamb`,
-      img: '/images/products/placeholder.png',
+      img: getLocalImagePath('eltalkhawy/general/placeholder'),
       accent: '#7c0035',
       expires: dict.home?.promos.items.eid.expires || '2 days left',
     },
@@ -39,7 +39,7 @@ export default function PromoBanners() {
       badgeVariant: 'gold' as const,
       cta: dict.home?.promos.items.bbq.cta || 'Get the Bundle',
       href: `/${locale}/categories/bbq-cuts`,
-      img: '/images/products/placeholder.png',
+      img: getLocalImagePath('eltalkhawy/general/placeholder'),
       accent: '#a07820',
       expires: dict.home?.promos.items.bbq.expires || '5 days left',
     },

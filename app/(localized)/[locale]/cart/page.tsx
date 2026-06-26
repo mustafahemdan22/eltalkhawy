@@ -11,7 +11,7 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
-import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice, parseWeight } from '@/lib/utils';
 import { SITE_CONFIG, CATEGORIES, STARTERS } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -45,6 +45,7 @@ interface PopulatedCartItem {
     categorySlug: string;
     images:       string[];
     discount:     number | null;
+    basePrice:    number;
     variants: Array<{
       weight: string;
       price:  number;
@@ -156,7 +157,9 @@ export default function CartPage() {
   const totals = useMemo(() => {
     const subtotal = cartItems.reduce((acc, item) => {
       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
-      const baseVal = variant ? variant.price : item.price;
+      const baseVal = variant 
+        ? variant.price 
+        : Math.round(item.product.basePrice * (parseWeight(item.variantWeight) / 1000));
       const rawPrice = item.product.discount ? discountedPrice(baseVal, item.product.discount) : baseVal;
       const grillFee = item.isGrilled ? 50 : 0;
       const starterFee = item.starterPrice ?? 0;
@@ -328,7 +331,7 @@ export default function CartPage() {
                     const maxStock = variant?.stock ?? 99;
                     const imgUrl = item.product.images[0]
                       ? cloudinaryImageUrl(item.product.images[0], { width: 300, height: 350, crop: 'fill', gravity: 'auto' })
-                      : cloudinaryImageUrl('products/beef_cubes', { width: 300, height: 350, crop: 'fill', gravity: 'auto' });
+                      : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes', { width: 300, height: 350, crop: 'fill', gravity: 'auto' });
 
                     return (
                       <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 md:py-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">

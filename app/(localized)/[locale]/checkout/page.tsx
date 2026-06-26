@@ -8,7 +8,7 @@ import type { Id, Doc } from '@/convex/_generated/dataModel';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
-import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice, parseWeight } from '@/lib/utils';
 import { SITE_CONFIG, STARTERS } from '@/lib/constants';
 import { useUser } from '@clerk/nextjs';
 import { useLocale } from '@/components/LocaleProvider';
@@ -25,26 +25,27 @@ import {
 import Image from 'next/image';
 
 interface CheckoutCartItem {
-  productId:     string;
+  productId: string;
   variantWeight: string;
-  quantity:      number;
-  price:         number;
-  isGrilled?:    boolean;
+  quantity: number;
+  price: number;
+  isGrilled?: boolean;
   grillComment?: string;
-  starterName?:  string;
+  starterName?: string;
   starterPrice?: number;
   product: {
-    _id:          string;
-    slug:         string;
-    name:         string;
-    nameAr:       string;
+    _id: string;
+    slug: string;
+    name: string;
+    nameAr: string;
     categorySlug: string;
-    images:       string[];
-    discount:     number | null;
+    images: string[];
+    discount: number | null;
+    basePrice: number;
     variants: Array<{
       weight: string;
-      price:  number;
-      stock:  number;
+      price: number;
+      stock: number;
     }>;
   };
 }
@@ -69,18 +70,18 @@ export default function CheckoutPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const [successOrder, setSuccessOrder] = useState<{
-    orderId:     string;
+    orderId: string;
     orderNumber: string;
   } | null>(null);
 
   const guestCart = useMemo<Array<{
-    productId:     string;
+    productId: string;
     variantWeight: string;
-    quantity:      number;
-    price:         number;
+    quantity: number;
+    price: number;
   }>>(() => {
     if (typeof window !== 'undefined') {
-       try { return JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]') as Array<{ productId: string; variantWeight: string; quantity: number; price: number }>; } catch { return []; }
+      try { return JSON.parse(localStorage.getItem('et_guest_cart') ?? '[]') as Array<{ productId: string; variantWeight: string; quantity: number; price: number }>; } catch { return []; }
 
     }
     return [];
@@ -121,15 +122,23 @@ export default function CheckoutPage() {
   }, [user, dbCart, guestCart, allProducts]);
 
   useEffect(() => {
-    if (authLoaded && dbCart !== undefined && checkoutItems.length === 0 && !successOrder) {
+    if (authLoaded && !user) {
+      router.push(`/${locale}/sign-in?redirect_url=${encodeURIComponent(`/${locale}/checkout`)}`);
+    }
+  }, [authLoaded, user, locale, router]);
+
+  useEffect(() => {
+    if (authLoaded && user && dbCart !== undefined && checkoutItems.length === 0 && !successOrder) {
       router.push(`/${locale}/categories`);
     }
-  }, [authLoaded, dbCart, checkoutItems, successOrder, locale, router]);
+  }, [authLoaded, user, dbCart, checkoutItems, successOrder, locale, router]);
 
   const totals = useMemo(() => {
     const subtotal = checkoutItems.reduce((acc, item) => {
       const variant = item.product.variants.find((v) => v.weight === item.variantWeight);
-      const baseVal = variant ? variant.price : item.price;
+      const baseVal = variant
+        ? variant.price
+        : Math.round(item.product.basePrice * (parseWeight(item.variantWeight) / 1000));
       const rawPrice = item.product.discount ? discountedPrice(baseVal, item.product.discount) : baseVal;
       const grillFee = item.isGrilled ? 50 : 0;
       const starterFee = item.starterPrice ?? 0;
@@ -165,6 +174,11 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert(locale === 'ar' ? 'يرجى تسجيل الدخول للمتابعة وإتمام عملية الشراء.' : 'Please sign in to continue with your purchase.');
+      router.push(`/${locale}/sign-in?redirect_url=${encodeURIComponent(`/${locale}/checkout`)}`);
+      return;
+    }
     if (!validateForm() || isSubmitting) return;
     try {
       setIsSubmitting(true);
@@ -391,9 +405,9 @@ export default function CheckoutPage() {
                       return (
                         <button key={method.id} type="button" onClick={() => setPaymentMethod(method.id)}
                           className={cn('p-5 rounded-xl border flex flex-col items-center text-center gap-4 transition-all duration-350 cursor-pointer',
-                                                        paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)] text-[var(--gold)] shadow-gold' : 'border-muted bg-surface-raised/40 text-secondary hover:border-muted hover:text-primary' )}>
+                            paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)] text-[var(--gold)] shadow-gold' : 'border-muted bg-surface-raised/40 text-secondary hover:border-muted hover:text-primary')}>
                           <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0 border',
-                                                        paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)]' : 'border-muted bg-surface-raised' )}>
+                            paymentMethod === method.id ? 'border-[var(--gold)] bg-[var(--gold-subtle)]' : 'border-muted bg-surface-raised')}>
                             <Icon className="w-4 h-4 text-[var(--gold)]" />
                           </div>
                           <div>
@@ -421,9 +435,9 @@ export default function CheckoutPage() {
                       const grillFee = item.isGrilled ? 50 : 0;
                       const starterFee = item.starterPrice ?? 0;
                       const unitPrice = rawPrice + grillFee + starterFee;
-                       const imgUrl = item.product.images[0]
-                         ? cloudinaryImageUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill', gravity: 'auto' })
-                         : cloudinaryImageUrl('products/beef_cubes', { width: 120, height: 140, crop: 'fill', gravity: 'auto' });
+                      const imgUrl = item.product.images[0]
+                        ? cloudinaryImageUrl(item.product.images[0], { width: 120, height: 140, crop: 'fill', gravity: 'auto' })
+                        : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes', { width: 120, height: 140, crop: 'fill', gravity: 'auto' });
 
                       return (
                         <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className={cn('py-4 flex items-center justify-between gap-5', isRtl && 'flex-row-reverse')}>

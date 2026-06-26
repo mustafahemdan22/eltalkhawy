@@ -105,7 +105,7 @@ export default function PremiumCutsSection() {
                        <Image
                          src={cut.images[0]
                            ? cloudinaryImageUrl(cut.images[0], { width: 640, height: 448, crop: 'fill', gravity: 'auto' })
-                           : cloudinaryImageUrl('products/beef_cubes', { width: 640, height: 448, crop: 'fill', gravity: 'auto' })
+                           : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes', { width: 640, height: 448, crop: 'fill', gravity: 'auto' })
                          }
                          alt={`${cut.name} — ${getNote(cut.slug, cut.description)}`}
                          fill

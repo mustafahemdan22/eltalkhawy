@@ -12,7 +12,8 @@ import ProductCard from '@/components/shop/ProductCard';
 import { StarRating } from '@/components/ui/StarRating';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { cn, formatPrice, cloudinaryImageUrl, discountedPrice } from '@/lib/utils';
+import WeightSelector from '@/components/ui/WeightSelector';
+import { cn, formatPrice, cloudinaryImageUrl, discountedPrice, parseWeight } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import {
   Heart,
@@ -112,11 +113,9 @@ export default function ProductDetailPage({ params }: PageProps) {
     return dbProduct;
   }, [dbProduct, slug]);
 
-  // When a new product loads, reset the selected weight to its first variant.
+  // When a new product loads, reset the selected weight to 1kg.
   if (product && product.slug !== prevProductSlug) {
-    if (product.variants?.[0]) {
-      setSelectedWeight(product.variants[0].weight);
-    }
+    setSelectedWeight('1kg');
     setPrevProductSlug(product.slug);
   }
   
@@ -158,13 +157,21 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   const selectedVariant = useMemo(() => {
     if (!product) return null;
-    return product.variants.find((v) => v.weight === selectedWeight) ?? product.variants[0];
+    const exact = product.variants.find((v) => v.weight === selectedWeight);
+    if (exact) return exact;
+    return product.variants.find(v => v.stock > 0) || product.variants[0];
   }, [product, selectedWeight]);
 
   const isWishlisted = useMemo(() => {
     if (!wishlistItems || !product) return false;
     return wishlistItems.some((item) => item._id === product._id);
   }, [wishlistItems, product]);
+
+  const currentPrice = useMemo(() => {
+    if (!product) return 0;
+    const currentWeightGrams = parseWeight(selectedWeight || '1kg');
+    return Math.round(product.basePrice * (currentWeightGrams / 1000));
+  }, [product, selectedWeight]);
 
   if (product === undefined) {
     return (
@@ -196,7 +203,6 @@ export default function ProductDetailPage({ params }: PageProps) {
     );
   }
 
-  const currentPrice = selectedVariant?.price ?? product.basePrice;
   const finalPrice = product.discount ? discountedPrice(currentPrice, product.discount) : currentPrice;
 
   const selectedStarterObj = STARTERS.find((s) => s.id === selectedStarter);
@@ -206,7 +212,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   // Placeholder support
   const PLACEHOLDER_IMAGES = {
-    default: 'products/placeholders/placeholder',
+    default: 'eltalkhawy/general/placeholder',
   };
   const imageUrl = product.images[0]
     ? cloudinaryImageUrl(product.images[0], { preset: 'productDetail' })
@@ -432,30 +438,16 @@ export default function ProductDetailPage({ params }: PageProps) {
                   <span className="text-3xs uppercase tracking-[0.2em] font-semibold text-[var(--gold)]">
                     {dict.productDetail?.selectWeight || 'Select Desired Weight'}
                   </span>
-                  <div className={cn("flex flex-wrap gap-4", locale === 'ar' && "flex-row-reverse")} role="radiogroup" aria-label="Select weight">
-                    {product.variants.map((v) => (
-                      <button
-                        key={v.weight}
-                        role="radio"
-                        aria-checked={v.weight === selectedWeight}
-                        onClick={() => {
-                          setSelectedWeight(v.weight);
-                          setQuantity(1);
-                        }}
-                        disabled={v.stock === 0}
-                        className={cn(
-                          'h-12 px-6 rounded-button text-sm font-bold transition-all duration-300 border flex items-center justify-between gap-5 cursor-pointer shadow-sm hover:shadow-md',
-                          v.weight === selectedWeight
-                            ? 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold-subtle)] ring-1 ring-[var(--gold)]/50'
-                            : 'border-muted text-secondary bg-surface hover:border-[var(--gold-hover)] hover:text-primary',
-                          v.stock === 0 && 'opacity-30 cursor-not-allowed line-through hover:border-muted hover:shadow-none',
-                        )}
-                      >
-                        <span className="tracking-wide">{v.weight}</span>
-                        <span className="font-mono text-[var(--gold)]">{formatPrice(product.discount ? discountedPrice(v.price, product.discount) : v.price, locale)}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <WeightSelector
+                    selectedWeight={selectedWeight || '1kg'}
+                    onChange={(weight) => {
+                      setSelectedWeight(weight);
+                      setQuantity(1);
+                    }}
+                    basePrice={product.basePrice}
+                    discount={product.discount}
+                    locale={locale}
+                  />
                 </div>
               )}
 

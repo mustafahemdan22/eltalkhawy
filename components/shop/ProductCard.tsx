@@ -13,9 +13,9 @@ import { useLocale } from '@/components/LocaleProvider';
 import { useToast } from '@/components/ui/Toast';
 
 const PLACEHOLDER_IMAGES: Record<string, string> = {
-  beef:    'products/placeholders/beef_placeholder',
-  lamb:    'products/placeholders/lamb_placeholder',
-  default: 'products/placeholders/placeholder',
+  beef:    'eltalkhawy/general/beef-placeholder',
+  lamb:    'eltalkhawy/general/lamb-placeholder',
+  default: 'eltalkhawy/general/placeholder',
 };
 
 interface ProductCardProps {

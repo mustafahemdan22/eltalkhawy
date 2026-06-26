@@ -7,11 +7,23 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+function toKebabCase(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-+|-+$)/g, '');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const folder = formData.get('folder') as string || 'general';
+    const category = formData.get('category') as string || '';
+    const subcategory = formData.get('subcategory') as string || '';
+    const productId = formData.get('productId') as string || '';
+    const imageIndex = formData.get('index') as string || '';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -30,12 +42,38 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const publicId = `${folder}/${Date.now()}-${file.name.replace(/\.[^/.]+$/, '')}`;
+    const cleanFilename = toKebabCase(file.name.replace(/\.[^/.]+$/, ''));
+    let publicId = '';
+
+    if (folder === 'products') {
+      if (category && productId) {
+        const cleanCat = toKebabCase(category);
+        const cleanSub = subcategory ? toKebabCase(subcategory) : '';
+        const cleanProd = toKebabCase(productId);
+        const indexSuffix = imageIndex ? `-${toKebabCase(imageIndex)}` : '';
+        
+        if (cleanSub) {
+          publicId = `eltalkhawy/categories/${cleanCat}/${cleanSub}/products/${cleanProd}${indexSuffix}`;
+        } else {
+          publicId = `eltalkhawy/categories/${cleanCat}/products/${cleanProd}${indexSuffix}`;
+        }
+      } else {
+        publicId = `eltalkhawy/products/${cleanFilename}`;
+      }
+    } else if (folder === 'categories' || folder === 'banners') {
+      if (category) {
+        const cleanCat = toKebabCase(category);
+        publicId = `eltalkhawy/categories/${cleanCat}/banner`;
+      } else {
+        publicId = `eltalkhawy/categories/${cleanFilename}`;
+      }
+    } else {
+      publicId = `eltalkhawy/general/${cleanFilename}`;
+    }
 
     const result = await new Promise<{ public_id: string; secure_url: string; width: number; height: number; format: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
-          folder,
           public_id: publicId,
           resource_type: 'image',
           overwrite: false,

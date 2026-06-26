@@ -112,6 +112,15 @@ export const create = mutation({
     notes: v.union(v.string(), v.null()),
   },
   handler: async (ctx, args) => {
+    // 0. Validate authentication
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error('Not authenticated: You must be logged in to place an order.');
+    }
+    if (!args.userId || args.userId !== identity.subject) {
+      throw new Error('Unauthorized: User ID mismatch.');
+    }
+
     // Generate unique order number
     const dateCode = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const rand = Math.floor(1000 + Math.random() * 9000);
@@ -123,9 +132,27 @@ export const create = mutation({
       if (!product) {
         throw new Error(`Product ${item.productName} not found`);
       }
-      const variant = product.variants.find((v) => v.weight === item.variantWeight);
+      let variant = product.variants.find((v) => v.weight === item.variantWeight);
       if (!variant) {
-        throw new Error(`Variant ${item.variantWeight} not found for ${item.productName}`);
+        let weightInGrams = 0;
+        const weightStr = item.variantWeight.toLowerCase();
+        if (weightStr.endsWith('kg')) {
+          weightInGrams = parseFloat(weightStr.replace('kg', '')) * 1000;
+        } else if (weightStr.endsWith('g')) {
+          weightInGrams = parseFloat(weightStr.replace('g', ''));
+        } else {
+          weightInGrams = parseFloat(weightStr) || 500;
+        }
+
+        const price = Math.round(product.basePrice * (weightInGrams / 1000));
+        const stockVariant = product.variants.find(v => v.stock > 0) || product.variants[0];
+        const stock = stockVariant ? stockVariant.stock : 10;
+
+        variant = {
+          weight: item.variantWeight,
+          price: price,
+          stock: stock,
+        };
       }
 
       // SERVER-SIDE AUTHORITATIVE PRICING
@@ -166,13 +193,18 @@ export const create = mutation({
         if (!freshProduct) throw new Error(`Product ${item.productId} not found during stock update`);
 
         const freshVariant = freshProduct.variants.find((v) => v.weight === item.variantWeight);
-        if (!freshVariant) throw new Error(`Variant ${item.variantWeight} not found during stock update`);
-        if (freshVariant.stock < item.quantity) {
-          throw new Error(`Stock depleted for ${item.productName} (${item.variantWeight})`);
+        const decrementWeight = freshVariant
+          ? item.variantWeight
+          : (freshProduct.variants.find(v => v.stock > 0) || freshProduct.variants[0])?.weight;
+
+        const targetVariant = freshProduct.variants.find((v) => v.weight === decrementWeight);
+        if (!targetVariant) throw new Error(`Variant for stock update not found`);
+        if (targetVariant.stock < item.quantity) {
+          throw new Error(`Stock depleted for ${item.productName}`);
         }
 
         const updatedVariants = freshProduct.variants.map((v) =>
-          v.weight === item.variantWeight ? { ...v, stock: v.stock - item.quantity } : v
+          v.weight === decrementWeight ? { ...v, stock: v.stock - item.quantity } : v
         );
 
         try {

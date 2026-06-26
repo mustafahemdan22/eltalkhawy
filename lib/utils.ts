@@ -100,6 +100,32 @@ export function localImageUrl(
   return `${src}${sep}${params.toString()}`;
 }
 
+/** Get the local file path for an image from a structured public ID. Use this for fallbacks and static local images. */
+export function getLocalImagePath(publicId: string, ext = 'png'): string {
+  if (!publicId) return '';
+  if (publicId.startsWith('http') || publicId.startsWith('/')) return publicId;
+
+  // Remove the brand namespace prefix 'eltalkhawy/' if present
+  const cleanPath = publicId.replace(/^eltalkhawy\//, '');
+
+  // General assets or banners map directly to their structure
+  if (cleanPath.startsWith('general/') || cleanPath.endsWith('/banner')) {
+    return `/images/${cleanPath}.${ext}`;
+  }
+
+  // Product images structure: eltalkhawy/categories/.../products/{slug} -> /images/categories/.../products/{slug}/images/1.png
+  if (cleanPath.includes('/products/')) {
+    // If it already specifies /images/{index}, just append the extension
+    if (cleanPath.match(/\/images\/\d+$/)) {
+      return `/images/${cleanPath}.${ext}`;
+    }
+    // Default to the first image in the product's image directory
+    return `/images/${cleanPath}/images/1.${ext}`;
+  }
+
+  return `/images/${cleanPath}.${ext}`;
+}
+
 /** Format a date */
 export function formatDate(date: string | number, locale: 'en' | 'ar' = 'en') {
   return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-EG', {
@@ -121,4 +147,25 @@ export function getStars(rating: number) {
 /** Clamp a number between min and max */
 export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
+}
+
+/** Parse weight string (e.g. "500g", "1kg", "1.5kg") to numeric value in grams */
+export function parseWeight(weightStr: string): number {
+  const clean = weightStr.toLowerCase().trim();
+  if (clean.endsWith('kg')) {
+    return parseFloat(clean.replace('kg', '')) * 1000;
+  }
+  if (clean.endsWith('g')) {
+    return parseFloat(clean.replace('g', ''));
+  }
+  return parseFloat(clean) || 500;
+}
+
+/** Format weight in grams to string representation (e.g. "500g", "1kg", "1.5kg") */
+export function formatWeight(weightInGrams: number): string {
+  if (weightInGrams < 1000) {
+    return `${weightInGrams}g`;
+  }
+  const kgValue = weightInGrams / 1000;
+  return `${kgValue}kg`;
 }

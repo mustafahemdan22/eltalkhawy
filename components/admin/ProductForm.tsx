@@ -387,6 +387,9 @@ export default function ProductForm({ initial = EMPTY_PRODUCT, productId, mode }
             onChange={(urls) => set('images', urls)}
             folder="products"
             maxItems={8}
+            category={state.categorySlug}
+            subcategory={state.subcategory}
+            productId={state.slug}
           />
         </FormField>
       </Section>

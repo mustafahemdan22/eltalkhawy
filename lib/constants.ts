@@ -187,16 +187,16 @@ export const SORT_OPTIONS = [
 export type SortValue = (typeof SORT_OPTIONS)[number]['value'];
 
 export const CATEGORY_IMAGES: Record<string, string> = {
-  beef: 'categories/beef_banner',
-  buffalo: 'categories/buffalo_banner',
-  lamb: 'categories/lamb_banner',
-  goat: 'categories/goat_banner',
-  veal: 'categories/veal_banner',
-  'bbq-cuts': 'categories/bbq_banner',
-  'premium-cuts': 'categories/premium_cuts_banner',
-  'organ-meats': 'categories/organ_banner',
-  frozen: 'categories/frozen_banner',
-  offers: 'categories/offers_banner',
+  beef: 'eltalkhawy/categories/beef/banner',
+  buffalo: 'eltalkhawy/categories/buffalo/banner',
+  lamb: 'eltalkhawy/categories/lamb/banner',
+  goat: 'eltalkhawy/categories/goat/banner',
+  veal: 'eltalkhawy/categories/veal/banner',
+  'bbq-cuts': 'eltalkhawy/categories/bbq-cuts/banner',
+  'premium-cuts': 'eltalkhawy/categories/premium-cuts/banner',
+  'organ-meats': 'eltalkhawy/categories/organ-meats/banner',
+  frozen: 'eltalkhawy/categories/frozen/banner',
+  offers: 'eltalkhawy/categories/offers/banner',
 };
 
 export function withImageSize(
@@ -207,15 +207,16 @@ export function withImageSize(
   if (publicId.startsWith('http')) return publicId;
 
   const { width, height, quality = 'auto', crop = 'fill' } = opts;
-  const params = new URLSearchParams();
-  if (width) params.set('w', width.toString());
-  if (height) params.set('h', height.toString());
-  params.set('q', quality.toString());
-  params.set('c', crop);
-  params.set('g', 'auto');
-  params.set('f', 'auto');
-  const sep = publicId.includes('?') ? '&' : '?';
-  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr'}/image/upload/${params.toString()}/${publicId}`;
+  const transformations: string[] = [];
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  transformations.push(`q_${quality}`);
+  transformations.push(`c_${crop}`);
+  transformations.push(`g_auto`);
+  transformations.push(`f_auto`);
+
+  const transformStr = transformations.join(',');
+  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr'}/image/upload/${transformStr}/${publicId}`;
 }
 
 export const TRUST_FEATURES = [

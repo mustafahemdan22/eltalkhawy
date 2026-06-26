@@ -17,6 +17,9 @@ interface FormImagePickerProps {
   maxItems?:    number;
   help?:        string;
   folder?:      'products' | 'banners' | 'categories' | 'general';
+  category?:    string;
+  subcategory?: string;
+  productId?:   string;
 }
 
 function getPreviewUrl(publicId: string): string {
@@ -29,6 +32,9 @@ export default function FormImagePicker({
   maxItems = 8,
   help,
   folder = 'products',
+  category,
+  subcategory,
+  productId,
 }: FormImagePickerProps) {
   const { showToast } = useToast();
   const { locale, dict } = useLocale();
@@ -129,7 +135,7 @@ export default function FormImagePicker({
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addUrl(); } }}
-            placeholder="products/beef/ribeye_steak"
+            placeholder="eltalkhawy/categories/beef/ribeye/products/dry-aged-ribeye-steak"
             className="h-11 w-full ps-10 pe-3 rounded-button bg-[var(--bg-surface-raised)] border border-[var(--border-default)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]/40"
             disabled={value.length >= maxItems}
           />
@@ -191,6 +197,10 @@ export default function FormImagePicker({
             <div className="overflow-y-auto p-5 flex flex-col gap-5">
               <MediaUploader
                 folder={folder}
+                category={category}
+                subcategory={subcategory}
+                productId={productId}
+                index={value.length + 1}
                 onUploaded={() => {
                   /* list query auto-refreshes */
                 }}
