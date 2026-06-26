@@ -122,9 +122,7 @@ export default function FeaturedCategories() {
                         />
                       ) : (
                       <div className="flex h-full w-full items-center justify-center bg-[var(--bg-surface-raised)]">
-                        <span className="text-4xl" aria-hidden="true">
-                          {cat.icon}
-                        </span>
+                       
                       </div>
                     )}
 
