@@ -233,7 +233,7 @@ function CategoriesContent() {
                   <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
                     <div>
                       <span className="text-[var(--gold)] text-2xs font-semibold tracking-widest uppercase block mb-1">
-                        {cat.icon} {dict.categoriesPage.specialtyCut}
+                        {dict.categoriesPage.specialtyCut}
                       </span>
                       <h2 className="font-display text-xl md:text-2xl font-bold text-primary flex items-center gap-2">
                         {locale === 'ar' ? cat.nameAr : cat.name}
