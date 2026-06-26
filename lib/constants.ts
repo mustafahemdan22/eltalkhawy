@@ -46,6 +46,8 @@ export const NAV_LINKS = [
   { label: 'Categories', labelAr: 'التصنيفات', href: '/categories' },
   { label: 'About Us', labelAr: 'من نحن', href: '/about' },
   { label: 'Contact', labelAr: 'تواصل معنا', href: '/contact' },
+    { label: 'Orders', labelAr: 'طلباتي', href: '/orders' },
+
 ] as const;
 
 export const CATEGORIES = [
@@ -96,7 +98,7 @@ export const CATEGORIES = [
     nameAr: 'لحم ماعز',
     description: 'Lean local goat meat with a distinctive flavour.',
     descriptionAr: 'لحم ماعز بلدي قليل الدهن بطعم مميز.',
-    icon: '🐐',
+
     subcategories: [],
   },
   {
@@ -105,7 +107,6 @@ export const CATEGORIES = [
     nameAr: 'لحم عجل',
     description: 'Tender veal cuts for a softer, lighter taste.',
     descriptionAr: 'قطعيات لحم عجل طرية بطعم خفيف.',
-    icon: '🐄',
     subcategories: [],
   },
   {
@@ -114,7 +115,6 @@ export const CATEGORIES = [
     nameAr: 'قطعيات الشوي',
     description: 'Ready-to-grill cuts including kofta, burgers, ribs, and more.',
     descriptionAr: 'قطعيات جاهزة للشوي مثل الكفتة والبرجر والريش وغيرها.',
-    icon: '🔥',
     subcategories: [],
   },
   {
@@ -122,8 +122,9 @@ export const CATEGORIES = [
     name: 'Premium Cuts',
     nameAr: 'قطعيات مميزة',
     description: 'Selected cuts for special meals and premium cooking.',
+   
     descriptionAr: 'قطعيات مختارة للوجبات المميزة والطهي الخاص.',
-    icon: '⭐',
+
     subcategories: [],
   },
   {
@@ -132,7 +133,7 @@ export const CATEGORIES = [
     nameAr: 'أحشاء ومشتقات',
     description: 'Fresh traditional organ meats prepared daily.',
     descriptionAr: 'أحشاء ومشتقات طازجة يتم تجهيزها يوميًا.',
-    icon: '🫀',
+
     subcategories: [
       { slug: 'liver', name: 'Liver', nameAr: 'كبدة' },
       { slug: 'brain', name: 'Brain', nameAr: 'مخ' },

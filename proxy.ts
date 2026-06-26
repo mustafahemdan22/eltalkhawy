@@ -71,12 +71,16 @@ export default clerkMiddleware(async (auth, req) => {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.pstmrk.it https://*.clerk.accounts.dev",
+      // Clerk JS SDK + Cloudflare Turnstile CAPTCHA (required for email sign-in/sign-up)
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.pstmrk.it https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: https://images.unsplash.com",
-      "connect-src 'self' https://*.convex.cloud https://*.clerk.accounts.dev wss://*.convex.cloud",
-      "frame-src https://*.clerk.accounts.dev",
+      // Clerk CDN (provider logos + user avatars), Cloudinary (product images),
+      // Google user content (Google OAuth avatars), Apple CDN (Apple logo), Unsplash
+      "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.com https://*.clerk.accounts.dev https://lh3.googleusercontent.com https://appleid.cdn-apple.com https://res.cloudinary.com https://images.unsplash.com",
+      "connect-src 'self' https://*.convex.cloud https://*.clerk.accounts.dev https://*.clerk.com https://clerk.pstmrk.it wss://*.convex.cloud",
+      // Clerk auth iframes + Cloudflare Turnstile widget iframe
+      "frame-src https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com",
       "form-action 'self'",
       "base-uri 'self'",
     ].join('; ')

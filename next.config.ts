@@ -34,6 +34,20 @@ const nextConfig: NextConfig = {
         hostname: 'res.cloudinary.com',
         pathname: `/${cloudinaryCloudName}/**`,
       },
+      // Clerk CDN — provider logos (Google, Apple, etc.) and user avatars
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.clerk.com',
+      },
+      // Google OAuth user profile images
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

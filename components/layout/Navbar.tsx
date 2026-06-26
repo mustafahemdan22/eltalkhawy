@@ -235,17 +235,7 @@ export default function Navbar() {
           </ul>
 
           {/* ── Right Actions ── */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Search button */}
-            <button
-              onClick={() => setSearchOpen((v) => !v)}
-              className="p-3 rounded-button text-secondary hover:text-primary hover:bg-surface transition-all duration-250 shine"
-              aria-label="Search"
-              aria-expanded={searchOpen}
-            >
-              <Search className="w-5 h-5" aria-hidden="true" />
-            </button>
-
+          <div className="flex items-center">
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
@@ -298,7 +288,7 @@ export default function Navbar() {
             </button>
 
             {/* Auth — rendered client-side only to prevent Clerk hydration mismatch */}
-            <div className="hidden md:flex items-center gap-2 ms-1">
+            <div className="flex items-center gap-2 ms-1">
               {mounted && (
                 <>
                   <SignedIn>
@@ -306,15 +296,17 @@ export default function Navbar() {
                       {isAdmin && (
                         <Link
                           href={`/${locale}/admin`}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
+                          className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-button text-xs uppercase tracking-wider text-[var(--gold)] hover:text-[var(--gold-hover)] hover:bg-[var(--gold-subtle)] transition-all duration-250"
                         >
                           {locale === 'ar' ? 'التحكم' : 'Admin'}
                         </Link>
                       )}
+                      {/* Account icon — visible on all screen sizes */}
+                    
                       <UserButton
                         appearance={{
                           elements: {
-                            avatarBox: 'w-9 h-9 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
+                            avatarBox: 'w-8 h-8 ring-1 ring-[var(--gold)]/40 hover:ring-[var(--gold)] transition-all',
                           },
                         }}
                       />
@@ -462,26 +454,6 @@ export default function Navbar() {
                     {locale === 'ar' ? link.labelAr : link.label}
                   </Link>
                 ))}
-
-                {/* Categories shortcut */}
-                <div className="pt-4 border-t border-muted">
-                  <p className="section-label text-[var(--gold)] px-5 pb-3">
-                    {locale === 'ar' ? 'التصنيفات' : 'Categories'}
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 mt-1">
-                    {CATEGORIES.slice(0, 8).map((cat) => (
-                      <Link
-                        key={cat.slug}
-                        href={ANIMAL_SLUGS.has(cat.slug) ? `/${locale}/animal/${cat.slug}` : `/${locale}/categories/${cat.slug}`}
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-secondary hover:bg-surface hover:text-primary transition-colors"
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        <span aria-hidden="true">{cat.icon}</span>
-                        {locale === 'ar' ? cat.nameAr : cat.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
               </nav>
 
               {/* Footer */}
