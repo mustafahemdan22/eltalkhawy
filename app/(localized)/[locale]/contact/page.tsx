@@ -23,6 +23,7 @@ export default function ContactPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { locale, dict } = useLocale();
   const sendMessage = useMutation(api.contact.send);
@@ -32,6 +33,7 @@ export default function ContactPage() {
     if (!name || !email || !message) return;
 
     setLoading(true);
+    setError(false);
     try {
       await sendMessage({ name, email, message, locale: locale as 'en' | 'ar' });
       setSubmitted(true);
@@ -39,7 +41,7 @@ export default function ContactPage() {
       setEmail('');
       setMessage('');
     } catch {
-      // Error state could be added
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -206,6 +208,12 @@ export default function ContactPage() {
                         className="w-full p-4 rounded-button text-sm bg-base border border-muted text-primary placeholder:text-muted focus:outline-none focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)]/20 transition-all duration-300 resize-none"
                       />
                     </div>
+
+                    {error && (
+                      <p className="text-sm text-[var(--error)] font-medium">
+                        {locale === 'ar' ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : 'Something went wrong. Please try again.'}
+                      </p>
+                    )}
 
                     <Button
                       type="submit"

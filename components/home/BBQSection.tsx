@@ -10,8 +10,8 @@ import { useLocale } from '@/components/LocaleProvider';
 import { cloudinaryImageUrl, formatPrice } from '@/lib/utils';
 
 const PLACEHOLDER = cloudinaryImageUrl('eltalkhawy/general/placeholder', { preset: 'productCard' });
-const BBQ_BG_1    = cloudinaryImageUrl('eltalkhawy/categories/bbq-cuts/products/shish-tawook', { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
-const BBQ_BG_2    = cloudinaryImageUrl('eltalkhawy/categories/beef/brisket/products/beef-brisket', { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
+const BBQ_BG_1    = cloudinaryImageUrl('eltalkhawy/categories/bbq-cuts/products/shish-tawook/1', { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
+const BBQ_BG_2    = cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-brisket/1', { width: 800, height: 540, crop: 'fill', gravity: 'auto' });
 
 export default function BBQSection() {
   const { locale, dict } = useLocale();

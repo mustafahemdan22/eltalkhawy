@@ -117,7 +117,7 @@ export default function MediaUploader({
         }
       }
     },
-    [folder, showToast, dict, onUploaded],
+    [folder, showToast, dict, onUploaded, category, index, productId, subcategory],
   );
 
   return (

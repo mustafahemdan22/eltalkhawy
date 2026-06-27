@@ -9,7 +9,6 @@ import { useLocale } from '@/components/LocaleProvider';
 import { cn, cloudinaryImageUrl } from '@/lib/utils';
 import { X, Link as LinkIcon, Library, Plus, Loader2 } from 'lucide-react';
 import MediaUploader from './MediaUploader';
-import type { Id } from '@/convex/_generated/dataModel';
 
 interface FormImagePickerProps {
   value:        string[];                          // array of Cloudinary public IDs

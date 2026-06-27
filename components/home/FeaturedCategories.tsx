@@ -87,7 +87,6 @@ export default function FeaturedCategories() {
             const isAnimal = ['beef', 'buffalo', 'lamb', 'goat', 'veal'].includes(cat.slug);
             const categoryHref = isAnimal ? `/${locale}/animal/${cat.slug}` : `/${locale}/categories/${cat.slug}`;
             const catStats = statsBySlug.get(cat.slug);
-            const productCount = catStats?.count;
             const priceLabel = catStats
               ? catStats.minPrice === catStats.maxPrice
                 ? formatPrice(catStats.minPrice, locale)

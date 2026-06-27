@@ -59,7 +59,7 @@ function NewsletterForm({ locale }: { locale: 'en' | 'ar' }) {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Your premium email address'}
+          placeholder={locale === 'ar' ? 'البريد الإلكتروني' : 'Enter your email'}
           className={cn(
             'w-full h-12 rounded-button text-sm font-sans',
             locale === 'ar' ? 'pr-5 pl-10' : 'pl-5 pr-10',

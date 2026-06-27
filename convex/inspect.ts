@@ -2,6 +2,7 @@ import { internalQuery } from './_generated/server';
 
 /** Inspect what the first product and first category look like in the DB */
 export const inspect = internalQuery({
+  args: {},
   handler: async (ctx) => {
     const product  = await ctx.db.query('products').first();
     const category = await ctx.db.query('categories').first();

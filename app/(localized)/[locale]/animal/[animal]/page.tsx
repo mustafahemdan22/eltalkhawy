@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { api } from '@/convex/_generated/api';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+
+import SkeletonCard from '@/components/shop/SkeletonCard';
 import CutCard from '@/components/shop/CutCard';
 import { CATEGORIES, CATEGORY_IMAGES, withImageSize } from '@/lib/constants';
 import { ANIMAL_CUTS } from '@/lib/animal-cuts';
@@ -286,15 +288,7 @@ export default function AnimalPage({ params }: PageProps) {
           {dbProducts === undefined ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
               {Array.from({ length: Math.min(cutCount || 4, 8) }).map((_, i) => (
-                <div key={i} className="bg-surface rounded-2xl overflow-hidden border border-muted animate-pulse">
-                  <div className="aspect-[4/3] bg-surface-raised" />
-                  <div className="p-5 space-y-3">
-                    <div className="h-3 w-1/3 rounded bg-surface-raised" />
-                    <div className="h-5 w-3/4 rounded bg-surface-raised" />
-                    <div className="h-4 w-1/2 rounded bg-surface-raised" />
-                    <div className="h-8 w-full rounded bg-surface-raised mt-4" />
-                  </div>
-                </div>
+                <SkeletonCard key={i} />
               ))}
             </div>
           ) : cuts.length > 0 ? (

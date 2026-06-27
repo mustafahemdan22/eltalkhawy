@@ -81,50 +81,7 @@ export function cloudinaryImageUrl(
   return getCloudinaryUrl(publicId, transformOptions);
 }
 
-/** @deprecated Use cloudinaryImageUrl instead. Kept for backward compatibility during migration. */
-export function localImageUrl(
-  src: string,
-  options: {
-    width?: number;
-    height?: number;
-    quality?: number;
-  } = {},
-): string {
-  if (!src || src.startsWith('http')) return src;
-  const { width, height, quality = 80 } = options;
-  const params = new URLSearchParams();
-  if (width) params.set('w', width.toString());
-  if (height) params.set('h', height.toString());
-  params.set('q', quality.toString());
-  const sep = src.includes('?') ? '&' : '?';
-  return `${src}${sep}${params.toString()}`;
-}
 
-/** Get the local file path for an image from a structured public ID. Use this for fallbacks and static local images. */
-export function getLocalImagePath(publicId: string, ext = 'png'): string {
-  if (!publicId) return '';
-  if (publicId.startsWith('http') || publicId.startsWith('/')) return publicId;
-
-  // Remove the brand namespace prefix 'eltalkhawy/' if present
-  const cleanPath = publicId.replace(/^eltalkhawy\//, '');
-
-  // General assets or banners map directly to their structure
-  if (cleanPath.startsWith('general/') || cleanPath.endsWith('/banner')) {
-    return `/images/${cleanPath}.${ext}`;
-  }
-
-  // Product images structure: eltalkhawy/categories/.../products/{slug} -> /images/categories/.../products/{slug}/images/1.png
-  if (cleanPath.includes('/products/')) {
-    // If it already specifies /images/{index}, just append the extension
-    if (cleanPath.match(/\/images\/\d+$/)) {
-      return `/images/${cleanPath}.${ext}`;
-    }
-    // Default to the first image in the product's image directory
-    return `/images/${cleanPath}/images/1.${ext}`;
-  }
-
-  return `/images/${cleanPath}.${ext}`;
-}
 
 /** Format a date */
 export function formatDate(date: string | number, locale: 'en' | 'ar' = 'en') {

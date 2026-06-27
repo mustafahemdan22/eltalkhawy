@@ -185,16 +185,16 @@ export const SORT_OPTIONS = [
 export type SortValue = (typeof SORT_OPTIONS)[number]['value'];
 
 export const CATEGORY_IMAGES: Record<string, string> = {
-  beef: 'eltalkhawy/categories/beef/banner',
-  buffalo: 'eltalkhawy/categories/buffalo/banner',
-  lamb: 'eltalkhawy/categories/lamb/banner',
-  goat: 'eltalkhawy/categories/goat/banner',
-  veal: 'eltalkhawy/categories/veal/banner',
-  'bbq-cuts': 'eltalkhawy/categories/bbq-cuts/banner',
-  'premium-cuts': 'eltalkhawy/categories/premium-cuts/banner',
-  'organ-meats': 'eltalkhawy/categories/organ-meats/banner',
-  frozen: 'eltalkhawy/categories/frozen/banner',
-  offers: 'eltalkhawy/categories/offers/banner',
+  beef: 'eltalkhawy/categories/beef/category',
+  buffalo: 'eltalkhawy/categories/buffalo/category',
+  lamb: 'eltalkhawy/categories/lamb/category',
+  goat: 'eltalkhawy/categories/goat/category',
+  veal: 'eltalkhawy/categories/veal/category',
+  'bbq-cuts': 'eltalkhawy/categories/bbq-cuts/category',
+  'premium-cuts': 'eltalkhawy/categories/premium-cuts/category',
+  'organ-meats': 'eltalkhawy/categories/organ-meats/category',
+  frozen: 'eltalkhawy/categories/frozen/category',
+  offers: 'eltalkhawy/categories/offers/category',
 };
 
 export function withImageSize(

@@ -3,18 +3,14 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useLocale } from '@/components/LocaleProvider';
-import { cn, cloudinaryImageUrl } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import img from "../../public/hero_premium_meat.png"
 
 export default function HeroSection() {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const bgY    = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const textY  = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   const { locale, dict } = useLocale();
   const shouldReduceMotion = useReducedMotion();
@@ -23,7 +19,7 @@ export default function HeroSection() {
   const animateVisible = shouldReduceMotion ? {} : { opacity: 1, y: 0 };
   const transitionBase = shouldReduceMotion ? {} : { duration: 0.6 };
 
-  const heroImageUrl = cloudinaryImageUrl('hero/hero_premium_meat', { preset: 'hero' });
+
 
   return (
     <section
@@ -33,10 +29,9 @@ export default function HeroSection() {
       style={{ height: 'calc(100svh - 72px)', minHeight: '560px', maxHeight: '900px' }}
       aria-label="Hero"
     >
-      {/* ── Parallax background ── */}
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute inset-0 will-change-transform"
+      {/* ── Background ── */}
+      <div
+        className="absolute inset-0"
         aria-hidden="true"
       >
         <Image
@@ -50,14 +45,12 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-[var(--bg-base)]/50 sm:bg-[var(--bg-base)]/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-base)] via-[var(--bg-base)]/80 to-transparent sm:hidden" />
         <div className={cn("absolute inset-0 hidden sm:block", locale === 'ar' ? "bg-gradient-to-l" : "bg-gradient-to-r", "from-[var(--bg-base)]/95 via-[var(--bg-base)]/60 to-transparent")} />
-      </motion.div>
+      </div>
 
       {/* ── Content ── */}
-      <motion.div
+      <div
         className="relative z-10 container-brand h-full flex flex-col justify-center"
       >
-        <div className="">
-         
 
           <motion.h1
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
@@ -96,9 +89,7 @@ export default function HeroSection() {
             </Link>
            
           </motion.div>
-
-        </div>
-      </motion.div>
+      </div>
 
     </section>
   );

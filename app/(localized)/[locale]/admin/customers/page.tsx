@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/Toast';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable';
 import { FormInput } from '@/components/admin/FormInput';
-import { Search, Shield, User as UserIcon, Crown, RotateCcw } from 'lucide-react';
+import { Shield, User as UserIcon, Crown, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type CustomerRow = {

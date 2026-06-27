@@ -1,6 +1,4 @@
-import { env } from 'process';
-
-const CLOUD_NAME = env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dfq1xxerr';
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '';
 const BASE_URL = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload`;
 
 export type CloudinaryTransformOptions = {

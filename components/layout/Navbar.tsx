@@ -23,10 +23,8 @@ import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { NAV_LINKS, CATEGORIES, SITE_CONFIG } from '@/lib/constants';
+import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants';
 import CartDrawer from '@/components/layout/CartDrawer';
-
-const ANIMAL_SLUGS = new Set(['beef', 'buffalo', 'lamb', 'goat', 'veal']);
 
 /* ── Navbar ── */
 export default function Navbar() {

@@ -331,7 +331,7 @@ export default function CartPage() {
                     const maxStock = variant?.stock ?? 99;
                     const imgUrl = item.product.images[0]
                       ? cloudinaryImageUrl(item.product.images[0], { width: 300, height: 350, crop: 'fill', gravity: 'auto' })
-                      : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes', { width: 300, height: 350, crop: 'fill', gravity: 'auto' });
+                      : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes/1', { width: 300, height: 350, crop: 'fill', gravity: 'auto' });
 
                     return (
                       <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 md:py-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">

@@ -177,7 +177,7 @@ async function migrate() {
       const slug = slugMatch[1];
       const category = catMatch[1];
       const subcategory = subMatch && subMatch[1] ? subMatch[1] : null;
-      let rawImage = imgMatch ? imgMatch[1].trim() : '';
+      const rawImage = imgMatch ? imgMatch[1].trim() : '';
 
       if (rawImage) {
         // Resolve image string

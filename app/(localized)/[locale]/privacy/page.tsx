@@ -7,7 +7,7 @@ import { useLocale } from '@/components/LocaleProvider';
 import { Shield } from 'lucide-react';
 
 export default function PrivacyPage() {
-  const { locale, dict } = useLocale();
+  const { locale } = useLocale();
   const isAr = locale === 'ar';
 
   return (

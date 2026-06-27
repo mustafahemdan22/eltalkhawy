@@ -10,7 +10,7 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useUser } from '@clerk/nextjs';
 import ProductCard from '@/components/shop/ProductCard';
-import { ProductCardSkeleton } from '@/components/ui/Skeleton';
+import SkeletonCard from '@/components/shop/SkeletonCard';
 import { useLocale } from '@/components/LocaleProvider';
 import { cn, discountedPrice } from '@/lib/utils';
 import { Pagination } from '@/components/ui/Pagination';
@@ -115,7 +115,7 @@ export default function BestSellers() {
         {products === undefined ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
             {Array.from({ length: limit }).map((_, i) => (
-              <ProductCardSkeleton key={i} />
+              <SkeletonCard key={i} />
             ))}
           </div>
         ) : products.length === 0 ? null : (

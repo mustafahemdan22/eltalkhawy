@@ -3,9 +3,7 @@ import { NextResponse } from 'next/server';
 
 const isAdminRoute = createRouteMatcher(['/(.*)/admin/(.*)']);
 const isCheckoutRoute = createRouteMatcher(['/(.*)/checkout']);
-const _isApiRoute = createRouteMatcher(['/(.*)/api/(.*)']);
 
-const PUBLIC_PATHS = ['/(.*)/sign-in', '/(.*)/sign-up', '/(.*)/api/webhooks/(.*)'];
 
 // Global rate limit store (use Redis in production)
 declare global {
@@ -16,9 +14,6 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const url = req.nextUrl;
   const locale = url.pathname.split('/')[1] || 'en';
-  const _isPublicPath = PUBLIC_PATHS.some(pattern => 
-    new RegExp(`^${pattern.replace('(.*)', '([^/]+)')}$`).test(url.pathname)
-  );
 
   // Rate limiting for checkout (using in-memory map for simplicity; use Redis in production)
   if (isCheckoutRoute(req)) {

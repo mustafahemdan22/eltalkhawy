@@ -40,11 +40,7 @@ interface UploadResult {
   error?: string;
 }
 
-const CATEGORY_FOLDERS: Record<string, string> = {
-  'images/categories': 'categories',
-  'images/products': 'products',
-  'hero': 'hero',
-};
+
 
 async function uploadFile(localPath: string, publicId: string): Promise<UploadResult> {
   try {

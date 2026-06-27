@@ -48,15 +48,11 @@ type ProductSeed = Omit<
 >;
 
 function p(data: ProductSeed): ProductInsert {
-  const images = data.images.map((_, i) => {
+  // Always generate exactly 2 images
+  const images = [1, 2].map(num => {
     const cat = data.categorySlug.toLowerCase().trim();
-    const sub = data.subcategory ? data.subcategory.toLowerCase().trim() : '';
     const slug = data.slug.toLowerCase().trim();
-    const suffix = i > 0 ? `-${i + 1}` : '';
-    if (sub) {
-      return `eltalkhawy/categories/${cat}/${sub}/products/${slug}${suffix}`;
-    }
-    return `eltalkhawy/categories/${cat}/products/${slug}${suffix}`;
+    return `eltalkhawy/categories/${cat}/products/${slug}/${num}`;
   });
 
   return {

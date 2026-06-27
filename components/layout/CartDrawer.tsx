@@ -87,6 +87,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       if (!user) {
         try {
           const raw = localStorage.getItem('et_guest_cart') ?? '[]';
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setGuestCart(JSON.parse(raw));
         } catch {
           setGuestCart([]);
@@ -261,7 +262,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                   const imgUrl = item.product.images[0]
                     ? cloudinaryImageUrl(item.product.images[0], { width: 120, height: 160, crop: 'fill', gravity: 'auto' })
-                    : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes', { width: 120, height: 160, crop: 'fill', gravity: 'auto' });
+                    : cloudinaryImageUrl('eltalkhawy/categories/beef/products/beef-chuck-cubes/1', { width: 120, height: 160, crop: 'fill', gravity: 'auto' });
 
                   return (
                     <div key={`${item.productId}-${item.variantWeight}-${item.isGrilled ? 'grill' : 'raw'}-${item.starterName || ''}`} className="py-4 flex gap-4 cart-item-enter">

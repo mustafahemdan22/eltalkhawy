@@ -37,6 +37,7 @@ function toPublicId(value: string, defaultFolder: string): string | null {
 
 /** Migrate all products' image arrays to Cloudinary public IDs */
 export const migrateImages = internalMutation({
+  args: {},
   handler: async (ctx) => {
     let updatedProducts  = 0;
     let updatedCategories = 0;
